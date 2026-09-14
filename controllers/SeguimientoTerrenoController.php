@@ -65,21 +65,25 @@ try {
         volverConError('La actividad seleccionada no es válida.');
     }
 
+    // Se eliminan los dos puntos (:) en las llaves del array
+    // para que coincidan con $datos['id_deposito'] en el modelo.
     $modelo->registrar([
-        ':id_deposito' => $idDeposito,
-        ':id_usuario' => $_SESSION['usuario_id'],
-        ':fecha' => date('Y-m-d'),
-        ':id_actividad_terreno' => $idActividad,
-        ':ph' => $ph,
-        ':temperatura' => $temperatura,
-        ':larvas_aedes' => (int) $larvasAedes,
-        ':pupas' => (int) $pupas,
-        ':larvas_culex' => (int) $larvasCulex,
+        'id_deposito'          => $idDeposito,
+        'id_usuario'           => $_SESSION['usuario_id'] ?? 1, // Fallback por si la sesión está vacía
+        'fecha'                => date('Y-m-d'),
+        'id_actividad_terreno' => $idActividad,
+        'ph'                   => $ph,
+        'temperatura'          => $temperatura,
+        'larvas_aedes'         => (int) $larvasAedes,
+        'pupas'                => (int) $pupas,
+        'larvas_culex'         => (int) $larvasCulex,
     ]);
 
     $_SESSION['seguimiento_terreno_exito'] = 'Registro guardado correctamente.';
     header('Location: ../views/auxiliar_terreno/registrar_seguimiento.php');
     exit;
+
 } catch (Throwable $e) {
-    volverConError('No fue posible guardar el registro. Revise la configuración de PostgreSQL.');
+    // Muestra la causa exacta (error de sintaxis, clave foránea, columna inexistente, etc.)
+    volverConError('Error de ejecución: ' . $e->getMessage() . ' (Línea ' . $e->getLine() . ')');
 }

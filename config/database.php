@@ -22,10 +22,7 @@ class Database
             return $pdo;
 
         } catch (PDOException $e) {
-            die('Error de PostgreSQL: ' . $e->getMessage());
+            die('Error de conexión a PostgreSQL: ' . $e->getMessage());
         }
     }
 }
-
-
-?>

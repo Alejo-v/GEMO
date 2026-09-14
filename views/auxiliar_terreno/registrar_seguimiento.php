@@ -50,7 +50,8 @@ $exito = $_SESSION['seguimiento_terreno_exito'] ?? null; unset($_SESSION['seguim
         <div class="row g-3">
             <div class="col-md-6">
                 <label class="form-label">Sitio *</label>
-                <select id="id_sitio" class="form-select" required>
+                <!-- Se agregó name="id_sitio" que faltaba -->
+                <select name="id_sitio" id="id_sitio" class="form-select" required>
                     <option value="">Seleccione un sitio</option>
                     <?php foreach ($sitios as $s): ?>
                         <option value="<?= (int)$s['id_sitio'] ?>">
@@ -65,7 +66,7 @@ $exito = $_SESSION['seguimiento_terreno_exito'] ?? null; unset($_SESSION['seguim
                 <select name="id_deposito" id="id_deposito" class="form-select" required disabled>
                     <option value="">Seleccione primero un sitio</option>
                     <?php foreach ($depositos as $d): ?>
-                        <option value="<?= (int)$d['id_deposito'] ?>" data-sitio="<?= (int)$d['id_sitio'] ?>">
+                        <option value="<?= (int)$d['id_deposito'] ?>" data-sitio="<?= (int)($d['id_sitio'] ?? 0) ?>">
                             #<?= (int)$d['id_deposito'] ?> — <?= htmlspecialchars($d['tipo_deposito']) ?>
                         </option>
                     <?php endforeach; ?>
@@ -143,10 +144,14 @@ $exito = $_SESSION['seguimiento_terreno_exito'] ?? null; unset($_SESSION['seguim
 document.addEventListener('DOMContentLoaded', function () {
     var sitioSelect = document.getElementById('id_sitio');
     var depositoSelect = document.getElementById('id_deposito');
-    var opcionesDeposito = Array.prototype.slice.call(depositoSelect.options);
+    
+    // Guardar las opciones originales de depósitos omitiendo placeholders vacíos
+    var opcionesDeposito = Array.prototype.slice.call(depositoSelect.options).filter(function (op) {
+        return op.value !== '';
+    });
 
     function actualizarDepositos() {
-        var idSitio = sitioSelect.value;
+        var idSitio = String(sitioSelect.value).trim();
         depositoSelect.innerHTML = '';
 
         if (!idSitio) {
@@ -165,13 +170,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var encontrados = 0;
         opcionesDeposito.forEach(function (opcion) {
-            if (opcion.dataset.sitio === idSitio) {
+            var sitioDeposito = String(opcion.getAttribute('data-sitio') || '').trim();
+            if (sitioDeposito === idSitio) {
                 depositoSelect.appendChild(opcion.cloneNode(true));
                 encontrados++;
             }
         });
 
-        depositoSelect.disabled = encontrados === 0;
+        depositoSelect.disabled = (encontrados === 0);
     }
 
     sitioSelect.addEventListener('change', actualizarDepositos);

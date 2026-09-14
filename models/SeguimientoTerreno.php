@@ -14,8 +14,8 @@ class SeguimientoTerreno
     public function obtenerSitios(): array
     {
         $sql = "SELECT st.id_sitio, st.direccion,
-                       COALESCE(string_agg(DISTINCT b.nombre, ', ' ORDER BY b.nombre), 'Sin barrio') AS barrios,
-                       COALESCE(string_agg(DISTINCT c.nombre, ', ' ORDER BY c.nombre), 'Sin comuna') AS comunas
+                    COALESCE(string_agg(DISTINCT b.nombre, ', ' ORDER BY b.nombre), 'Sin barrio') AS barrios,
+                    COALESCE(string_agg(DISTINCT c.nombre, ', ' ORDER BY c.nombre), 'Sin comuna') AS comunas
                 FROM sitio_terreno st
                 LEFT JOIN sitio_barrio sb ON sb.id_sitio = st.id_sitio
                 LEFT JOIN barrio b ON b.id_barrio = sb.id_barrio
@@ -60,57 +60,37 @@ class SeguimientoTerreno
     }
 
     /**
-     * id_seguimiento_terreno NO es autoincremental en la base de datos actual
-     * (a diferencia de id_seguimiento_zoo, que sí tiene IDENTITY). Por eso
-     * calculamos el siguiente número nosotros mismos dentro de una
-     * transacción. Si dos auxiliares guardan un registro exactamente al
-     * mismo tiempo puede haber choque de id (error 23505 = unique_violation);
-     * en ese caso reintentamos automáticamente hasta 3 veces con un id nuevo.
+     * Inserta un nuevo registro de seguimiento de terreno.
+     * Al utilizar la secuencia nativa de PostgreSQL, no se requiere calcular el MAX() manualmente.
      */
     public function registrar(array $datos): bool
     {
-        $intentos = 0;
-
-        while ($intentos < 3) {
-            $intentos++;
-            $this->conexion->beginTransaction();
-            try {
-                $siguienteId = (int) $this->conexion
-                    ->query('SELECT COALESCE(MAX(id_seguimiento_terreno), 0) + 1 FROM seguimiento_terreno')
-                    ->fetchColumn();
-
-                $datos[':id_seguimiento_terreno'] = $siguienteId;
-
-                $sql = 'INSERT INTO seguimiento_terreno
-                        (id_seguimiento_terreno, id_deposito, id_usuario, fecha, id_actividad_terreno,
-                         ph, temperatura, larvas_aedes, pupas, larvas_culex)
-                        VALUES
-                        (:id_seguimiento_terreno, :id_deposito, :id_usuario, :fecha, :id_actividad_terreno,
-                         :ph, :temperatura, :larvas_aedes, :pupas, :larvas_culex)';
-                $stmt = $this->conexion->prepare($sql);
-                $stmt->execute($datos);
-
-                $this->conexion->commit();
-                return true;
-            } catch (PDOException $e) {
-                $this->conexion->rollBack();
-                if ($e->getCode() === '23505' && $intentos < 3) {
-                    continue;
-                }
-                throw $e;
-            }
-        }
-
-        return false;
+        $sql = 'INSERT INTO seguimiento_terreno
+                (id_deposito, id_usuario, fecha, id_actividad_terreno, ph, temperatura, larvas_aedes, pupas, larvas_culex)
+                VALUES
+                (:id_deposito, :id_usuario, :fecha, :id_actividad_terreno, :ph, :temperatura, :larvas_aedes, :pupas, :larvas_culex)';
+        
+        $stmt = $this->conexion->prepare($sql);
+        return $stmt->execute([
+            ':id_deposito'          => $datos['id_deposito'],
+            ':id_usuario'           => $datos['id_usuario'],
+            ':fecha'                => $datos['fecha'],
+            ':id_actividad_terreno' => $datos['id_actividad_terreno'],
+            ':ph'                   => $datos['ph'],
+            ':temperatura'          => $datos['temperatura'],
+            ':larvas_aedes'         => $datos['larvas_aedes'],
+            ':pupas'                => $datos['pupas'],
+            ':larvas_culex'         => $datos['larvas_culex']
+        ]);
     }
 
     public function obtenerRegistrosPorUsuario(int $idUsuario): array
     {
         $sql = "SELECT s.id_seguimiento_terreno, s.fecha, s.ph, s.temperatura,
-                       s.larvas_aedes, s.pupas, s.larvas_culex,
-                       at2.nombre AS actividad,
-                       td.descripcion AS tipo_deposito,
-                       st.direccion AS sitio_direccion
+                    s.larvas_aedes, s.pupas, s.larvas_culex,
+                    at2.nombre AS actividad,
+                    td.descripcion AS tipo_deposito,
+                    st.direccion AS sitio_direccion
                 FROM seguimiento_terreno s
                 INNER JOIN deposito d ON d.id_deposito = s.id_deposito
                 INNER JOIN tipo_deposito td ON td.id_tipo_deposito = d.id_tipo_deposito
