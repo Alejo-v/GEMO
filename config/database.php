@@ -6,7 +6,7 @@ class Database
     private string $port = '5432';
     private string $dbname = 'bd_gemo';
     private string $username = 'postgres';
-    private string $password = 'Apolo/2007';
+    private string $password = 'alejo';
 
     public function conectar(): PDO
     {
