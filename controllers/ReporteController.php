@@ -4,15 +4,19 @@ session_start();
 require_once __DIR__ . '/../models/SeguimientoZoocriadero.php';
 require_once __DIR__ . '/../lib/fpdf/fpdf.php';
 
-if (!isset($_SESSION['usuario_id']) || (int) ($_SESSION['usuario_rol_id'] ?? 0) !== 1) {
+$rolesPermitidos = [1, 2]; // 1 = Administrador del Sistema, 2 = Coordinador Zoocriadero
+
+if (!isset($_SESSION['usuario_id']) || !in_array((int) ($_SESSION['usuario_rol_id'] ?? 0), $rolesPermitidos, true)) {
     header('Location: ../login.php');
     exit;
 }
 
+$carpetaVista = (int) $_SESSION['usuario_rol_id'] === 2 ? 'coordinador_zoocriadero' : 'admin';
+
 $accion = $_GET['accion'] ?? '';
 
 if ($accion !== 'pdf') {
-    header('Location: ../views/admin/reportes.php');
+    header('Location: ../views/' . $carpetaVista . '/reportes.php');
     exit;
 }
 
