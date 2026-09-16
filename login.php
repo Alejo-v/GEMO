@@ -5,10 +5,17 @@ if (isset($_SESSION['usuario_id'])) {
     $destino = 'index.php';
     if ($rolId === 1) {
         $destino = 'views/admin/dashboard.php';
+    } elseif ($rolId === 2) {
+        $destino = 'views/coordinador_zoocriadero/inicio.php';
     } elseif ($rolId === 3) {
-        $destino = 'views/auxiliar_zoocriadero/registrar_seguimiento.php';
+        $destino = 'views/auxiliar_zoocriadero/inicio.php';
     } elseif ($rolId === 4) {
-        $destino = 'views/auxiliar_terreno/registrar_seguimiento.php';
+        $destino = 'views/auxiliar_terreno/inicio.php';
+    } elseif ($rolId === 5) {
+        $destino = 'views/coordinador_terreno/inicio.php';
+    }
+    elseif ($rolId === 6) {
+        $destino = 'views/super_admin/dashboard.php';
     }
     header('Location: ' . $destino);
     exit;

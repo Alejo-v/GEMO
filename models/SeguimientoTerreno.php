@@ -149,4 +149,77 @@ class SeguimientoTerreno
         $stmt->execute([':id_usuario' => $idUsuario]);
         return $stmt->fetchAll();
     }
+    /**
+     * Historial de auditoría de registros de terreno.
+     * Permite filtrar por rango de fechas, usuario y actividad.
+     */
+    public function obtenerAuditoriaTerreno(?string $fechaDesde = null, ?string $fechaHasta = null, ?int $idUsuario = null, ?int $idActividad = null): array
+    {
+        $condiciones = [];
+        $params = [];
+
+        if ($fechaDesde !== null && $fechaDesde !== '') {
+            $condiciones[] = 's.fecha >= :fecha_desde';
+            $params[':fecha_desde'] = $fechaDesde;
+        }
+
+        if ($fechaHasta !== null && $fechaHasta !== '') {
+            $condiciones[] = 's.fecha <= :fecha_hasta';
+            $params[':fecha_hasta'] = $fechaHasta;
+        }
+
+        if ($idUsuario !== null && $idUsuario > 0) {
+            $condiciones[] = 's.id_usuario = :id_usuario';
+            $params[':id_usuario'] = $idUsuario;
+        }
+
+        if ($idActividad !== null && $idActividad > 0) {
+            $condiciones[] = 's.id_actividad_terreno = :id_actividad';
+            $params[':id_actividad'] = $idActividad;
+        }
+
+        $where = $condiciones ? 'WHERE ' . implode(' AND ', $condiciones) : '';
+
+        $sql = "SELECT s.id_seguimiento_terreno,
+                       s.fecha,
+                       u.id_usuario,
+                       u.nombres || ' ' || u.apellidos AS usuario,
+                       u.correo,
+                       u.telefono,
+                       r.nombre_rol,
+                       at2.id_actividad_terreno,
+                       at2.nombre AS actividad,
+                       st.direccion AS sitio,
+                       d.id_deposito,
+                       td.descripcion AS tipo_deposito,
+                       s.ph,
+                       s.temperatura,
+                       s.larvas_aedes,
+                       s.pupas,
+                       s.larvas_culex
+                FROM seguimiento_terreno s
+                INNER JOIN usuario u ON u.id_usuario = s.id_usuario
+                INNER JOIN rol r ON r.id_rol = u.id_rol
+                INNER JOIN actividad_terreno at2 ON at2.id_actividad_terreno = s.id_actividad_terreno
+                INNER JOIN deposito d ON d.id_deposito = s.id_deposito
+                INNER JOIN tipo_deposito td ON td.id_tipo_deposito = d.id_tipo_deposito
+                INNER JOIN sitio_terreno st ON st.id_sitio = d.id_sitio
+                $where
+                ORDER BY s.fecha DESC, s.id_seguimiento_terreno DESC";
+
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    public function obtenerUsuariosConRegistrosTerreno(): array
+    {
+        $sql = "SELECT DISTINCT u.id_usuario,
+                       u.nombres || ' ' || u.apellidos AS nombre
+                FROM usuario u
+                INNER JOIN seguimiento_terreno s ON s.id_usuario = u.id_usuario
+                ORDER BY nombre";
+        return $this->conexion->query($sql)->fetchAll();
+    }
+
 }

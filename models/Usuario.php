@@ -14,7 +14,7 @@ class Usuario
     public function buscarPorCorreo(string $correo): ?array
     {
         $sql = 'SELECT u.id_usuario, u.id_rol, u.documento, u.nombres, u.apellidos,
-                       u.correo, u.contraseña, r.nombre_rol
+                       u.correo, u.contraseña, u.activo, r.nombre_rol
                 FROM usuario u
                 INNER JOIN rol r ON r.id_rol = u.id_rol
                 WHERE LOWER(u.correo) = LOWER(:correo)';
@@ -46,7 +46,7 @@ class Usuario
     public function obtenerUsuarios(): array
     {
         $sql = 'SELECT u.id_usuario, u.id_rol, u.documento, u.nombres, u.apellidos, u.correo,
-                       u.fecha_nacimiento, u.telefono, r.nombre_rol
+                       u.fecha_nacimiento, u.telefono, u.activo, r.nombre_rol
                 FROM usuario u
                 INNER JOIN rol r ON r.id_rol=u.id_rol
                 ORDER BY u.id_usuario';
@@ -56,7 +56,7 @@ class Usuario
     public function buscarPorId(int $id): ?array
     {
         $sql = 'SELECT u.id_usuario, u.id_rol, u.documento, u.nombres, u.apellidos,
-                       u.correo, u.fecha_nacimiento, u.telefono, r.nombre_rol
+                       u.correo, u.fecha_nacimiento, u.telefono, u.activo, r.nombre_rol
                 FROM usuario u
                 INNER JOIN rol r ON r.id_rol = u.id_rol
                 WHERE u.id_usuario = :id';
@@ -98,6 +98,40 @@ class Usuario
         }
         $stmt = $this->conexion->prepare($sql);
         return $stmt->execute($datos);
+    }
+
+    /**
+     * Actualiza únicamente el número de teléfono de un usuario.
+     */
+    public function actualizarTelefono(int $idUsuario, string $telefono): bool
+    {
+        $stmt = $this->conexion->prepare(
+            'UPDATE usuario SET telefono = :telefono WHERE id_usuario = :id_usuario'
+        );
+        return $stmt->execute([':telefono' => $telefono, ':id_usuario' => $idUsuario]);
+    }
+
+    /**
+     * Actualiza únicamente la contraseña (ya hasheada) de un usuario.
+     */
+    public function actualizarPassword(int $idUsuario, string $hashPassword): bool
+    {
+        $stmt = $this->conexion->prepare(
+            'UPDATE usuario SET "contraseña" = :contrasena WHERE id_usuario = :id_usuario'
+        );
+        return $stmt->execute([':contrasena' => $hashPassword, ':id_usuario' => $idUsuario]);
+    }
+
+    /**
+     * Habilita o inhabilita el acceso de un usuario al sistema.
+     * Un usuario inhabilitado (activo = false) no podrá iniciar sesión.
+     */
+    public function cambiarEstado(int $idUsuario, bool $activo): bool
+    {
+        $stmt = $this->conexion->prepare(
+            'UPDATE usuario SET activo = :activo WHERE id_usuario = :id_usuario'
+        );
+        return $stmt->execute([':activo' => $activo, ':id_usuario' => $idUsuario]);
     }
 
     public function registrar(array $datos): bool

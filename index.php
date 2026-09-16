@@ -6,11 +6,17 @@ if (!isset($_SESSION['usuario_id'])) {
 if ((int)($_SESSION['usuario_rol_id'] ?? 0) === 1) {
     header('Location: views/admin/dashboard.php'); exit;
 }
+if ((int)($_SESSION['usuario_rol_id'] ?? 0) === 2) {
+    header('Location: views/coordinador_zoocriadero/inicio.php'); exit;
+}
 if ((int)($_SESSION['usuario_rol_id'] ?? 0) === 3) {
-    header('Location: views/auxiliar_zoocriadero/registrar_seguimiento.php'); exit;
+    header('Location: views/auxiliar_zoocriadero/inicio.php'); exit;
 }
 if ((int)($_SESSION['usuario_rol_id'] ?? 0) === 4) {
-    header('Location: views/auxiliar_terreno/registrar_seguimiento.php'); exit;
+    header('Location: views/auxiliar_terreno/inicio.php'); exit;
+}
+if ((int)($_SESSION['usuario_rol_id'] ?? 0) === 5) {
+    header('Location: views/coordinador_terreno/inicio.php'); exit;
 }
 
 $nombreCompleto = trim(($_SESSION['usuario_nombre'] ?? '') . ' ' . ($_SESSION['usuario_apellido'] ?? ''));

@@ -37,6 +37,12 @@ if (!$usuario || !password_verify($password, $usuario['contraseña'])) {
     exit;
 }
 
+if (!$usuario['activo']) {
+    $_SESSION['error_login'] = 'Su usuario se encuentra inhabilitado. Comuníquese con el administrador del sistema.';
+    header('Location: ../login.php');
+    exit;
+}
+
 session_regenerate_id(true);
 $_SESSION['usuario_id'] = $usuario['id_usuario'];
 $_SESSION['usuario_nombre'] = $usuario['nombres'];
@@ -49,13 +55,28 @@ if ((int)$usuario['id_rol'] === 1) {
     exit;
 }
 
+if ((int)$usuario['id_rol'] === 2) {
+    header('Location: ../views/coordinador_zoocriadero/inicio.php');
+    exit;
+}
+
 if ((int)$usuario['id_rol'] === 3) {
-    header('Location: ../views/auxiliar_zoocriadero/registrar_seguimiento.php');
+    header('Location: ../views/auxiliar_zoocriadero/inicio.php');
     exit;
 }
 
 if ((int)$usuario['id_rol'] === 4) {
-    header('Location: ../views/auxiliar_terreno/registrar_seguimiento.php');
+    header('Location: ../views/auxiliar_terreno/inicio.php');
+    exit;
+}
+
+if ((int)$usuario['id_rol'] === 5) {
+    header('Location: ../views/coordinador_terreno/inicio.php');
+    exit;
+}
+
+if ((int)$usuario['id_rol'] === 6) {
+    header('Location: ../views/super_admin/dashboard.php');
     exit;
 }
 

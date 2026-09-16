@@ -29,6 +29,7 @@ $error=$_SESSION['usuario_error']??null; unset($_SESSION['usuario_error']);
                         <th>Correo</th>
                         <th>Teléfono</th>
                         <th>Rol</th>
+                        <th>Estado</th>
                         <th class="text-end">Acciones</th>
                     </tr>
                 </thead>
@@ -41,6 +42,13 @@ $error=$_SESSION['usuario_error']??null; unset($_SESSION['usuario_error']);
                         <td><?= htmlspecialchars($u['correo']) ?></td>
                         <td><?= htmlspecialchars($u['telefono']) ?></td>
                         <td><span class="badge badge-success"><?= htmlspecialchars($u['nombre_rol']) ?></span></td>
+                        <td>
+                            <?php if ($u['activo']): ?>
+                                <span class="badge badge-success">Activo</span>
+                            <?php else: ?>
+                                <span class="badge badge-danger">Inhabilitado</span>
+                            <?php endif; ?>
+                        </td>
                         <td class="text-end">
                             <button type="button"
                                     class="btn btn-sm btn-outline-success"
@@ -53,11 +61,33 @@ $error=$_SESSION['usuario_error']??null; unset($_SESSION['usuario_error']);
                                     data-rol="<?= (int)$u['id_rol'] ?>">
                                 <i class="fas fa-edit"></i> Editar
                             </button>
+                            <?php if ((int)$u['id_usuario'] === (int) ($_SESSION['usuario_id'] ?? 0)): ?>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" disabled
+                                        title="No puede inhabilitar su propio usuario">
+                                    <?= $u['activo'] ? '<i class="fas fa-ban"></i> Inhabilitar' : '<i class="fas fa-check"></i> Habilitar' ?>
+                                </button>
+                            <?php else: ?>
+                                <form method="post" action="../../controllers/UsuarioController.php" class="d-inline"
+                                      onsubmit="return confirm('<?= $u['activo'] ? '¿Inhabilitar' : '¿Habilitar' ?> a <?= htmlspecialchars($u['nombres'].' '.$u['apellidos'], ENT_QUOTES) ?>?');">
+                                    <input type="hidden" name="accion" value="cambiar_estado">
+                                    <input type="hidden" name="id_usuario" value="<?= (int)$u['id_usuario'] ?>">
+                                    <input type="hidden" name="activo" value="<?= $u['activo'] ? '0' : '1' ?>">
+                                    <?php if ($u['activo']): ?>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-ban"></i> Inhabilitar
+                                        </button>
+                                    <?php else: ?>
+                                        <button type="submit" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-check"></i> Habilitar
+                                        </button>
+                                    <?php endif; ?>
+                                </form>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
                 <?php if(empty($usuarios)): ?>
-                    <tr><td colspan="7" class="text-center text-muted">Aún no hay usuarios registrados.</td></tr>
+                    <tr><td colspan="8" class="text-center text-muted">Aún no hay usuarios registrados.</td></tr>
                 <?php endif; ?>
                 </tbody>
             </table>

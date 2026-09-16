@@ -10,13 +10,18 @@ if (!isset($_SESSION['usuario_id']) || (int)($_SESSION['usuario_rol_id'] ?? 0) !
 
 $accion = $_POST['accion'] ?? '';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !in_array($accion, ['registrar', 'editar'], true)) {
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !in_array($accion, ['registrar', 'editar', 'cambiar_estado'], true)) {
     header('Location: ../views/admin/usuarios.php');
     exit;
 }
 
 if ($accion === 'editar') {
     editarUsuario();
+    exit;
+}
+
+if ($accion === 'cambiar_estado') {
+    cambiarEstadoUsuario();
     exit;
 }
 
@@ -98,6 +103,39 @@ function editarUsuario(): void
         }
 
         $_SESSION['usuario_exito'] = 'Usuario actualizado correctamente.';
+        header('Location: ../views/admin/usuarios.php');
+        exit;
+    } catch (Throwable $e) {
+        die('ERROR REAL: ' . $e->getMessage());
+    }
+}
+
+function cambiarEstadoUsuario(): void
+{
+    $idUsuario = (int) ($_POST['id_usuario'] ?? 0);
+    $nuevoEstado = ($_POST['activo'] ?? '') === '1';
+
+    if ($idUsuario <= 0) {
+        volverAUsuariosConError('Usuario no válido.');
+    }
+
+    if ($idUsuario === (int) ($_SESSION['usuario_id'] ?? 0)) {
+        volverAUsuariosConError('No puede inhabilitar su propio usuario.');
+    }
+
+    try {
+        $usuarioModel = new Usuario();
+        $usuario = $usuarioModel->buscarPorId($idUsuario);
+
+        if (!$usuario) {
+            volverAUsuariosConError('El usuario indicado no existe.');
+        }
+
+        $usuarioModel->cambiarEstado($idUsuario, $nuevoEstado);
+
+        $_SESSION['usuario_exito'] = $nuevoEstado
+            ? 'Usuario habilitado correctamente. Ya puede iniciar sesión.'
+            : 'Usuario inhabilitado correctamente. Ya no podrá iniciar sesión.';
         header('Location: ../views/admin/usuarios.php');
         exit;
     } catch (Throwable $e) {
