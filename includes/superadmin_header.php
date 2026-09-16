@@ -22,6 +22,7 @@
 <div class="sidebar-wrapper scrollbar scrollbar-inner"><div class="sidebar-content"><ul class="nav nav-secondary">
 <li class="nav-item <?= basename($_SERVER['PHP_SELF'])==='dashboard.php'?'active':'' ?>"><a href="dashboard.php"><i class="fas fa-home"></i><p>Inicio</p></a></li>
 <li class="nav-item <?= basename($_SERVER['PHP_SELF'])==='auditoria_terreno.php'?'active':'' ?>"><a href="auditoria_terreno.php"><i class="fas fa-history"></i><p>Auditoría de terreno</p></a></li>
+<li class="nav-item <?= basename($_SERVER['PHP_SELF'])==='permisos.php'?'active':'' ?>"><a href="permisos.php"><i class="fas fa-user-shield"></i><p>Permisos</p></a></li>
 <li class="nav-section"><span class="sidebar-mini-icon"><i class="fa fa-ellipsis-h"></i></span><h4 class="text-section">Cuenta</h4></li>
 <li class="nav-item <?= basename($_SERVER['PHP_SELF'])==='informacion_personal.php'?'active':'' ?>"><a href="informacion_personal.php"><i class="fas fa-id-card"></i><p>Información personal</p></a></li>
 <li class="nav-item"><a href="../../logout.php"><i class="fas fa-sign-out-alt"></i><p>Cerrar sesión</p></a></li>
