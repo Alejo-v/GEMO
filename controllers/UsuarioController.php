@@ -107,6 +107,11 @@ function editarUsuario(): void
         $_SESSION['usuario_exito'] = 'Usuario actualizado correctamente.';
         header('Location: ../views/admin/usuarios.php');
         exit;
+    } catch (PDOException $e) {
+        if ($e->getCode() === '23505') {
+            volverAUsuariosConError('Ese correo electrónico ya está en uso por otro usuario.');
+        }
+        die('ERROR REAL: ' . $e->getMessage());
     } catch (Throwable $e) {
         die('ERROR REAL: ' . $e->getMessage());
     }
@@ -239,6 +244,14 @@ try {
         : 'Usuario registrado correctamente, pero no fue posible enviar el correo de bienvenida. Revise la configuración de correo.';
     header('Location: ../views/admin/usuarios.php');
     exit;
+} catch (PDOException $e) {
+    if ($e->getCode() === '23505') {
+        $mensaje = str_contains($e->getMessage(), 'documento')
+            ? 'La cédula ya está registrada.'
+            : 'El correo electrónico ya está registrado.';
+        volverConError($mensaje);
+    }
+    die('ERROR REAL: ' . $e->getMessage());
 } catch (Throwable $e) {
     die('ERROR REAL: ' . $e->getMessage());
 }

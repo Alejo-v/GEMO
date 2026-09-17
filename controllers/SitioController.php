@@ -26,6 +26,7 @@ try {
         $orientacion = trim($_POST['orientacion'] ?? '');
         $numeroPlaca = trim($_POST['numero_placa'] ?? '');
         $letraPlaca = strtoupper(trim($_POST['letra_placa'] ?? ''));
+        $numeroMetros = trim($_POST['numero_metros'] ?? '');
         $complemento = trim($_POST['complemento'] ?? '');
         $latitud = trim($_POST['latitud'] ?? '');
         $longitud = trim($_POST['longitud'] ?? '');
@@ -39,9 +40,10 @@ try {
         if ($orientacion !== '' && !in_array($orientacion, $orientaciones, true)) volverSitioConError('La orientación no es válida.');
         if (!preg_match('/^[0-9]{1,4}$/', $numeroPlaca)) volverSitioConError('El número de placa debe contener entre 1 y 4 dígitos.');
         if ($letraPlaca !== '' && !preg_match('/^[A-Z]{1,2}$/', $letraPlaca)) volverSitioConError('La letra de la placa no es válida.');
+        if (!preg_match('/^[0-9]{1,4}$/', $numeroMetros)) volverSitioConError('El número después del guion debe contener entre 1 y 4 dígitos.');
         if ($complemento !== '' && (mb_strlen($complemento) > 20 || !preg_match('/^[\p{L}\p{N} .#\/\-]+$/u', $complemento))) volverSitioConError('El complemento de la dirección contiene caracteres no válidos.');
 
-        $direccion = $tipoVia . ' ' . $numeroVia . $letraVia . ($orientacion !== '' ? ' ' . $orientacion : '') . ' # ' . $numeroPlaca . $letraPlaca . ($complemento !== '' ? '-' . $complemento : '');
+        $direccion = $tipoVia . ' ' . $numeroVia . $letraVia . ($orientacion !== '' ? ' ' . $orientacion : '') . ' # ' . $numeroPlaca . $letraPlaca . '-' . $numeroMetros . ($complemento !== '' ? ' ' . $complemento : '');
         if (mb_strlen($direccion) > 50) volverSitioConError('La dirección completa no puede superar 50 caracteres.');
 
         if ($latitud !== '' && (!is_numeric($latitud) || $latitud < -90 || $latitud > 90)) {

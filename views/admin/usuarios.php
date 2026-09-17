@@ -19,8 +19,17 @@ $error=$_SESSION['usuario_error']??null; unset($_SESSION['usuario_error']);
 <?php if($error): ?><div class="alert alert-danger"><?= htmlspecialchars($error) ?></div><?php endif; ?>
 <div class="card card-round">
     <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label class="form-label small">Buscar por número de documento</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" id="filtro-documento" class="form-control" placeholder="Ej: 1006123456" inputmode="numeric" autocomplete="off">
+                </div>
+            </div>
+        </div>
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
+            <table class="table table-hover align-middle" id="tabla-usuarios">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -35,7 +44,7 @@ $error=$_SESSION['usuario_error']??null; unset($_SESSION['usuario_error']);
                 </thead>
                 <tbody>
                 <?php foreach($usuarios as $u): ?>
-                    <tr>
+                    <tr data-documento="<?= htmlspecialchars($u['documento']) ?>">
                         <td><?= (int)$u['id_usuario'] ?></td>
                         <td><strong><?= htmlspecialchars($u['nombres'].' '.$u['apellidos']) ?></strong></td>
                         <td><?= htmlspecialchars($u['documento']) ?></td>
@@ -89,6 +98,7 @@ $error=$_SESSION['usuario_error']??null; unset($_SESSION['usuario_error']);
                 <?php if(empty($usuarios)): ?>
                     <tr><td colspan="8" class="text-center text-muted">Aún no hay usuarios registrados.</td></tr>
                 <?php endif; ?>
+                <tr id="fila-sin-resultados" style="display:none;"><td colspan="8" class="text-center text-muted">Ningún usuario coincide con ese número de documento.</td></tr>
                 </tbody>
             </table>
         </div>
@@ -178,6 +188,23 @@ $error=$_SESSION['usuario_error']??null; unset($_SESSION['usuario_error']);
       alert('Las contraseñas nuevas no coinciden.');
       confirmar.focus();
     }
+  });
+})();
+
+(function () {
+  var input = document.getElementById('filtro-documento');
+  if (!input) return;
+  var filas = document.querySelectorAll('#tabla-usuarios tbody tr[data-documento]');
+  var filaSinResultados = document.getElementById('fila-sin-resultados');
+  input.addEventListener('input', function () {
+    var termino = this.value.trim();
+    var coincidencias = 0;
+    filas.forEach(function (fila) {
+      var coincide = termino === '' || fila.getAttribute('data-documento').indexOf(termino) !== -1;
+      fila.style.display = coincide ? '' : 'none';
+      if (coincide) coincidencias++;
+    });
+    filaSinResultados.style.display = (termino !== '' && coincidencias === 0) ? '' : 'none';
   });
 })();
 </script>
