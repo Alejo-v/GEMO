@@ -3,6 +3,7 @@
 session_start();
 require_once __DIR__ . '/../models/Usuario.php';
 require_once __DIR__ . '/../includes/password_validation.php';
+require_once __DIR__ . '/../includes/Mailer.php';
 
 if (!isset($_SESSION['usuario_id']) || (int)($_SESSION['usuario_rol_id'] ?? 0) !== 1) {
     header('Location: ../login.php');
@@ -220,9 +221,46 @@ try {
         ':telefono' => $telefono,
     ]);
 
-    $_SESSION['usuario_exito'] = 'Usuario registrado correctamente.';
+    $nombreCompleto = trim($nombres . ' ' . $apellidos);
+    $correoEnviado = true;
+    try {
+        (new Mailer())->enviar(
+            $correo,
+            $nombreCompleto,
+            'Bienvenido a GEMO - Datos de acceso',
+            plantillaCorreoBienvenida($nombreCompleto, $correo, $password)
+        );
+    } catch (Throwable $e) {
+        $correoEnviado = false;
+    }
+
+    $_SESSION['usuario_exito'] = $correoEnviado
+        ? 'Usuario registrado correctamente y se enviaron sus datos de acceso al correo registrado.'
+        : 'Usuario registrado correctamente, pero no fue posible enviar el correo de bienvenida. Revise la configuración de correo.';
     header('Location: ../views/admin/usuarios.php');
     exit;
 } catch (Throwable $e) {
     die('ERROR REAL: ' . $e->getMessage());
+}
+
+
+function plantillaCorreoBienvenida(string $nombre, string $correo, string $password): string
+{
+    $nombre = htmlspecialchars($nombre, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $correo = htmlspecialchars($correo, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $password = htmlspecialchars($password, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+    return '<!doctype html><html lang="es"><body style="margin:0;background:#E6ECF2;font-family:Arial,sans-serif;color:#153D6B;">'
+        . '<div style="max-width:600px;margin:30px auto;background:#ffffff;border-radius:16px;padding:35px;">'
+        . '<div style="text-align:center;"><h2 style="color:#1D63B3;margin:0 0 20px;">GEMO</h2>'
+        . '<h1 style="font-size:24px;margin:0 0 20px;">Bienvenido a GEMO</h1></div>'
+        . '<p>Bienvenido/a, <strong>' . $nombre . '</strong>.</p>'
+        . '<p>El administrador ha creado su usuario en el Sistema de Gestión y Control del Dengue.</p>'
+        . '<p style="margin-top:25px;"><strong>Sus datos de acceso son:</strong></p>'
+        . '<div style="background:#E6ECF2;border-radius:12px;padding:20px;line-height:1.8;">'
+        . '<strong>Correo:</strong> ' . $correo . '<br>'
+        . '<strong>Contraseña:</strong> ' . $password . '</div>'
+        . '<p style="margin-top:25px;">Por seguridad, le recomendamos cambiar esta contraseña después de iniciar sesión.</p>'
+        . '<p style="margin-top:30px;color:#6b7785;font-size:13px;">GEMO - Sistema de Gestión y Control del Dengue</p>'
+        . '</div></body></html>';
 }
