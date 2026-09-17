@@ -65,9 +65,6 @@ $error = $_SESSION['permiso_error'] ?? null; unset($_SESSION['permiso_error']);
 
 <script>
 (function () {
-  // Cada switch envía su propio formulario (ya trae el valor invertido
-  // en el input oculto "activo"). Se confirma antes de deshabilitar,
-  // para evitar que un clic accidental le quite el acceso a un rol.
   document.querySelectorAll('.permiso-switch').forEach(function (switchInput) {
     switchInput.addEventListener('change', function () {
       var form = switchInput.closest('.permiso-form');
@@ -75,7 +72,7 @@ $error = $_SESSION['permiso_error'] ?? null; unset($_SESSION['permiso_error']);
       if (!vaAHabilitar) {
         var confirmado = confirm('¿Quitar el acceso a esta página para este rol?');
         if (!confirmado) {
-          switchInput.checked = true; // revertir el toggle visual
+          switchInput.checked = true;
           return;
         }
       }

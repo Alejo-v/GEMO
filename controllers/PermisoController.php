@@ -3,7 +3,7 @@
 session_start();
 require_once __DIR__ . '/../models/Permiso.php';
 
-// Solo el Super Administrador (rol 6) puede modificar permisos.
+
 if (!isset($_SESSION['usuario_id']) || (int) ($_SESSION['usuario_rol_id'] ?? 0) !== 6) {
     header('Location: ../login.php');
     exit;
@@ -40,8 +40,8 @@ if (!$modelo->esRolAdministrable($idRol)) {
     volverConError('Ese rol no se administra desde este panel.');
 }
 
-// No dejar un rol sin ninguna página habilitada: si se va a desactivar
-// el último permiso activo de ese rol, se rechaza el cambio.
+
+
 if (!$activo && $modelo->contarActivosPorRol($idRol) <= 1) {
     volverConError('No puedes quitar el último permiso activo de ese rol: el usuario se quedaría sin ninguna página disponible.');
 }

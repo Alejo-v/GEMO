@@ -1,19 +1,19 @@
--- =====================================================================
--- Migración: separar los reportes del Administrador del Sistema (rol 1)
--- en dos módulos independientes.
---
---   reportes.php              -> ahora es solo un menú (elige el módulo)
---   reportes_zoocriadero.php  -> los 3 reportes del proceso Zoocriadero
---   reportes_terreno.php      -> los 4 reportes del proceso Terreno
---
--- Por qué es necesaria: includes/auth.php valida cada página contra la
--- tabla permiso_rol. Si las dos páginas nuevas no están registradas ahí,
--- el admin recibe "No tienes permisos para acceder a esa página".
---
--- Es segura de ejecutar varias veces (idempotente) y no borra nada.
--- Si permiso_rol todavía no existe (no se aplicó sql/alter_permisos.sql),
--- el bloque se omite sin error.
--- =====================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 BEGIN;
 

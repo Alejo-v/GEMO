@@ -1,17 +1,17 @@
 <?php
 
 session_start();
+require_once __DIR__ . '/../includes/roles.php';
 require_once __DIR__ . '/../models/TipoDeposito.php';
 
-if (!isset($_SESSION['usuario_id']) || (int)($_SESSION['usuario_rol_id'] ?? 0) !== 4) {
-    header('Location: ../login.php');
-    exit;
-}
+
+
+gemoExigirRoles(GEMO_ROLES_CRUD_TERRENO);
 
 function volverTipoDepositoConError(string $mensaje): never
 {
     $_SESSION['tipo_deposito_error'] = $mensaje;
-    header('Location: ../views/auxiliar_terreno/tipos_deposito.php');
+    header('Location: ' . gemoVistaDelRol('tipos_deposito.php'));
     exit;
 }
 
@@ -44,7 +44,7 @@ try {
             $_SESSION['tipo_deposito_exito'] = 'Tipo de depósito actualizado correctamente.';
         }
 
-        header('Location: ../views/auxiliar_terreno/tipos_deposito.php');
+        header('Location: ' . gemoVistaDelRol('tipos_deposito.php'));
         exit;
     }
 
@@ -62,11 +62,11 @@ try {
         $_SESSION['tipo_deposito_exito'] = $accion === 'habilitar'
             ? 'Tipo de depósito habilitado correctamente.'
             : 'Tipo de depósito inhabilitado correctamente.';
-        header('Location: ../views/auxiliar_terreno/tipos_deposito.php');
+        header('Location: ' . gemoVistaDelRol('tipos_deposito.php'));
         exit;
     }
 
-    header('Location: ../views/auxiliar_terreno/tipos_deposito.php');
+    header('Location: ' . gemoVistaDelRol('tipos_deposito.php'));
     exit;
 } catch (Throwable $e) {
     volverTipoDepositoConError('No fue posible completar la operación. Revise la configuración de PostgreSQL.');

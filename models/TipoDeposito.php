@@ -18,7 +18,7 @@ class TipoDeposito
         )->fetchAll();
     }
 
-    /** Solo los activos, para el <select> del formulario de Depósitos. */
+    
     public function obtenerActivos(): array
     {
         return $this->conexion->query(
@@ -49,7 +49,7 @@ class TipoDeposito
         return (bool) $stmt->fetchColumn();
     }
 
-    /** Antes de inhabilitar: evita dejar depósitos activos apuntando a un tipo sin catálogo visible. */
+    
     public function tieneDepositosActivos(int $id): bool
     {
         $stmt = $this->conexion->prepare(

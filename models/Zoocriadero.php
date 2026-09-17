@@ -23,7 +23,7 @@ class Zoocriadero
         return $this->conexion->query($sql)->fetchAll();
     }
 
-    /** Solo los activos, para el <select> del formulario de Tanques. */
+    
     public function obtenerActivos(): array
     {
         $sql = 'SELECT id_zoocriadero, direccion FROM zoocriadero WHERE activo = TRUE ORDER BY id_zoocriadero';
@@ -40,7 +40,7 @@ class Zoocriadero
         return $zoocriadero ?: null;
     }
 
-    /** Catálogo de barrios (con su comuna) para el <select> del formulario. */
+    
     public function obtenerBarrios(): array
     {
         $sql = 'SELECT b.id_barrio, b.nombre, c.nombre AS comuna
@@ -50,7 +50,7 @@ class Zoocriadero
         return $this->conexion->query($sql)->fetchAll();
     }
 
-    /** Usuarios que pueden quedar como encargados (Coordinador y Auxiliar de Zoocriadero). */
+    
     public function obtenerEncargados(): array
     {
         $sql = "SELECT id_usuario, TRIM(CONCAT(nombres, ' ', apellidos)) AS nombre_completo

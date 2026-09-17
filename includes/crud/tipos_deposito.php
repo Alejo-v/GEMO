@@ -1,18 +1,16 @@
 <?php
-$pageTitle = 'GEMO | Tipos de tanque';
-require_once '../../includes/auxzoo_header.php';
-require_once '../../models/TipoTanque.php';
+require_once __DIR__ . '/../../models/TipoDeposito.php';
 
-$modelo = new TipoTanque();
+$modelo = new TipoDeposito();
 $tipos = $modelo->obtenerTodos();
 
-$error = $_SESSION['tipo_tanque_error'] ?? null; unset($_SESSION['tipo_tanque_error']);
-$exito = $_SESSION['tipo_tanque_exito'] ?? null; unset($_SESSION['tipo_tanque_exito']);
+$error = $_SESSION['tipo_deposito_error'] ?? null; unset($_SESSION['tipo_deposito_error']);
+$exito = $_SESSION['tipo_deposito_exito'] ?? null; unset($_SESSION['tipo_deposito_exito']);
 ?>
 <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
-        <h3 class="fw-bold mb-1">Tipos de tanque</h3>
-        <p class="text-muted mb-0">Catálogo de tipos de tanque (Siembra, Reproducción, Alevines, Reserva, etc.).</p>
+        <h3 class="fw-bold mb-1">Tipos de depósito</h3>
+        <p class="text-muted mb-0">Catálogo de tipos de depósito (Piscina abandonada, Aguas estancadas, Fuente o pila de agua, Construcción abandonada, etc.).</p>
     </div>
     <button type="button" class="btn btn-gemo" onclick="nuevoTipo()"><i class="fas fa-plus me-1"></i> Nuevo tipo</button>
 </div>
@@ -21,11 +19,11 @@ $exito = $_SESSION['tipo_tanque_exito'] ?? null; unset($_SESSION['tipo_tanque_ex
 <?php if ($exito): ?><div class="alert alert-success"><?= htmlspecialchars($exito) ?></div><?php endif; ?>
 
 <div class="card card-round mb-4" id="card-formulario" style="display:none;">
-    <div class="card-header"><h4 class="card-title" id="titulo-formulario">Nuevo tipo de tanque</h4></div>
+    <div class="card-header"><h4 class="card-title" id="titulo-formulario">Nuevo tipo de depósito</h4></div>
     <div class="card-body">
-        <form method="post" action="../../controllers/TipoTanqueController.php" id="form-tipo-tanque">
+        <form method="post" action="../../controllers/TipoDepositoController.php" id="form-tipo-deposito">
             <input type="hidden" name="accion" id="f-accion" value="crear">
-            <input type="hidden" name="id_tipo_tanque" id="f-id_tipo_tanque" value="">
+            <input type="hidden" name="id_tipo_deposito" id="f-id_tipo_deposito" value="">
             <div class="row g-3">
                 <div class="col-md-8">
                     <label class="form-label">Descripción *</label>
@@ -34,7 +32,7 @@ $exito = $_SESSION['tipo_tanque_exito'] ?? null; unset($_SESSION['tipo_tanque_ex
             </div>
             <div class="d-flex gap-2 mt-3">
                 <button type="submit" class="btn btn-gemo"><i class="fas fa-save me-1"></i> Guardar</button>
-                <button type="button" class="btn btn-secondary" onclick="cerrarFormulario()">Cancelar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarFormulario()"><i class="fas fa-times me-1"></i>Cancelar</button>
             </div>
         </form>
     </div>
@@ -49,11 +47,11 @@ $exito = $_SESSION['tipo_tanque_exito'] ?? null; unset($_SESSION['tipo_tanque_ex
                 </thead>
                 <tbody>
                 <?php if (empty($tipos)): ?>
-                    <tr><td colspan="4" class="text-center text-muted">No hay tipos de tanque registrados.</td></tr>
+                    <tr><td colspan="4" class="text-center text-muted">No hay tipos de depósito registrados.</td></tr>
                 <?php endif; ?>
                 <?php foreach ($tipos as $t): ?>
                     <tr>
-                        <td><?= (int)$t['id_tipo_tanque'] ?></td>
+                        <td><?= (int)$t['id_tipo_deposito'] ?></td>
                         <td><?= htmlspecialchars($t['descripcion']) ?></td>
                         <td>
                             <?php if ($t['activo']): ?>
@@ -67,11 +65,11 @@ $exito = $_SESSION['tipo_tanque_exito'] ?? null; unset($_SESSION['tipo_tanque_ex
                                     onclick='editarTipo(<?= json_encode($t, JSON_HEX_APOS) ?>)'>
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <form method="post" action="../../controllers/TipoTanqueController.php" class="d-inline">
-                                <input type="hidden" name="id_tipo_tanque" value="<?= (int)$t['id_tipo_tanque'] ?>">
+                            <form method="post" action="../../controllers/TipoDepositoController.php" class="d-inline">
+                                <input type="hidden" name="id_tipo_deposito" value="<?= (int)$t['id_tipo_deposito'] ?>">
                                 <?php if ($t['activo']): ?>
                                     <input type="hidden" name="accion" value="inhabilitar">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Inhabilitar este tipo de tanque?')"><i class="fas fa-ban"></i></button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Inhabilitar este tipo de depósito?')"><i class="fas fa-ban"></i></button>
                                 <?php else: ?>
                                     <input type="hidden" name="accion" value="habilitar">
                                     <button type="submit" class="btn btn-sm btn-outline-success"><i class="fas fa-check"></i></button>
@@ -88,18 +86,18 @@ $exito = $_SESSION['tipo_tanque_exito'] ?? null; unset($_SESSION['tipo_tanque_ex
 
 <script>
 function nuevoTipo() {
-    document.getElementById('titulo-formulario').textContent = 'Nuevo tipo de tanque';
+    document.getElementById('titulo-formulario').textContent = 'Nuevo tipo de depósito';
     document.getElementById('f-accion').value = 'crear';
-    document.getElementById('f-id_tipo_tanque').value = '';
+    document.getElementById('f-id_tipo_deposito').value = '';
     document.getElementById('f-descripcion').value = '';
     document.getElementById('card-formulario').style.display = '';
     document.getElementById('card-formulario').scrollIntoView({ behavior: 'smooth' });
 }
 
 function editarTipo(tipo) {
-    document.getElementById('titulo-formulario').textContent = 'Editar tipo de tanque #' + tipo.id_tipo_tanque;
+    document.getElementById('titulo-formulario').textContent = 'Editar tipo de depósito #' + tipo.id_tipo_deposito;
     document.getElementById('f-accion').value = 'actualizar';
-    document.getElementById('f-id_tipo_tanque').value = tipo.id_tipo_tanque;
+    document.getElementById('f-id_tipo_deposito').value = tipo.id_tipo_deposito;
     document.getElementById('f-descripcion').value = tipo.descripcion;
     document.getElementById('card-formulario').style.display = '';
     document.getElementById('card-formulario').scrollIntoView({ behavior: 'smooth' });
@@ -113,5 +111,3 @@ function cerrarFormulario() {
 document.getElementById('card-formulario').style.display = <?= $error ? "''" : "'none'" ?>;
 <?php endif; ?>
 </script>
-
-<?php require_once '../../includes/auxzoo_footer.php'; ?>

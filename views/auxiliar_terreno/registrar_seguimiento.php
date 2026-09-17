@@ -145,7 +145,6 @@ document.addEventListener('DOMContentLoaded', function () {
     var sitioSelect = document.getElementById('id_sitio');
     var depositoSelect = document.getElementById('id_deposito');
     
-    // Guardar las opciones originales de depósitos omitiendo placeholders vacíos
     var opcionesDeposito = Array.prototype.slice.call(depositoSelect.options).filter(function (op) {
         return op.value !== '';
     });

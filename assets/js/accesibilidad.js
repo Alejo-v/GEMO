@@ -1,11 +1,11 @@
-/**
- * Widget de accesibilidad de GEMO.
- * Pensado para personas con discapacidad visual: permite aumentar el
- * tamaño del texto, activar un modo de alto contraste, subrayar todos
- * los enlaces y escuchar el contenido de la página en voz alta.
- * Las preferencias quedan guardadas en localStorage y se aplican
- * automáticamente en cada página (login incluido).
- */
+
+
+
+
+
+
+
+
 (function () {
     'use strict';
 
@@ -29,7 +29,7 @@
         html.classList.toggle('gemo-a11y-subrayado', activo);
     }
 
-    // Aplicar preferencias guardadas antes de construir el panel.
+    
     var tamanoGuardado = localStorage.getItem(CLAVE_FS) || 'md';
     var contrasteGuardado = localStorage.getItem(CLAVE_CONTRASTE) === '1';
     var subrayadoGuardado = localStorage.getItem(CLAVE_SUBRAYADO) === '1';
@@ -119,7 +119,7 @@
             });
         }
 
-        // Lectura en voz alta del contenido principal de la página.
+        
         if (botonLeer && 'speechSynthesis' in window) {
             var leyendo = false;
             var textoOriginalBoton = botonLeer.innerHTML;

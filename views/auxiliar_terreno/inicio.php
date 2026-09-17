@@ -3,12 +3,10 @@ $pageTitle = 'GEMO | Inicio';
 require_once '../../includes/auxterreno_header.php';
 
 $nombreCompleto = trim(($_SESSION['usuario_nombre'] ?? '') . ' ' . ($_SESSION['usuario_apellido'] ?? ''));
-$hora = (int) date('G');
-$saludo = $hora < 12 ? 'Buenos días' : ($hora < 19 ? 'Buenas tardes' : 'Buenas noches');
 ?>
 <div class="gemo-welcome-card mb-4">
     <div class="gemo-welcome-text">
-        <p class="mb-1 text-uppercase gemo-welcome-eyebrow"><?= htmlspecialchars($saludo) ?></p>
+        <p class="mb-1 text-uppercase gemo-welcome-eyebrow">Bienvenido a GEMO</p>
         <h2 class="fw-bold mb-2"><?= htmlspecialchars($nombreCompleto !== '' ? $nombreCompleto : 'Bienvenido') ?></h2>
         <p class="mb-0 opacity-75">Has ingresado como <strong>Auxiliar de terreno</strong> al Sistema de Gestión y Control del Dengue.</p>
     </div>
@@ -75,10 +73,9 @@ $saludo = $hora < 12 ? 'Buenos días' : ($hora < 19 ? 'Buenas tardes' : 'Buenas 
 <div class="card card-round mt-3">
     <div class="card-body">
         <h4 class="card-title">Accesos rápidos</h4>
-        <p class="card-text">Desde aquí puede ir directamente a sus catálogos de sitios, depósitos y actividades, o consultar los reportes generados.</p>
-        <a href="sitios.php" class="btn btn-outline-success me-2"><i class="fas fa-map me-1"></i> Sitios</a>
-        <a href="depositos.php" class="btn btn-outline-success me-2"><i class="fas fa-water me-1"></i> Depósitos</a>
-        <a href="actividades.php" class="btn btn-outline-success me-2"><i class="fas fa-tasks me-1"></i> Actividades</a>
+        <p class="card-text">Desde aquí puede registrar el trabajo del día en terreno, revisar su historial y consultar los reportes generados. Los catálogos de sitios, depósitos y actividades los administra el Coordinador de terreno.</p>
+        <a href="registrar_seguimiento.php" class="btn btn-outline-success me-2"><i class="fas fa-map-marker-alt me-1"></i> Registro de campo</a>
+        <a href="mis_registros.php" class="btn btn-outline-success me-2"><i class="fas fa-history me-1"></i> Mis registros</a>
         <a href="reportes.php" class="btn btn-outline-success"><i class="fas fa-file-alt me-1"></i> Reportes</a>
     </div>
 </div>

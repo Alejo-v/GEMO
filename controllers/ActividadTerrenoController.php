@@ -1,17 +1,17 @@
 <?php
 
 session_start();
+require_once __DIR__ . '/../includes/roles.php';
 require_once __DIR__ . '/../models/ActividadTerreno.php';
 
-if (!isset($_SESSION['usuario_id']) || (int)($_SESSION['usuario_rol_id'] ?? 0) !== 4) {
-    header('Location: ../login.php');
-    exit;
-}
+
+
+gemoExigirRoles(GEMO_ROLES_CRUD_TERRENO);
 
 function volverActividadConError(string $mensaje): never
 {
     $_SESSION['actividad_terreno_error'] = $mensaje;
-    header('Location: ../views/auxiliar_terreno/actividades.php');
+    header('Location: ' . gemoVistaDelRol('actividades.php'));
     exit;
 }
 
@@ -44,7 +44,7 @@ try {
             $_SESSION['actividad_terreno_exito'] = 'Actividad actualizada correctamente.';
         }
 
-        header('Location: ../views/auxiliar_terreno/actividades.php');
+        header('Location: ' . gemoVistaDelRol('actividades.php'));
         exit;
     }
 
@@ -57,11 +57,11 @@ try {
         $_SESSION['actividad_terreno_exito'] = $accion === 'habilitar'
             ? 'Actividad habilitada correctamente.'
             : 'Actividad inhabilitada correctamente.';
-        header('Location: ../views/auxiliar_terreno/actividades.php');
+        header('Location: ' . gemoVistaDelRol('actividades.php'));
         exit;
     }
 
-    header('Location: ../views/auxiliar_terreno/actividades.php');
+    header('Location: ' . gemoVistaDelRol('actividades.php'));
     exit;
 } catch (Throwable $e) {
     volverActividadConError('No fue posible completar la operación. Revise la configuración de PostgreSQL.');

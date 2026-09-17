@@ -176,7 +176,7 @@ INSERT INTO rol (id_rol, nombre_rol) VALUES
 INSERT INTO tipo_documento (id_tipo_documento, nombre) VALUES
 (1, 'Cédula de ciudadanía');
 
--- Usuario inicial de prueba. Cambie esta contraseña después del primer acceso.
+
 INSERT INTO usuario
 (id_usuario, id_rol, documento, nombres, apellidos, id_tipo_documento, contraseña, correo, fecha_nacimiento, telefono)
 VALUES

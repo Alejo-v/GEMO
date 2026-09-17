@@ -4,7 +4,7 @@ session_start();
 require_once __DIR__ . '/../models/ReporteTerreno.php';
 require_once __DIR__ . '/../lib/fpdf/fpdf.php';
 
-$rolesPermitidos = [1, 5]; // 1 = Administrador del Sistema, 5 = Coordinador Terreno
+$rolesPermitidos = [1, 5]; 
 
 if (!isset($_SESSION['usuario_id']) || !in_array((int) ($_SESSION['usuario_rol_id'] ?? 0), $rolesPermitidos, true)) {
     header('Location: ../login.php');
@@ -12,8 +12,8 @@ if (!isset($_SESSION['usuario_id']) || !in_array((int) ($_SESSION['usuario_rol_i
 }
 
 $esAdmin = (int) $_SESSION['usuario_rol_id'] === 1;
-// El admin ahora tiene una pantalla dedicada solo a terreno; el coordinador
-// sigue con su reportes.php de siempre.
+
+
 $paginaRetorno = $esAdmin
     ? '../views/admin/reportes_terreno.php'
     : '../views/coordinador_terreno/reportes.php';
@@ -25,14 +25,14 @@ if ($accion !== 'pdf') {
     exit;
 }
 
-/**
- * Qué reporte se va a imprimir. Cada uno se descarga por separado:
- *   1 = detalle de sitios visitados
- *   2 = registros por tipo de actividad
- *   3 = actividades por auxiliar
- *   4 = registros por tipo de depósito
- *   todos = los cuatro en un mismo archivo (comportamiento anterior)
- */
+
+
+
+
+
+
+
+
 $reporte = (string) ($_GET['reporte'] ?? 'todos');
 if (!in_array($reporte, ['1', '2', '3', '4', 'todos'], true)) {
     $reporte = 'todos';
@@ -55,10 +55,10 @@ if ($filtros['fecha_desde'] !== '' && $filtros['fecha_hasta'] !== '' && $filtros
     [$filtros['fecha_desde'], $filtros['fecha_hasta']] = [$filtros['fecha_hasta'], $filtros['fecha_desde']];
 }
 
-/**
- * FPDF (fuentes core tipo Helvetica) sólo soporta ISO-8859-1, por lo que el
- * texto en español con tildes/ñ debe transliterarse antes de imprimirse.
- */
+
+
+
+
 function pdfTexto(?string $texto): string
 {
     $texto = (string) $texto;
@@ -84,8 +84,8 @@ $imprimeReporte4 = ($reporte === '4' || $reporte === 'todos');
 
 try {
     $modelo = new ReporteTerreno();
-    // El reporte 1 también alimenta el resumen general (Aedes/pupas/Culex),
-    // por eso se consulta siempre.
+    
+    
     $reporteSitios = $modelo->reporteSitios($filtros);
     $reporteActividad = $imprimeReporte2 ? $modelo->reportePorActividad($filtros) : [];
     $reporteAuxiliar = $imprimeReporte3 ? $modelo->reportePorAuxiliar($filtros) : [];
@@ -103,7 +103,7 @@ $totalAedes = array_sum(array_column($reporteSitios, 'larvas_aedes'));
 $totalPupas = array_sum(array_column($reporteSitios, 'pupas'));
 $totalCulex = array_sum(array_column($reporteSitios, 'larvas_culex'));
 
-// Títulos y nombres de archivo propios de cada reporte.
+
 $titulosReporte = [
     '1' => 'Reporte 1 - Detalle de sitios',
     '2' => 'Reporte 2 - Registros por tipo de actividad',
@@ -166,8 +166,8 @@ class ReporteTerrenoPDF extends FPDF
     }
 }
 
-// Subtítulo con los filtros aplicados, ahora con los nombres reales y no
-// con el texto genérico "Comuna filtrada".
+
+
 $nombreComuna = '';
 foreach ($comunas as $c) {
     if (!empty($filtros['id_comuna']) && (int) $c['id_comuna'] === (int) $filtros['id_comuna']) {
@@ -219,7 +219,7 @@ $pdf->filaResumen('Pupas encontradas', (string) $totalPupas);
 $pdf->filaResumen('Larvas Culex encontradas', (string) $totalCulex);
 $pdf->Ln(8);
 
-// ---- Reporte 2: por tipo de actividad ----
+
 if ($imprimeReporte2) {
     $pdf->tituloSeccion('Reporte 2 - Registros por tipo de actividad');
     $pdf->SetFillColor(230, 236, 242);
@@ -240,7 +240,7 @@ if ($imprimeReporte2) {
     $pdf->Ln(6);
 }
 
-// ---- Reporte 4: por tipo de depósito ----
+
 if ($imprimeReporte4) {
     if ($reporte === 'todos' && $pdf->GetY() > 240) {
         $pdf->AddPage();
@@ -264,7 +264,7 @@ if ($imprimeReporte4) {
     $pdf->Ln(6);
 }
 
-// ---- Reporte 3: por auxiliar ----
+
 if ($imprimeReporte3) {
     if ($reporte === 'todos' && $pdf->GetY() > 220) {
         $pdf->AddPage();
@@ -290,7 +290,7 @@ if ($imprimeReporte3) {
     $pdf->Ln(6);
 }
 
-// ---- Reporte 1: detalle de sitios ----
+
 if ($imprimeReporte1) {
     if ($reporte === 'todos') {
         $pdf->AddPage();

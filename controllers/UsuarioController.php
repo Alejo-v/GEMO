@@ -2,6 +2,7 @@
 
 session_start();
 require_once __DIR__ . '/../models/Usuario.php';
+require_once __DIR__ . '/../includes/password_validation.php';
 
 if (!isset($_SESSION['usuario_id']) || (int)($_SESSION['usuario_rol_id'] ?? 0) !== 1) {
     header('Location: ../login.php');
@@ -68,8 +69,8 @@ function editarUsuario(): void
         if ($password !== $confirmar) {
             volverAUsuariosConError('Las contraseñas nuevas no coinciden.');
         }
-        if (strlen($password) < 8) {
-            volverAUsuariosConError('La nueva contraseña debe tener mínimo 8 caracteres.');
+        if (!validarComplejidadPassword($password)) {
+            volverAUsuariosConError(mensajeComplejidadPassword());
         }
     }
 
@@ -177,12 +178,16 @@ if ($password !== $confirmar) {
     volverConError('Las contraseñas no coinciden.');
 }
 
-if (strlen($password) < 8) {
-    volverConError('La contraseña debe tener mínimo 8 caracteres.');
+if (!validarComplejidadPassword($password)) {
+    volverConError(mensajeComplejidadPassword());
 }
 
 if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
     volverConError('La fecha de nacimiento no es válida.');
+}
+$fechaNacimiento = DateTime::createFromFormat('!Y-m-d', $fecha);
+if (!$fechaNacimiento || $fechaNacimiento->format('Y-m-d') !== $fecha || $fechaNacimiento > new DateTime('today')) {
+    volverConError('La fecha de nacimiento no es válida o no puede ser futura.');
 }
 
 try {

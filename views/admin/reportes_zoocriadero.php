@@ -47,10 +47,10 @@ $etiquetasTanque = array_map(static fn($t) => '#' . (int) $t['id_tanque'], $resu
 $vivosTanque = array_map(static fn($t) => (int) $t['total_vivos'], $resumenPorTanque);
 $muertosTanque = array_map(static fn($t) => (int) $t['total_muertos'], $resumenPorTanque);
 
-/**
- * Cada reporte se descarga por separado: misma URL, cambia el parámetro
- * "reporte" (1, 2, 3 o "todos"). Los filtros activos viajan siempre.
- */
+
+
+
+
 function urlPdfZoo(array $filtros, string $reporte): string
 {
     return '../../controllers/ReporteController.php?accion=pdf'

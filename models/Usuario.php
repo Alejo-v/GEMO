@@ -75,10 +75,10 @@ class Usuario
         return (bool) $stmt->fetchColumn();
     }
 
-    /**
-     * Actualiza apellido, correo y rol de un usuario existente.
-     * Si $datos[':contrasena'] no es null, también actualiza la contraseña.
-     */
+    
+
+
+
     public function actualizar(array $datos): bool
     {
         if (!empty($datos[':contrasena'])) {
@@ -100,9 +100,9 @@ class Usuario
         return $stmt->execute($datos);
     }
 
-    /**
-     * Actualiza únicamente el número de teléfono de un usuario.
-     */
+    
+
+
     public function actualizarTelefono(int $idUsuario, string $telefono): bool
     {
         $stmt = $this->conexion->prepare(
@@ -111,9 +111,9 @@ class Usuario
         return $stmt->execute([':telefono' => $telefono, ':id_usuario' => $idUsuario]);
     }
 
-    /**
-     * Actualiza únicamente la contraseña (ya hasheada) de un usuario.
-     */
+    
+
+
     public function actualizarPassword(int $idUsuario, string $hashPassword): bool
     {
         $stmt = $this->conexion->prepare(
@@ -122,10 +122,10 @@ class Usuario
         return $stmt->execute([':contrasena' => $hashPassword, ':id_usuario' => $idUsuario]);
     }
 
-    /**
-     * Habilita o inhabilita el acceso de un usuario al sistema.
-     * Un usuario inhabilitado (activo = false) no podrá iniciar sesión.
-     */
+    
+
+
+
     public function cambiarEstado(int $idUsuario, bool $activo): bool
     {
         $stmt = $this->conexion->prepare(

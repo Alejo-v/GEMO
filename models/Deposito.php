@@ -22,7 +22,7 @@ class Deposito
         return $this->conexion->query($sql)->fetchAll();
     }
 
-    /** Solo los activos, para el <select> del formulario de Registro de campo. */
+    
     public function obtenerActivos(): array
     {
         $sql = 'SELECT d.id_deposito, d.id_sitio, d.id_tipo_deposito, td.descripcion AS tipo_deposito

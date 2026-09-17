@@ -1,17 +1,17 @@
 <?php
 
 session_start();
+require_once __DIR__ . '/../includes/roles.php';
 require_once __DIR__ . '/../models/Sitio.php';
 
-if (!isset($_SESSION['usuario_id']) || (int)($_SESSION['usuario_rol_id'] ?? 0) !== 4) {
-    header('Location: ../login.php');
-    exit;
-}
 
-function volverSitioConError(string $mensaje, string $destino = '../views/auxiliar_terreno/sitios.php'): never
+
+gemoExigirRoles(GEMO_ROLES_CRUD_TERRENO);
+
+function volverSitioConError(string $mensaje, ?string $destino = null): never
 {
     $_SESSION['sitio_error'] = $mensaje;
-    header("Location: $destino");
+    header('Location: ' . ($destino ?? gemoVistaDelRol('sitios.php')));
     exit;
 }
 
@@ -20,14 +20,29 @@ $modelo = new Sitio();
 
 try {
     if ($accion === 'crear' || $accion === 'actualizar') {
-        $direccion = trim($_POST['direccion'] ?? '');
+        $tipoVia = trim($_POST['tipo_via'] ?? '');
+        $numeroVia = trim($_POST['numero_via'] ?? '');
+        $letraVia = strtoupper(trim($_POST['letra_via'] ?? ''));
+        $orientacion = trim($_POST['orientacion'] ?? '');
+        $numeroPlaca = trim($_POST['numero_placa'] ?? '');
+        $letraPlaca = strtoupper(trim($_POST['letra_placa'] ?? ''));
+        $complemento = trim($_POST['complemento'] ?? '');
         $latitud = trim($_POST['latitud'] ?? '');
         $longitud = trim($_POST['longitud'] ?? '');
         $idsBarrios = array_map('intval', $_POST['barrios'] ?? []);
 
-        if ($direccion === '' || mb_strlen($direccion) > 50) {
-            volverSitioConError('La dirección es obligatoria (máximo 50 caracteres).');
-        }
+        $tiposVia = ['Calle','Carrera','Avenida','Diagonal','Transversal','Circular','Autopista','Vía','Kilómetro'];
+        $orientaciones = ['Norte','Sur','Este','Oeste'];
+        if (!in_array($tipoVia, $tiposVia, true)) volverSitioConError('Debe seleccionar un tipo de vía válido.');
+        if (!preg_match('/^[0-9]{1,4}$/', $numeroVia)) volverSitioConError('El número de vía debe contener entre 1 y 4 dígitos.');
+        if ($letraVia !== '' && !preg_match('/^[A-Z]{1,2}$/', $letraVia)) volverSitioConError('La letra de la vía no es válida.');
+        if ($orientacion !== '' && !in_array($orientacion, $orientaciones, true)) volverSitioConError('La orientación no es válida.');
+        if (!preg_match('/^[0-9]{1,4}$/', $numeroPlaca)) volverSitioConError('El número de placa debe contener entre 1 y 4 dígitos.');
+        if ($letraPlaca !== '' && !preg_match('/^[A-Z]{1,2}$/', $letraPlaca)) volverSitioConError('La letra de la placa no es válida.');
+        if ($complemento !== '' && (mb_strlen($complemento) > 20 || !preg_match('/^[\p{L}\p{N} .#\/\-]+$/u', $complemento))) volverSitioConError('El complemento de la dirección contiene caracteres no válidos.');
+
+        $direccion = $tipoVia . ' ' . $numeroVia . $letraVia . ($orientacion !== '' ? ' ' . $orientacion : '') . ' # ' . $numeroPlaca . $letraPlaca . ($complemento !== '' ? '-' . $complemento : '');
+        if (mb_strlen($direccion) > 50) volverSitioConError('La dirección completa no puede superar 50 caracteres.');
 
         if ($latitud !== '' && (!is_numeric($latitud) || $latitud < -90 || $latitud > 90)) {
             volverSitioConError('La latitud debe estar entre -90 y 90.');
@@ -65,7 +80,7 @@ try {
             $_SESSION['sitio_exito'] = 'Sitio actualizado correctamente.';
         }
 
-        header('Location: ../views/auxiliar_terreno/sitios.php');
+        header('Location: ' . gemoVistaDelRol('sitios.php'));
         exit;
     }
 
@@ -78,11 +93,11 @@ try {
         $_SESSION['sitio_exito'] = $accion === 'habilitar'
             ? 'Sitio habilitado correctamente.'
             : 'Sitio inhabilitado correctamente.';
-        header('Location: ../views/auxiliar_terreno/sitios.php');
+        header('Location: ' . gemoVistaDelRol('sitios.php'));
         exit;
     }
 
-    header('Location: ../views/auxiliar_terreno/sitios.php');
+    header('Location: ' . gemoVistaDelRol('sitios.php'));
     exit;
 } catch (Throwable $e) {
     volverSitioConError('No fue posible completar la operación. Revise la configuración de PostgreSQL.');

@@ -11,7 +11,7 @@ class Sitio
         $this->conexion = (new Database())->conectar();
     }
 
-    /** Catálogo de barrios (con su comuna) para los checkboxes del formulario. */
+    
     public function obtenerBarrios(): array
     {
         $sql = 'SELECT b.id_barrio, b.nombre, c.nombre AS comuna
@@ -34,7 +34,7 @@ class Sitio
         $stmt = $this->conexion->query($sql);
         $filas = $stmt->fetchAll();
         foreach ($filas as &$fila) {
-            // PDO (pgsql) devuelve el array de Postgres como texto "{1,2}"; lo convertimos a array PHP de enteros.
+            
             $fila['ids_barrios'] = array_map('intval', array_filter(
                 explode(',', trim($fila['ids_barrios'], '{}')),
                 fn ($v) => $v !== ''
@@ -43,7 +43,7 @@ class Sitio
         return $filas;
     }
 
-    /** Solo los activos, para los <select> de otros formularios (Depósito, Registro de campo). */
+    
     public function obtenerActivos(): array
     {
         $sql = "SELECT st.id_sitio, st.direccion,

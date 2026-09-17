@@ -1,6 +1,6 @@
 :root{--gemo-green:#1D63B3;--gemo-dark:#153D6B;--gemo-mid:#1D63B3;--gemo-soft:#E6ECF2;--gemo-bg:#E6ECF2;--gemo-text:#153D6B}body{background:var(--gemo-bg);color:var(--gemo-text)}.btn-gemo{background:var(--gemo-green);border-color:var(--gemo-green);color:#fff}.btn-gemo:hover,.btn-gemo:focus{background:var(--gemo-dark);border-color:var(--gemo-dark);color:#fff}.gemo-sidebar{background:var(--gemo-dark)!important}.gemo-logo-header{background:var(--gemo-dark)!important}.gemo-sidebar .nav-item.active>a,.gemo-sidebar .nav-item>a:hover{background:rgba(29,99,179,.28)!important}.gemo-sidebar .nav-item.active>a:before{background:var(--gemo-mid)!important}.gemo-sidebar-brand,.gemo-top-brand{font-weight:800;letter-spacing:2px;color:#fff;font-size:22px}.gemo-brand-img{height:52px;width:auto;display:inline-block}.gemo-top-brand-img{height:34px;width:auto;display:inline-block}.page-inner{padding-top:30px}.card-round{border-radius:12px}.badge-success{background:var(--gemo-mid)!important}.gemo-login{min-height:100vh;background:linear-gradient(135deg,var(--gemo-dark),var(--gemo-green));display:flex;align-items:center;justify-content:center}.login-wrap{width:min(430px,92%)}.login-card{background:#fff;border-radius:18px;padding:40px;box-shadow:0 20px 50px rgba(0,0,0,.2)}.gemo-mark{font-weight:900;font-size:46px;letter-spacing:4px;color:var(--gemo-green)}.gemo-mark-img{max-width:230px;width:100%;height:auto;margin:0 auto 10px;display:block}.login-title{font-size:20px;line-height:1.35;margin-top:12px}.form-control:focus,.form-select:focus{border-color:var(--gemo-mid);box-shadow:0 0 0 .2rem rgba(29,99,179,.15)}.footer{padding:20px 0}.icon-success{background:var(--gemo-mid)!important}.icon-primary{background:var(--gemo-dark)!important}.icon-secondary{background:#4f6f95!important}.gemo-welcome-card{background:linear-gradient(135deg,var(--gemo-dark),var(--gemo-mid));border-radius:16px;padding:32px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:20px;box-shadow:0 10px 30px rgba(21,61,107,.3)}.gemo-welcome-eyebrow{font-size:12px;letter-spacing:2px;color:rgba(255,255,255,.75)}.gemo-welcome-icon{font-size:56px;opacity:.35}.gemo-modal-hint{font-size:12px}.gemo-alcaldia-footer{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:4px}.gemo-alcaldia-footer img{height:44px;width:auto}.gemo-alcaldia-footer .gemo-alcaldia-divider{color:#b9c2cc}.gemo-login-institucional{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px}.gemo-login-institucional img{height:52px;width:auto}.gemo-login-institucional-texto{text-align:left;line-height:1.2}.gemo-login-institucional-texto strong{display:block;font-size:13px;color:var(--gemo-text)}.gemo-login-institucional-texto span{display:block;font-size:11px;color:#8a97a6;letter-spacing:.4px}
 
-/* ===== Accesibilidad ===== */
+
 html.gemo-a11y-fs-lg{font-size:112.5%}
 html.gemo-a11y-fs-xl{font-size:125%}
 .gemo-a11y{position:fixed;right:18px;bottom:18px;z-index:2000}
@@ -17,8 +17,8 @@ html.gemo-a11y-fs-xl{font-size:125%}
 .gemo-a11y-btns button.active,.gemo-a11y-btns button:hover{background:var(--gemo-mid);color:#fff}
 .gemo-a11y-row label{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gemo-text);cursor:pointer;margin:0}
 
-/* Alto contraste: se redefinen las variables globales, así todo lo que ya
-   usa var(--gemo-*) (sidebar, botones, badges) cambia automáticamente. */
+
+
 html.gemo-a11y-contraste{--gemo-green:#000;--gemo-dark:#000;--gemo-mid:#000;--gemo-soft:#fff;--gemo-bg:#fff;--gemo-text:#000}
 html.gemo-a11y-contraste body{background:#fff!important;color:#000!important}
 html.gemo-a11y-contraste .card,html.gemo-a11y-contraste .login-card,html.gemo-a11y-contraste .table{background:#fff!important;color:#000!important;border:1px solid #000!important}
@@ -29,3 +29,34 @@ html.gemo-a11y-contraste *:focus{outline:3px solid #ff0!important;outline-offset
 
 html.gemo-a11y-subrayado a{text-decoration:underline!important}@media(max-width:767px){.gemo-welcome-card{flex-direction:column;text-align:center;padding:24px}.gemo-welcome-icon{font-size:40px;opacity:.5}}
 @media(max-width:991px){.page-inner{padding-top:20px}.login-card{padding:28px}}
+
+
+.gemo-password-wrap{position:relative}
+.gemo-password-wrap .form-control{padding-right:46px}
+.gemo-password-toggle{position:absolute;top:0;right:0;height:100%;width:44px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;padding:0;color:#7a8b9c;font-size:16px;cursor:pointer;border-radius:0 .5rem .5rem 0}
+.gemo-password-toggle:hover{color:var(--gemo-green)}
+.gemo-password-toggle:focus-visible{outline:2px solid var(--gemo-green);outline-offset:-2px;color:var(--gemo-green)}
+.gemo-password-toggle[aria-pressed="true"]{color:var(--gemo-green)}
+html.gemo-a11y-contraste .gemo-password-toggle{color:#000}
+
+
+html.gemo-a11y-contraste .gemo-sidebar a,
+html.gemo-a11y-contraste .gemo-sidebar .nav-item > a,
+html.gemo-a11y-contraste .gemo-sidebar .nav-item > a p,
+html.gemo-a11y-contraste .gemo-sidebar .nav-item > a i,
+html.gemo-a11y-contraste .gemo-sidebar .nav-section .text-section,
+html.gemo-a11y-contraste .gemo-sidebar .sidebar-mini-icon { color:#fff!important }
+html.gemo-a11y-contraste .gemo-sidebar .nav-item.active>a,
+html.gemo-a11y-contraste .gemo-sidebar .nav-item>a:hover { background:#222!important }
+html.gemo-a11y-contraste .text-muted,
+html.gemo-a11y-contraste small.text-muted,
+html.gemo-a11y-contraste .card-category { color:#111!important }
+html.gemo-a11y-contraste .form-control,
+html.gemo-a11y-contraste .form-select,
+html.gemo-a11y-contraste textarea { background:#fff!important;color:#000!important;border:2px solid #000!important }
+html.gemo-a11y-contraste .btn-outline-success,
+html.gemo-a11y-contraste .btn-outline-primary,
+html.gemo-a11y-contraste .btn-outline-secondary { color:#000!important;border-color:#000!important;background:#fff!important }
+html.gemo-a11y-contraste .btn-gemo { background:#000!important;color:#fff!important;border-color:#000!important }
+html.gemo-a11y-contraste .table th,
+html.gemo-a11y-contraste .table td { color:#000!important;border-color:#000!important }

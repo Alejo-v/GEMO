@@ -35,10 +35,10 @@ $totalAedes = array_sum(array_column($reporteSitios, 'larvas_aedes'));
 $totalPupas = array_sum(array_column($reporteSitios, 'pupas'));
 $totalCulex = array_sum(array_column($reporteSitios, 'larvas_culex'));
 
-/**
- * Cada reporte se descarga por separado: misma URL, cambia el parámetro
- * "reporte" (1, 2, 3, 4 o "todos"). Los filtros activos viajan siempre.
- */
+
+
+
+
 function urlPdfTerreno(array $filtros, string $reporte): string
 {
     return '../../controllers/ReporteTerrenoController.php?accion=pdf'

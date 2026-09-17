@@ -127,12 +127,12 @@ $error=$_SESSION['usuario_error']??null; unset($_SESSION['usuario_error']);
           <hr>
           <div class="mb-3">
             <label class="form-label">Nueva contraseña</label>
-            <input type="password" class="form-control" name="password" minlength="8" autocomplete="new-password">
-            <small class="text-muted">Deje ambos campos en blanco para no cambiar la contraseña. Mínimo 8 caracteres.</small>
+            <input type="password" class="form-control" name="password" minlength="8" pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}" autocomplete="new-password">
+            <small class="text-muted">Deje ambos campos en blanco para no cambiar la contraseña. Si cambia la contraseña: mínimo 8 caracteres, con mayúscula, minúscula, número y carácter especial.</small>
           </div>
           <div class="mb-3">
             <label class="form-label">Confirmar nueva contraseña</label>
-            <input type="password" class="form-control" name="confirmar_password" minlength="8" autocomplete="new-password">
+            <input type="password" class="form-control" name="confirmar_password" minlength="8" pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}" autocomplete="new-password">
           </div>
         </div>
         <div class="modal-footer">
@@ -159,6 +159,25 @@ $error=$_SESSION['usuario_error']??null; unset($_SESSION['usuario_error']);
     var form = document.getElementById('formEditarUsuario');
     form.querySelector('[name="password"]').value = '';
     form.querySelector('[name="confirmar_password"]').value = '';
+  });
+
+  var form = document.getElementById('formEditarUsuario');
+  form.addEventListener('submit', function (e) {
+    var nueva = form.querySelector('[name="password"]');
+    var confirmar = form.querySelector('[name="confirmar_password"]');
+    if (nueva.value === '' && confirmar.value === '') return;
+    var patron = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$/;
+    if (!patron.test(nueva.value)) {
+      e.preventDefault();
+      alert('La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.');
+      nueva.focus();
+      return;
+    }
+    if (nueva.value !== confirmar.value) {
+      e.preventDefault();
+      alert('Las contraseñas nuevas no coinciden.');
+      confirmar.focus();
+    }
   });
 })();
 </script>

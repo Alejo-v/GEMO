@@ -11,7 +11,7 @@ class SeguimientoZoocriadero
         $this->conexion = (new Database())->conectar();
     }
 
-    /** Solo tanques activos y habilitados, para el <select> del Registro diario. */
+    
     public function obtenerTanques(): array
     {
         $sql = "SELECT t.id_tanque, t.estado, tt.id_tipo_tanque, tt.descripcion AS tipo_tanque
@@ -22,7 +22,7 @@ class SeguimientoZoocriadero
         return $this->conexion->query($sql)->fetchAll();
     }
 
-    /** Solo acciones habilitadas, para los checkboxes del Registro diario. */
+    
     public function obtenerActividades(): array
     {
         return $this->conexion->query(
@@ -87,7 +87,7 @@ class SeguimientoZoocriadero
         }
     }
 
-    /** Catálogo de zoocriaderos activos, para el <select> de filtros de los reportes. */
+    
     public function obtenerZoocriaderos(): array
     {
         return $this->conexion->query(
@@ -95,13 +95,13 @@ class SeguimientoZoocriadero
         )->fetchAll();
     }
 
-    /**
-     * Arma el WHERE + parámetros comunes a los reportes del zoocriadero, a
-     * partir de los filtros que llegan por GET (fechas, zoocriadero y
-     * actividad). Se usa EXISTS para la actividad porque un seguimiento puede
-     * tener varias actividades asociadas (relación N:M) y un JOIN duplicaría
-     * filas.
-     */
+    
+
+
+
+
+
+
     private function condicionesFiltro(array $filtros): array
     {
         $condiciones = [];
@@ -135,10 +135,10 @@ class SeguimientoZoocriadero
         return [$where, $params];
     }
 
-    /**
-     * Reporte 1: seguimiento de actividades del zoocriadero, con filtros por
-     * fechas, zoocriadero y actividad.
-     */
+    
+
+
+
     public function obtenerRegistrosFiltrados(array $filtros): array
     {
         [$where, $params] = $this->condicionesFiltro($filtros);
@@ -169,10 +169,10 @@ class SeguimientoZoocriadero
         return $stmt->fetchAll();
     }
 
-    /**
-     * Totales generales (vivos/muertos) según los filtros activos, para las
-     * tarjetas de resumen y el reporte en PDF.
-     */
+    
+
+
+
     public function obtenerResumenFiltrado(array $filtros): array
     {
         [$where, $params] = $this->condicionesFiltro($filtros);
@@ -197,10 +197,10 @@ class SeguimientoZoocriadero
         ];
     }
 
-    /**
-     * Serie diaria de peces vivos (alevines nacidos) vs. muertos según los
-     * filtros activos, para el gráfico de Chart.js del reporte.
-     */
+    
+
+
+
     public function obtenerSerieDiariaFiltrada(array $filtros): array
     {
         [$where, $params] = $this->condicionesFiltro($filtros);
@@ -218,10 +218,10 @@ class SeguimientoZoocriadero
         return $stmt->fetchAll();
     }
 
-    /**
-     * Reporte 2: nacidos y muertos cuantificados por tanque (no solo el total
-     * general del período), según los mismos filtros de fechas/zoocriadero/actividad.
-     */
+    
+
+
+
     public function obtenerResumenPorTanque(array $filtros): array
     {
         [$where, $params] = $this->condicionesFiltro($filtros);

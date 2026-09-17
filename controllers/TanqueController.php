@@ -1,17 +1,17 @@
 <?php
 
 session_start();
+require_once __DIR__ . '/../includes/roles.php';
 require_once __DIR__ . '/../models/Tanque.php';
 
-if (!isset($_SESSION['usuario_id']) || (int)($_SESSION['usuario_rol_id'] ?? 0) !== 3) {
-    header('Location: ../login.php');
-    exit;
-}
+
+
+gemoExigirRoles(GEMO_ROLES_CRUD_ZOO);
 
 function volverTanqueConError(string $mensaje): never
 {
     $_SESSION['tanque_error'] = $mensaje;
-    header('Location: ../views/auxiliar_zoocriadero/tanques.php');
+    header('Location: ' . gemoVistaDelRol('tanques.php'));
     exit;
 }
 
@@ -50,7 +50,7 @@ try {
             $_SESSION['tanque_exito'] = 'Tanque actualizado correctamente.';
         }
 
-        header('Location: ../views/auxiliar_zoocriadero/tanques.php');
+        header('Location: ' . gemoVistaDelRol('tanques.php'));
         exit;
     }
 
@@ -63,11 +63,11 @@ try {
         $_SESSION['tanque_exito'] = $accion === 'habilitar'
             ? 'Tanque habilitado correctamente.'
             : 'Tanque inhabilitado correctamente.';
-        header('Location: ../views/auxiliar_zoocriadero/tanques.php');
+        header('Location: ' . gemoVistaDelRol('tanques.php'));
         exit;
     }
 
-    header('Location: ../views/auxiliar_zoocriadero/tanques.php');
+    header('Location: ' . gemoVistaDelRol('tanques.php'));
     exit;
 } catch (Throwable $e) {
     volverTanqueConError('No fue posible completar la operación. Revise la configuración de PostgreSQL.');

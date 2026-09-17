@@ -1,17 +1,17 @@
 <?php
 
 session_start();
+require_once __DIR__ . '/../includes/roles.php';
 require_once __DIR__ . '/../models/ActividadZoocriadero.php';
 
-if (!isset($_SESSION['usuario_id']) || (int)($_SESSION['usuario_rol_id'] ?? 0) !== 3) {
-    header('Location: ../login.php');
-    exit;
-}
+
+
+gemoExigirRoles(GEMO_ROLES_CRUD_ZOO);
 
 function volverAccionConError(string $mensaje): never
 {
     $_SESSION['accion_zoo_error'] = $mensaje;
-    header('Location: ../views/auxiliar_zoocriadero/acciones_zoocriadero.php');
+    header('Location: ' . gemoVistaDelRol('acciones_zoocriadero.php'));
     exit;
 }
 
@@ -44,7 +44,7 @@ try {
             $_SESSION['accion_zoo_exito'] = 'Acción actualizada correctamente.';
         }
 
-        header('Location: ../views/auxiliar_zoocriadero/acciones_zoocriadero.php');
+        header('Location: ' . gemoVistaDelRol('acciones_zoocriadero.php'));
         exit;
     }
 
@@ -57,11 +57,11 @@ try {
         $_SESSION['accion_zoo_exito'] = $accion === 'habilitar'
             ? 'Acción habilitada correctamente.'
             : 'Acción inhabilitada correctamente.';
-        header('Location: ../views/auxiliar_zoocriadero/acciones_zoocriadero.php');
+        header('Location: ' . gemoVistaDelRol('acciones_zoocriadero.php'));
         exit;
     }
 
-    header('Location: ../views/auxiliar_zoocriadero/acciones_zoocriadero.php');
+    header('Location: ' . gemoVistaDelRol('acciones_zoocriadero.php'));
     exit;
 } catch (Throwable $e) {
     volverAccionConError('No fue posible completar la operación. Revise la configuración de PostgreSQL.');

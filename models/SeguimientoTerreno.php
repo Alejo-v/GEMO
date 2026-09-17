@@ -59,10 +59,10 @@ class SeguimientoTerreno
         return (bool) $stmt->fetchColumn();
     }
 
-    /**
-     * Inserta un nuevo registro de seguimiento de terreno.
-     * Al utilizar la secuencia nativa de PostgreSQL, no se requiere calcular el MAX() manualmente.
-     */
+    
+
+
+
     public function registrar(array $datos): bool
     {
         $sql = 'INSERT INTO seguimiento_terreno
@@ -130,10 +130,10 @@ class SeguimientoTerreno
         return $stmt->fetchAll();
     }
 
-    /**
-     * Historial de auditoría de registros de terreno.
-     * Permite filtrar por rango de fechas, usuario y actividad.
-     */
+    
+
+
+
     public function obtenerAuditoriaTerreno(?string $fechaDesde = null, ?string $fechaHasta = null, ?int $idUsuario = null, ?int $idActividad = null): array
     {
         $condiciones = [];

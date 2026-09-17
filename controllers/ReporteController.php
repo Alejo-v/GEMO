@@ -5,7 +5,7 @@ require_once __DIR__ . '/../models/SeguimientoZoocriadero.php';
 require_once __DIR__ . '/../models/Tanque.php';
 require_once __DIR__ . '/../lib/fpdf/fpdf.php';
 
-$rolesPermitidos = [1, 2]; // 1 = Administrador del Sistema, 2 = Coordinador Zoocriadero
+$rolesPermitidos = [1, 2]; 
 
 if (!isset($_SESSION['usuario_id']) || !in_array((int) ($_SESSION['usuario_rol_id'] ?? 0), $rolesPermitidos, true)) {
     header('Location: ../login.php');
@@ -13,8 +13,8 @@ if (!isset($_SESSION['usuario_id']) || !in_array((int) ($_SESSION['usuario_rol_i
 }
 
 $esAdmin = (int) $_SESSION['usuario_rol_id'] === 1;
-// El admin ahora tiene una pantalla dedicada solo al zoocriadero; el
-// coordinador sigue con su reportes.php de siempre.
+
+
 $paginaRetorno = $esAdmin
     ? '../views/admin/reportes_zoocriadero.php'
     : '../views/coordinador_zoocriadero/reportes.php';
@@ -26,13 +26,13 @@ if ($accion !== 'pdf') {
     exit;
 }
 
-/**
- * Qué reporte se va a imprimir. Cada uno se descarga por separado:
- *   1 = seguimiento de actividades
- *   2 = nacidos y muertos por tanque
- *   3 = tanques por zoocriadero
- *   todos = los tres en un mismo archivo (comportamiento anterior)
- */
+
+
+
+
+
+
+
 $reporte = (string) ($_GET['reporte'] ?? 'todos');
 if (!in_array($reporte, ['1', '2', '3', 'todos'], true)) {
     $reporte = 'todos';
@@ -58,10 +58,10 @@ $filtros = [
     'id_actividad' => $_GET['id_actividad'] ?? '',
 ];
 
-/**
- * FPDF (fuentes core tipo Helvetica) sólo soporta ISO-8859-1, por lo que el
- * texto en español con tildes/ñ debe transliterarse antes de imprimirse.
- */
+
+
+
+
 function pdfTexto(?string $texto): string
 {
     $texto = (string) $texto;
@@ -72,11 +72,11 @@ function pdfTexto(?string $texto): string
     return @utf8_decode($texto);
 }
 
-/**
- * Trunca una cadena a $longitud caracteres. Usa mb_substr si la extensión
- * mbstring está disponible; si no, hace un recorte simple (no crítico aquí
- * porque sólo se usa para no desbordar columnas angostas de la tabla).
- */
+
+
+
+
+
 function pdfCorta(string $texto, int $longitud): string
 {
     if (function_exists('mb_substr')) {
@@ -93,7 +93,7 @@ try {
     $modelo = new SeguimientoZoocriadero();
     $modeloTanque = new Tanque();
 
-    // Solo se consulta lo que realmente se va a imprimir.
+    
     $resumen = $modelo->obtenerResumenFiltrado($filtros);
     $registros = $imprimeReporte1 ? $modelo->obtenerRegistrosFiltrados($filtros) : [];
     $resumenPorTanque = $imprimeReporte2 ? $modelo->obtenerResumenPorTanque($filtros) : [];
@@ -113,7 +113,7 @@ $totalMuertos = (int) $resumen['total_muertos'];
 $totalGeneral = $totalVivos + $totalMuertos;
 $tasaMortalidad = $totalGeneral > 0 ? round(($totalMuertos / $totalGeneral) * 100, 1) : 0.0;
 
-// Etiquetas descriptivas de los filtros aplicados, para el subtítulo del PDF.
+
 $nombreZoocriadero = '';
 if (!empty($filtros['id_zoocriadero'])) {
     foreach ($zoocriaderos as $z) {
@@ -133,7 +133,7 @@ if (!empty($filtros['id_actividad'])) {
     }
 }
 
-// Título y nombre de archivo propios de cada reporte.
+
 $titulosReporte = [
     '1' => 'Reporte 1 - Seguimiento de actividades',
     '2' => 'Reporte 2 - Nacidos y muertos por tanque',
@@ -211,8 +211,8 @@ $pdf->subtitulo = pdfTexto($resumenFiltros . '  -  Generado: ' . date('d/m/Y H:i
 $pdf->SetMargins(10, 10, 10);
 $pdf->AddPage();
 
-// El resumen general solo tiene sentido en los reportes que dependen de los
-// seguimientos (1 y 2); el 3 es un inventario estructural de tanques.
+
+
 if ($imprimeReporte1 || $imprimeReporte2) {
     $pdf->tituloSeccion('Resumen general');
     $pdf->filaResumen('Registros en el periodo', (string) $resumen['total_registros']);
@@ -224,7 +224,7 @@ if ($imprimeReporte1 || $imprimeReporte2) {
     $pdf->Ln(8);
 }
 
-// ---- Reporte 1: seguimiento de actividades ----
+
 if ($imprimeReporte1) {
     $pdf->tituloSeccion('Reporte 1 - Seguimiento de actividades');
 
@@ -269,7 +269,7 @@ if ($imprimeReporte1) {
     $pdf->Ln(6);
 }
 
-// ---- Reporte 2: nacidos/muertos por tanque ----
+
 if ($imprimeReporte2) {
     if ($reporte === 'todos' && $pdf->GetY() > 220) {
         $pdf->AddPage();
@@ -312,7 +312,7 @@ if ($imprimeReporte2) {
     $pdf->Ln(6);
 }
 
-// ---- Reporte 3: tanques por zoocriadero ----
+
 if ($imprimeReporte3) {
     if ($reporte === 'todos') {
         $pdf->AddPage();

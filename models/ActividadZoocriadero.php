@@ -18,7 +18,7 @@ class ActividadZoocriadero
         )->fetchAll();
     }
 
-    /** Solo las activas, para los checkboxes del formulario de Registro diario. */
+    
     public function obtenerActivas(): array
     {
         return $this->conexion->query(

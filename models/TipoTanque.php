@@ -18,7 +18,7 @@ class TipoTanque
         )->fetchAll();
     }
 
-    /** Solo los activos, para el <select> del formulario de Tanques. */
+    
     public function obtenerActivos(): array
     {
         return $this->conexion->query(

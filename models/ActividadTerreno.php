@@ -18,7 +18,7 @@ class ActividadTerreno
         )->fetchAll();
     }
 
-    /** Solo las activas, para el <select> del formulario de Registro de campo. */
+    
     public function obtenerActivas(): array
     {
         return $this->conexion->query(

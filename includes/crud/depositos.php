@@ -1,8 +1,6 @@
 <?php
-$pageTitle = 'GEMO | Depósitos';
-require_once '../../includes/auxterreno_header.php';
-require_once '../../models/Deposito.php';
-require_once '../../models/Sitio.php';
+require_once __DIR__ . '/../../models/Deposito.php';
+require_once __DIR__ . '/../../models/Sitio.php';
 
 $modelo = new Deposito();
 $depositos = $modelo->obtenerTodos();
@@ -56,7 +54,7 @@ $exito = $_SESSION['deposito_exito'] ?? null; unset($_SESSION['deposito_exito'])
             </div>
             <div class="d-flex gap-2 mt-3">
                 <button type="submit" class="btn btn-gemo"><i class="fas fa-save me-1"></i> Guardar</button>
-                <button type="button" class="btn btn-secondary" onclick="cerrarFormulario()">Cancelar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarFormulario()"><i class="fas fa-times me-1"></i>Cancelar</button>
             </div>
         </form>
     </div>
@@ -138,5 +136,3 @@ function cerrarFormulario() {
 document.getElementById('card-formulario').style.display = <?= $error ? "''" : "'none'" ?>;
 <?php endif; ?>
 </script>
-
-<?php require_once '../../includes/auxterreno_footer.php'; ?>

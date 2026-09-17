@@ -1,9 +1,7 @@
 <?php
-$pageTitle = 'GEMO | Tanques';
-require_once '../../includes/auxzoo_header.php';
-require_once '../../models/Tanque.php';
-require_once '../../models/Zoocriadero.php';
-require_once '../../models/TipoTanque.php';
+require_once __DIR__ . '/../../models/Tanque.php';
+require_once __DIR__ . '/../../models/Zoocriadero.php';
+require_once __DIR__ . '/../../models/TipoTanque.php';
 
 $modelo = new Tanque();
 $tanques = $modelo->obtenerTodos();
@@ -66,7 +64,7 @@ $exito = $_SESSION['tanque_exito'] ?? null; unset($_SESSION['tanque_exito']);
             </div>
             <div class="d-flex gap-2 mt-3">
                 <button type="submit" class="btn btn-gemo"><i class="fas fa-save me-1"></i> Guardar</button>
-                <button type="button" class="btn btn-secondary" onclick="cerrarFormulario()">Cancelar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarFormulario()"><i class="fas fa-times me-1"></i>Cancelar</button>
             </div>
         </form>
     </div>
@@ -151,5 +149,3 @@ function cerrarFormulario() {
 document.getElementById('card-formulario').style.display = <?= $error ? "''" : "'none'" ?>;
 <?php endif; ?>
 </script>
-
-<?php require_once '../../includes/auxzoo_footer.php'; ?>

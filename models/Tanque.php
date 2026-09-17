@@ -4,7 +4,7 @@ require_once __DIR__ . '/../config/database.php';
 
 class Tanque
 {
-    /** Estados operativos permitidos para un tanque. */
+    
     public const ESTADOS = ['Activo', 'Mantenimiento', 'Fuera de servicio'];
 
     private PDO $conexion;
@@ -75,16 +75,16 @@ class Tanque
         return $stmt->execute([':activo' => $activo, ':id' => $id]);
     }
 
-    /**
-     * Reporte 3: tanques agrupados por zoocriadero, con la cantidad total,
-     * el desglose por tipo de tanque y el encargado de cada zoocriadero.
-     * Es un reporte estructural (inventario), por eso no lleva filtro de fechas.
-     */
+    
+
+
+
+
     public function obtenerReportePorZoocriadero($idZoocriadero = null): array
     {
-        // El reporte 3 vive en la pantalla de reportes del zoocriadero, que
-        // tiene un filtro "Zoocriadero". Si viene ese filtro, se aplica aquí
-        // también para que la tabla sea coherente con los otros dos reportes.
+        
+        
+        
         $filtrarPorZoo = ($idZoocriadero !== null && $idZoocriadero !== '');
         $params = $filtrarPorZoo ? [':id_zoocriadero' => (int) $idZoocriadero] : [];
         $whereZoo = $filtrarPorZoo ? 'WHERE z.id_zoocriadero = :id_zoocriadero' : '';

@@ -1,17 +1,17 @@
 <?php
 
 session_start();
+require_once __DIR__ . '/../includes/roles.php';
 require_once __DIR__ . '/../models/Zoocriadero.php';
 
-if (!isset($_SESSION['usuario_id']) || (int)($_SESSION['usuario_rol_id'] ?? 0) !== 3) {
-    header('Location: ../login.php');
-    exit;
-}
+
+
+gemoExigirRoles(GEMO_ROLES_CRUD_ZOO);
 
 function volverZoocriaderoConError(string $mensaje): never
 {
     $_SESSION['zoocriadero_error'] = $mensaje;
-    header('Location: ../views/auxiliar_zoocriadero/zoocriaderos.php');
+    header('Location: ' . gemoVistaDelRol('zoocriaderos.php'));
     exit;
 }
 
@@ -20,13 +20,27 @@ $modelo = new Zoocriadero();
 
 try {
     if ($accion === 'crear' || $accion === 'actualizar') {
-        $direccion = trim($_POST['direccion'] ?? '');
+        $tipoVia = trim($_POST['tipo_via'] ?? '');
+        $numeroVia = trim($_POST['numero_via'] ?? '');
+        $letraVia = strtoupper(trim($_POST['letra_via'] ?? ''));
+        $orientacion = trim($_POST['orientacion'] ?? '');
+        $numeroPlaca = trim($_POST['numero_placa'] ?? '');
+        $letraPlaca = strtoupper(trim($_POST['letra_placa'] ?? ''));
+        $complemento = trim($_POST['complemento'] ?? '');
         $idUsuario = (int) ($_POST['id_usuario'] ?? 0);
         $idBarrio = (int) ($_POST['id_barrio'] ?? 0);
 
-        if ($direccion === '' || mb_strlen($direccion) > 50) {
-            volverZoocriaderoConError('La dirección es obligatoria (máximo 50 caracteres).');
-        }
+        $tiposVia = ['Calle','Carrera','Avenida','Diagonal','Transversal','Circular','Autopista','Vía','Kilómetro'];
+        $orientaciones = ['Norte','Sur','Este','Oeste'];
+        if (!in_array($tipoVia, $tiposVia, true)) volverZoocriaderoConError('Debe seleccionar un tipo de vía válido.');
+        if (!preg_match('/^[0-9]{1,4}$/', $numeroVia)) volverZoocriaderoConError('El número de vía debe contener entre 1 y 4 dígitos.');
+        if ($letraVia !== '' && !preg_match('/^[A-Z]{1,2}$/', $letraVia)) volverZoocriaderoConError('La letra de la vía no es válida.');
+        if ($orientacion !== '' && !in_array($orientacion, $orientaciones, true)) volverZoocriaderoConError('La orientación no es válida.');
+        if (!preg_match('/^[0-9]{1,4}$/', $numeroPlaca)) volverZoocriaderoConError('El número de placa debe contener entre 1 y 4 dígitos.');
+        if ($letraPlaca !== '' && !preg_match('/^[A-Z]{1,2}$/', $letraPlaca)) volverZoocriaderoConError('La letra de la placa no es válida.');
+        if ($complemento !== '' && (mb_strlen($complemento) > 20 || !preg_match('/^[\p{L}\p{N} .#\/\-]+$/u', $complemento))) volverZoocriaderoConError('El complemento de la dirección contiene caracteres no válidos.');
+        $direccion = $tipoVia . ' ' . $numeroVia . $letraVia . ($orientacion !== '' ? ' ' . $orientacion : '') . ' # ' . $numeroPlaca . $letraPlaca . ($complemento !== '' ? '-' . $complemento : '');
+        if (mb_strlen($direccion) > 50) volverZoocriaderoConError('La dirección completa no puede superar 50 caracteres.');
 
         if ($idBarrio <= 0 || !$modelo->barrioExiste($idBarrio)) {
             volverZoocriaderoConError('Debe seleccionar un barrio válido.');
@@ -50,7 +64,7 @@ try {
             $_SESSION['zoocriadero_exito'] = 'Zoocriadero actualizado correctamente.';
         }
 
-        header('Location: ../views/auxiliar_zoocriadero/zoocriaderos.php');
+        header('Location: ' . gemoVistaDelRol('zoocriaderos.php'));
         exit;
     }
 
@@ -63,11 +77,11 @@ try {
         $_SESSION['zoocriadero_exito'] = $accion === 'habilitar'
             ? 'Zoocriadero habilitado correctamente.'
             : 'Zoocriadero inhabilitado correctamente.';
-        header('Location: ../views/auxiliar_zoocriadero/zoocriaderos.php');
+        header('Location: ' . gemoVistaDelRol('zoocriaderos.php'));
         exit;
     }
 
-    header('Location: ../views/auxiliar_zoocriadero/zoocriaderos.php');
+    header('Location: ' . gemoVistaDelRol('zoocriaderos.php'));
     exit;
 } catch (Throwable $e) {
     volverZoocriaderoConError('No fue posible completar la operación. Revise la configuración de PostgreSQL.');

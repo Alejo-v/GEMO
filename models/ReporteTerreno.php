@@ -11,7 +11,7 @@ class ReporteTerreno
         $this->conexion = (new Database())->conectar();
     }
 
-    // -------- Catálogos para los filtros --------
+    
 
     public function obtenerComunas(): array
     {
@@ -30,12 +30,12 @@ class ReporteTerreno
         )->fetchAll();
     }
 
-    /**
-     * Arma el WHERE + parámetros comunes a los 4 reportes, a partir de los
-     * filtros que llegan por GET. Usamos EXISTS (en vez de JOIN) para
-     * comuna/barrio porque un sitio puede pertenecer a varios barrios
-     * (relación N:M) y un JOIN duplicaría filas.
-     */
+    
+
+
+
+
+
     private function condicionesFiltro(array $filtros): array
     {
         $condiciones = [];
@@ -77,7 +77,7 @@ class ReporteTerreno
         return [$where, $params];
     }
 
-    /** Reporte 1: información de sitios/depósitos visitados, con filtros. */
+    
     public function reporteSitios(array $filtros): array
     {
         [$where, $params] = $this->condicionesFiltro($filtros);
@@ -110,7 +110,7 @@ class ReporteTerreno
         return $stmt->fetchAll();
     }
 
-    /** Reporte 2: registros agrupados por tipo de actividad. */
+    
     public function reportePorActividad(array $filtros): array
     {
         [$where, $params] = $this->condicionesFiltro($filtros);
@@ -130,7 +130,7 @@ class ReporteTerreno
         return $stmt->fetchAll();
     }
 
-    /** Reporte 3: actividades ejecutadas, agrupadas por auxiliar. */
+    
     public function reportePorAuxiliar(array $filtros): array
     {
         [$where, $params] = $this->condicionesFiltro($filtros);
@@ -151,7 +151,7 @@ class ReporteTerreno
         $stmt->execute($params);
         $filas = $stmt->fetchAll();
 
-        // Pivoteamos en PHP: un renglón por auxiliar, con el detalle por actividad adentro.
+        
         $porAuxiliar = [];
         foreach ($filas as $fila) {
             $id = (int) $fila['id_usuario'];
@@ -165,7 +165,7 @@ class ReporteTerreno
         return array_values($porAuxiliar);
     }
 
-    /** Reporte 4: registros agrupados por tipo de depósito (para el gráfico). */
+    
     public function reportePorTipoDeposito(array $filtros): array
     {
         [$where, $params] = $this->condicionesFiltro($filtros);

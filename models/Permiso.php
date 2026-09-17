@@ -6,11 +6,11 @@ class Permiso
 {
     private PDO $conexion;
 
-    /**
-     * El rol 6 (Super Administrador) queda fuera del panel visual: no se
-     * administra a sí mismo desde aquí para evitar que se bloquee el
-     * acceso a su propia sesión.
-     */
+    
+
+
+
+
     private const ROL_EXCLUIDO = 6;
 
     public function __construct()
@@ -18,11 +18,11 @@ class Permiso
         $this->conexion = (new Database())->conectar();
     }
 
-    /**
-     * Devuelve todos los permisos (roles 1-5) agrupados por rol, listos
-     * para pintar el panel: cada elemento del arreglo tiene id_rol,
-     * nombre_rol y la lista de páginas con su estado activo/inactivo.
-     */
+    
+
+
+
+
     public function obtenerAgrupadoPorRol(): array
     {
         $sql = 'SELECT p.id_permiso, p.id_rol, p.pagina, p.etiqueta, p.activo, r.nombre_rol
@@ -55,10 +55,10 @@ class Permiso
         return $agrupado;
     }
 
-    /**
-     * Cuenta cuántos permisos activos tiene un rol. Se usa para no
-     * permitir dejar un rol sin ninguna página habilitada.
-     */
+    
+
+
+
     public function contarActivosPorRol(int $idRol): int
     {
         $stmt = $this->conexion->prepare(
@@ -68,11 +68,11 @@ class Permiso
         return (int) $stmt->fetchColumn();
     }
 
-    /**
-     * Devuelve el id_rol dueño de un id_permiso, o null si no existe.
-     * Se usa para validar que el permiso pertenece a un rol administrable
-     * (no al rol 6) antes de modificarlo.
-     */
+    
+
+
+
+
     public function obtenerRolDelPermiso(int $idPermiso): ?int
     {
         $stmt = $this->conexion->prepare(

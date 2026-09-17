@@ -1,17 +1,17 @@
 <?php
 
 session_start();
+require_once __DIR__ . '/../includes/roles.php';
 require_once __DIR__ . '/../models/Deposito.php';
 
-if (!isset($_SESSION['usuario_id']) || (int)($_SESSION['usuario_rol_id'] ?? 0) !== 4) {
-    header('Location: ../login.php');
-    exit;
-}
+
+
+gemoExigirRoles(GEMO_ROLES_CRUD_TERRENO);
 
 function volverDepositoConError(string $mensaje): never
 {
     $_SESSION['deposito_error'] = $mensaje;
-    header('Location: ../views/auxiliar_terreno/depositos.php');
+    header('Location: ' . gemoVistaDelRol('depositos.php'));
     exit;
 }
 
@@ -45,7 +45,7 @@ try {
             $_SESSION['deposito_exito'] = 'Depósito actualizado correctamente.';
         }
 
-        header('Location: ../views/auxiliar_terreno/depositos.php');
+        header('Location: ' . gemoVistaDelRol('depositos.php'));
         exit;
     }
 
@@ -58,11 +58,11 @@ try {
         $_SESSION['deposito_exito'] = $accion === 'habilitar'
             ? 'Depósito habilitado correctamente.'
             : 'Depósito inhabilitado correctamente.';
-        header('Location: ../views/auxiliar_terreno/depositos.php');
+        header('Location: ' . gemoVistaDelRol('depositos.php'));
         exit;
     }
 
-    header('Location: ../views/auxiliar_terreno/depositos.php');
+    header('Location: ' . gemoVistaDelRol('depositos.php'));
     exit;
 } catch (Throwable $e) {
     volverDepositoConError('No fue posible completar la operación. Revise la configuración de PostgreSQL.');

@@ -2,16 +2,17 @@
 
 session_start();
 require_once __DIR__ . '/../models/Usuario.php';
+require_once __DIR__ . '/../includes/password_validation.php';
 
 if (!isset($_SESSION['usuario_id'])) {
     header('Location: ../login.php');
     exit;
 }
 
-/**
- * Cada rol tiene su propia vista de "Información personal".
- * Se determina a cuál regresar según el rol de la sesión activa.
- */
+
+
+
+
 function carpetaDelRol(int $idRol): string
 {
     return match ($idRol) {
@@ -87,8 +88,8 @@ try {
             volverConError('Las contraseñas nuevas no coinciden.', $destino);
         }
 
-        if (strlen($passwordNueva) < 8) {
-            volverConError('La nueva contraseña debe tener mínimo 8 caracteres.', $destino);
+        if (!validarComplejidadPassword($passwordNueva)) {
+            volverConError(mensajeComplejidadPassword(), $destino);
         }
 
         $hash = password_hash($passwordNueva, PASSWORD_DEFAULT);

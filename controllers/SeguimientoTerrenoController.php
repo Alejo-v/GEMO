@@ -65,11 +65,11 @@ try {
         volverConError('La actividad seleccionada no es válida.');
     }
 
-    // Se eliminan los dos puntos (:) en las llaves del array
-    // para que coincidan con $datos['id_deposito'] en el modelo.
+    
+    
     $modelo->registrar([
         'id_deposito'          => $idDeposito,
-        'id_usuario'           => $_SESSION['usuario_id'] ?? 1, // Fallback por si la sesión está vacía
+        'id_usuario'           => $_SESSION['usuario_id'] ?? 1, 
         'fecha'                => date('Y-m-d'),
         'id_actividad_terreno' => $idActividad,
         'ph'                   => $ph,
@@ -84,6 +84,6 @@ try {
     exit;
 
 } catch (Throwable $e) {
-    // Muestra la causa exacta (error de sintaxis, clave foránea, columna inexistente, etc.)
+    
     volverConError('Error de ejecución: ' . $e->getMessage() . ' (Línea ' . $e->getLine() . ')');
 }
