@@ -1,6 +1,6 @@
 <?php
 $pageTitle = 'GEMO | Reportes de terreno';
-require_once '../../includes/coordterreno_header.php';
+require_once '../../includes/admin_header.php';
 require_once '../../models/ReporteTerreno.php';
 
 $modelo = new ReporteTerreno();
@@ -12,6 +12,15 @@ $filtros = [
     'fecha_desde' => $_GET['fecha_desde'] ?? '',
     'fecha_hasta' => $_GET['fecha_hasta'] ?? '',
 ];
+
+foreach (['fecha_desde', 'fecha_hasta'] as $campoFecha) {
+    if ($filtros[$campoFecha] !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $filtros[$campoFecha])) {
+        $filtros[$campoFecha] = '';
+    }
+}
+if ($filtros['fecha_desde'] !== '' && $filtros['fecha_hasta'] !== '' && $filtros['fecha_desde'] > $filtros['fecha_hasta']) {
+    [$filtros['fecha_desde'], $filtros['fecha_hasta']] = [$filtros['fecha_hasta'], $filtros['fecha_desde']];
+}
 
 $comunas = $modelo->obtenerComunas();
 $barrios = $modelo->obtenerBarrios();
@@ -26,27 +35,38 @@ $totalAedes = array_sum(array_column($reporteSitios, 'larvas_aedes'));
 $totalPupas = array_sum(array_column($reporteSitios, 'pupas'));
 $totalCulex = array_sum(array_column($reporteSitios, 'larvas_culex'));
 
-$urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
-    . '&id_comuna=' . urlencode($filtros['id_comuna'])
-    . '&id_barrio=' . urlencode($filtros['id_barrio'])
-    . '&id_tipo_deposito=' . urlencode($filtros['id_tipo_deposito'])
-    . '&fecha_desde=' . urlencode($filtros['fecha_desde'])
-    . '&fecha_hasta=' . urlencode($filtros['fecha_hasta']);
+/**
+ * Cada reporte se descarga por separado: misma URL, cambia el parámetro
+ * "reporte" (1, 2, 3, 4 o "todos"). Los filtros activos viajan siempre.
+ */
+function urlPdfTerreno(array $filtros, string $reporte): string
+{
+    return '../../controllers/ReporteTerrenoController.php?accion=pdf'
+        . '&reporte=' . urlencode($reporte)
+        . '&id_comuna=' . urlencode($filtros['id_comuna'])
+        . '&id_barrio=' . urlencode($filtros['id_barrio'])
+        . '&id_tipo_deposito=' . urlencode($filtros['id_tipo_deposito'])
+        . '&fecha_desde=' . urlencode($filtros['fecha_desde'])
+        . '&fecha_hasta=' . urlencode($filtros['fecha_hasta']);
+}
 ?>
 <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
     <div>
         <h3 class="fw-bold mb-1">Reportes de terreno</h3>
-        <p class="text-muted mb-0">Los 4 reportes del proceso de Trabajo de Terreno, con filtros por comuna, barrio, tipo de depósito y fechas.</p>
+        <p class="text-muted mb-0">
+            Solo el proceso de Trabajo de Terreno. Los reportes del zoocriadero están en
+            <a href="reportes_zoocriadero.php">su propia pantalla</a>.
+        </p>
     </div>
-    <a href="<?= htmlspecialchars($urlPdf) ?>" class="btn btn-gemo" target="_blank">
-        <i class="fas fa-file-pdf me-1"></i> Descargar PDF
+    <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, 'todos')) ?>" class="btn btn-outline-success" target="_blank">
+        <i class="fas fa-file-pdf me-1"></i> Descargar los 4 en un PDF
     </a>
 </div>
 
 <div class="card card-round mb-4">
     <div class="card-header"><h4 class="card-title">Filtros</h4></div>
     <div class="card-body">
-        <form method="get" action="reportes.php" class="row g-3">
+        <form method="get" action="reportes_terreno.php" class="row g-3">
             <div class="col-md-3">
                 <label class="form-label">Comuna</label>
                 <select name="id_comuna" id="f-comuna" class="form-select">
@@ -91,7 +111,7 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
             </div>
             <div class="col-md-9 d-flex align-items-end gap-2">
                 <button type="submit" class="btn btn-gemo"><i class="fas fa-filter me-1"></i> Aplicar filtros</button>
-                <a href="reportes.php" class="btn btn-secondary">Limpiar</a>
+                <a href="reportes_terreno.php" class="btn btn-secondary">Limpiar</a>
             </div>
         </form>
     </div>
@@ -121,8 +141,17 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
     </div>
 </div>
 
+<!-- ================= Reporte 1 ================= -->
 <div class="card card-round mb-4">
-    <div class="card-header"><h4 class="card-title">Reporte 1 — Información de sitios</h4></div>
+    <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div>
+            <h4 class="card-title mb-0">Reporte 1 — Información de sitios</h4>
+            <small class="text-muted">Detalle de cada visita registrada en campo</small>
+        </div>
+        <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '1')) ?>" class="btn btn-gemo btn-sm" target="_blank">
+            <i class="fas fa-file-pdf me-1"></i> Descargar reporte 1
+        </a>
+    </div>
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-hover align-middle">
@@ -156,10 +185,16 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
     </div>
 </div>
 
+<!-- ================= Reportes 2 y 4 ================= -->
 <div class="row">
     <div class="col-md-6">
         <div class="card card-round mb-4">
-            <div class="card-header"><h4 class="card-title">Reporte 2 — Por tipo de actividad</h4></div>
+            <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <h4 class="card-title mb-0">Reporte 2 — Por tipo de actividad</h4>
+                <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '2')) ?>" class="btn btn-gemo btn-sm" target="_blank">
+                    <i class="fas fa-file-pdf me-1"></i> Descargar
+                </a>
+            </div>
             <div class="card-body">
                 <?php if (empty($reporteActividad)): ?>
                     <p class="text-muted mb-0">No hay datos para graficar con estos filtros.</p>
@@ -171,7 +206,12 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
     </div>
     <div class="col-md-6">
         <div class="card card-round mb-4">
-            <div class="card-header"><h4 class="card-title">Reporte 4 — Por tipo de depósito</h4></div>
+            <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <h4 class="card-title mb-0">Reporte 4 — Por tipo de depósito</h4>
+                <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '4')) ?>" class="btn btn-gemo btn-sm" target="_blank">
+                    <i class="fas fa-file-pdf me-1"></i> Descargar
+                </a>
+            </div>
             <div class="card-body">
                 <?php if (empty($reporteTipoDeposito)): ?>
                     <p class="text-muted mb-0">No hay datos para graficar con estos filtros.</p>
@@ -183,8 +223,14 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
     </div>
 </div>
 
+<!-- ================= Reporte 3 ================= -->
 <div class="card card-round mb-4">
-    <div class="card-header"><h4 class="card-title">Reporte 3 — Actividades por auxiliar</h4></div>
+    <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <h4 class="card-title mb-0">Reporte 3 — Actividades por auxiliar</h4>
+        <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '3')) ?>" class="btn btn-gemo btn-sm" target="_blank">
+            <i class="fas fa-file-pdf me-1"></i> Descargar reporte 3
+        </a>
+    </div>
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-hover align-middle">
@@ -210,6 +256,8 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
 document.addEventListener('DOMContentLoaded', function () {
     var comunaSelect = document.getElementById('f-comuna');
     var barrioSelect = document.getElementById('f-barrio');
+    if (!comunaSelect || !barrioSelect) return;
+
     var opcionesBarrio = Array.prototype.slice.call(barrioSelect.options).map(function (o) {
         return { value: o.value, text: o.textContent, comuna: o.dataset.comuna, selected: o.selected };
     });
@@ -272,4 +320,4 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-<?php require_once '../../includes/coordterreno_footer.php'; ?>
+<?php require_once '../../includes/admin_footer.php'; ?>

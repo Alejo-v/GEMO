@@ -1,6 +1,6 @@
 <?php
-$pageTitle = 'GEMO | Reportes';
-require_once '../../includes/coordzoo_header.php';
+$pageTitle = 'GEMO | Reportes del zoocriadero';
+require_once '../../includes/admin_header.php';
 require_once '../../models/SeguimientoZoocriadero.php';
 require_once '../../models/Tanque.php';
 
@@ -32,7 +32,7 @@ $resumen = $modelo->obtenerResumenFiltrado($filtros);
 $serie = $modelo->obtenerSerieDiariaFiltrada($filtros);
 $registros = $modelo->obtenerRegistrosFiltrados($filtros);
 $resumenPorTanque = $modelo->obtenerResumenPorTanque($filtros);
-$reporteTanquesZoo = $modeloTanque->obtenerReportePorZoocriadero();
+$reporteTanquesZoo = $modeloTanque->obtenerReportePorZoocriadero($filtros['id_zoocriadero']);
 
 $totalVivos = (int) $resumen['total_vivos'];
 $totalMuertos = (int) $resumen['total_muertos'];
@@ -47,26 +47,37 @@ $etiquetasTanque = array_map(static fn($t) => '#' . (int) $t['id_tanque'], $resu
 $vivosTanque = array_map(static fn($t) => (int) $t['total_vivos'], $resumenPorTanque);
 $muertosTanque = array_map(static fn($t) => (int) $t['total_muertos'], $resumenPorTanque);
 
-$urlPdf = '../../controllers/ReporteController.php?accion=pdf'
-    . '&fecha_inicio=' . urlencode($filtros['fecha_inicio'])
-    . '&fecha_fin=' . urlencode($filtros['fecha_fin'])
-    . '&id_zoocriadero=' . urlencode($filtros['id_zoocriadero'])
-    . '&id_actividad=' . urlencode($filtros['id_actividad']);
+/**
+ * Cada reporte se descarga por separado: misma URL, cambia el parámetro
+ * "reporte" (1, 2, 3 o "todos"). Los filtros activos viajan siempre.
+ */
+function urlPdfZoo(array $filtros, string $reporte): string
+{
+    return '../../controllers/ReporteController.php?accion=pdf'
+        . '&reporte=' . urlencode($reporte)
+        . '&fecha_inicio=' . urlencode($filtros['fecha_inicio'])
+        . '&fecha_fin=' . urlencode($filtros['fecha_fin'])
+        . '&id_zoocriadero=' . urlencode($filtros['id_zoocriadero'])
+        . '&id_actividad=' . urlencode($filtros['id_actividad']);
+}
 ?>
 <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
     <div>
         <h3 class="fw-bold mb-1">Reportes del zoocriadero</h3>
-        <p class="text-muted mb-0">Los 3 reportes del proceso de Zoocriadero, con filtros por fechas, zoocriadero y actividad.</p>
+        <p class="text-muted mb-0">
+            Solo el proceso de Zoocriadero. Los reportes de terreno están en
+            <a href="reportes_terreno.php">su propia pantalla</a>.
+        </p>
     </div>
-    <a href="<?= htmlspecialchars($urlPdf) ?>" class="btn btn-gemo" target="_blank">
-        <i class="fas fa-file-pdf me-1"></i> Descargar PDF
+    <a href="<?= htmlspecialchars(urlPdfZoo($filtros, 'todos')) ?>" class="btn btn-outline-success" target="_blank">
+        <i class="fas fa-file-pdf me-1"></i> Descargar los 3 en un PDF
     </a>
 </div>
 
 <div class="card card-round mb-4">
     <div class="card-header"><h4 class="card-title">Filtros</h4></div>
     <div class="card-body">
-        <form method="get" action="reportes.php" class="row g-3 align-items-end">
+        <form method="get" action="reportes_zoocriadero.php" class="row g-3 align-items-end">
             <div class="col-sm-6 col-md-3">
                 <label class="form-label">Desde</label>
                 <input type="date" name="fecha_inicio" class="form-control" value="<?= htmlspecialchars($filtros['fecha_inicio']) ?>" max="<?= htmlspecialchars($hoy) ?>">
@@ -98,8 +109,8 @@ $urlPdf = '../../controllers/ReporteController.php?accion=pdf'
                 </select>
             </div>
             <div class="col-md-12 d-flex gap-2">
-                <button type="submit" class="btn btn-outline-success"><i class="fas fa-filter me-1"></i> Filtrar</button>
-                <a href="reportes.php" class="btn btn-secondary">Limpiar</a>
+                <button type="submit" class="btn btn-gemo"><i class="fas fa-filter me-1"></i> Filtrar</button>
+                <a href="reportes_zoocriadero.php" class="btn btn-secondary">Limpiar</a>
             </div>
         </form>
     </div>
@@ -199,8 +210,17 @@ $urlPdf = '../../controllers/ReporteController.php?accion=pdf'
     </div>
 </div>
 
+<!-- ================= Reporte 1 ================= -->
 <div class="card card-round mt-3 mb-4">
-    <div class="card-header"><h4 class="card-title">Reporte 1 — Seguimiento de actividades</h4></div>
+    <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div>
+            <h4 class="card-title mb-0">Reporte 1 — Seguimiento de actividades</h4>
+            <small class="text-muted">Filtrado por fechas, zoocriadero y actividad</small>
+        </div>
+        <a href="<?= htmlspecialchars(urlPdfZoo($filtros, '1')) ?>" class="btn btn-gemo btn-sm" target="_blank">
+            <i class="fas fa-file-pdf me-1"></i> Descargar reporte 1
+        </a>
+    </div>
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-hover align-middle">
@@ -246,10 +266,19 @@ $urlPdf = '../../controllers/ReporteController.php?accion=pdf'
     </div>
 </div>
 
+<!-- ================= Reporte 2 ================= -->
 <div class="row">
     <div class="col-md-7">
         <div class="card card-round mb-4">
-            <div class="card-header"><h4 class="card-title">Reporte 2 — Nacidos y muertos por tanque</h4></div>
+            <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div>
+                    <h4 class="card-title mb-0">Reporte 2 — Nacidos y muertos por tanque</h4>
+                    <small class="text-muted">Cuantificado tanque por tanque</small>
+                </div>
+                <a href="<?= htmlspecialchars(urlPdfZoo($filtros, '2')) ?>" class="btn btn-gemo btn-sm" target="_blank">
+                    <i class="fas fa-file-pdf me-1"></i> Descargar reporte 2
+                </a>
+            </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
@@ -304,8 +333,17 @@ $urlPdf = '../../controllers/ReporteController.php?accion=pdf'
     </div>
 </div>
 
+<!-- ================= Reporte 3 ================= -->
 <div class="card card-round mb-4">
-    <div class="card-header"><h4 class="card-title">Reporte 3 — Tanques por zoocriadero</h4></div>
+    <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div>
+            <h4 class="card-title mb-0">Reporte 3 — Tanques por zoocriadero</h4>
+            <small class="text-muted">Cantidad de tanques, tipo de tanque y encargado</small>
+        </div>
+        <a href="<?= htmlspecialchars(urlPdfZoo($filtros, '3')) ?>" class="btn btn-gemo btn-sm" target="_blank">
+            <i class="fas fa-file-pdf me-1"></i> Descargar reporte 3
+        </a>
+    </div>
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-hover align-middle">
@@ -438,4 +476,4 @@ $urlPdf = '../../controllers/ReporteController.php?accion=pdf'
 </script>
 <?php endif; ?>
 
-<?php require_once '../../includes/coordzoo_footer.php'; ?>
+<?php require_once '../../includes/admin_footer.php'; ?>

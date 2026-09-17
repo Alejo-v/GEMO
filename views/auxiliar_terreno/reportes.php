@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
             type: 'bar',
             data: {
                 labels: datosActividad.map(function (d) { return d.etiqueta; }),
-                datasets: [{ label: 'Registros', data: datosActividad.map(function (d) { return d.total; }), backgroundColor: '#2f855a' }]
+                datasets: [{ label: 'Registros', data: datosActividad.map(function (d) { return d.total; }), backgroundColor: '#1D63B3' }]
             },
             options: { legend: { display: false }, scales: { yAxes: [{ ticks: { beginAtZero: true, precision: 0 } }] } }
         });
@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function () {
             type: 'bar',
             data: {
                 labels: datosTipoDeposito.map(function (d) { return d.etiqueta; }),
-                datasets: [{ label: 'Registros', data: datosTipoDeposito.map(function (d) { return d.total; }), backgroundColor: '#14532d' }]
+                datasets: [{ label: 'Registros', data: datosTipoDeposito.map(function (d) { return d.total; }), backgroundColor: '#153D6B' }]
             },
             options: { legend: { display: false }, scales: { yAxes: [{ ticks: { beginAtZero: true, precision: 0 } }] } }
         });

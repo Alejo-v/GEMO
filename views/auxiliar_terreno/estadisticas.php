@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 datasets: [{
                     label: 'Registros',
                     data: datosTipoDeposito.map(function (d) { return d.total; }),
-                    backgroundColor: '#2f855a'
+                    backgroundColor: '#1D63B3'
                 }]
             },
             options: {
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 datasets: [{
                     label: 'Registros',
                     data: datosActividad.map(function (d) { return d.total; }),
-                    backgroundColor: '#14532d'
+                    backgroundColor: '#153D6B'
                 }]
             },
             options: {

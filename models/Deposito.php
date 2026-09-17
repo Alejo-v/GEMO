@@ -14,7 +14,7 @@ class Deposito
     public function obtenerTodos(): array
     {
         $sql = 'SELECT d.id_deposito, d.id_sitio, d.id_tipo_deposito, d.activo,
-                       td.descripcion AS tipo_deposito, st.direccion AS sitio_direccion
+                        td.descripcion AS tipo_deposito, st.direccion AS sitio_direccion
                 FROM deposito d
                 INNER JOIN tipo_deposito td ON td.id_tipo_deposito = d.id_tipo_deposito
                 INNER JOIN sitio_terreno st ON st.id_sitio = d.id_sitio
@@ -46,7 +46,7 @@ class Deposito
     public function obtenerTiposDeposito(): array
     {
         return $this->conexion->query(
-            'SELECT id_tipo_deposito, descripcion FROM tipo_deposito ORDER BY id_tipo_deposito'
+                'SELECT id_tipo_deposito, descripcion FROM tipo_deposito WHERE activo = TRUE ORDER BY id_tipo_deposito'
         )->fetchAll();
     }
 
@@ -68,7 +68,7 @@ class Deposito
     {
         $stmt = $this->conexion->prepare(
             'INSERT INTO deposito (id_sitio, id_tipo_deposito) VALUES (:id_sitio, :id_tipo_deposito)
-             RETURNING id_deposito'
+                RETURNING id_deposito'
         );
         $stmt->execute($datos);
         return (int) $stmt->fetchColumn();

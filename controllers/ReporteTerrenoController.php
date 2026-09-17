@@ -11,13 +11,31 @@ if (!isset($_SESSION['usuario_id']) || !in_array((int) ($_SESSION['usuario_rol_i
     exit;
 }
 
-$carpetaVista = (int) $_SESSION['usuario_rol_id'] === 5 ? 'coordinador_terreno' : 'admin';
+$esAdmin = (int) $_SESSION['usuario_rol_id'] === 1;
+// El admin ahora tiene una pantalla dedicada solo a terreno; el coordinador
+// sigue con su reportes.php de siempre.
+$paginaRetorno = $esAdmin
+    ? '../views/admin/reportes_terreno.php'
+    : '../views/coordinador_terreno/reportes.php';
 
 $accion = $_GET['accion'] ?? '';
 
 if ($accion !== 'pdf') {
-    header('Location: ../views/' . $carpetaVista . '/reportes.php');
+    header('Location: ' . $paginaRetorno);
     exit;
+}
+
+/**
+ * Qué reporte se va a imprimir. Cada uno se descarga por separado:
+ *   1 = detalle de sitios visitados
+ *   2 = registros por tipo de actividad
+ *   3 = actividades por auxiliar
+ *   4 = registros por tipo de depósito
+ *   todos = los cuatro en un mismo archivo (comportamiento anterior)
+ */
+$reporte = (string) ($_GET['reporte'] ?? 'todos');
+if (!in_array($reporte, ['1', '2', '3', '4', 'todos'], true)) {
+    $reporte = 'todos';
 }
 
 $filtros = [
@@ -27,6 +45,15 @@ $filtros = [
     'fecha_desde' => $_GET['fecha_desde'] ?? '',
     'fecha_hasta' => $_GET['fecha_hasta'] ?? '',
 ];
+
+foreach (['fecha_desde', 'fecha_hasta'] as $campoFecha) {
+    if ($filtros[$campoFecha] !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $filtros[$campoFecha])) {
+        $filtros[$campoFecha] = '';
+    }
+}
+if ($filtros['fecha_desde'] !== '' && $filtros['fecha_hasta'] !== '' && $filtros['fecha_desde'] > $filtros['fecha_hasta']) {
+    [$filtros['fecha_desde'], $filtros['fecha_hasta']] = [$filtros['fecha_hasta'], $filtros['fecha_desde']];
+}
 
 /**
  * FPDF (fuentes core tipo Helvetica) sólo soporta ISO-8859-1, por lo que el
@@ -50,12 +77,23 @@ function pdfCorta(string $texto, int $longitud): string
     return substr($texto, 0, $longitud);
 }
 
+$imprimeReporte1 = ($reporte === '1' || $reporte === 'todos');
+$imprimeReporte2 = ($reporte === '2' || $reporte === 'todos');
+$imprimeReporte3 = ($reporte === '3' || $reporte === 'todos');
+$imprimeReporte4 = ($reporte === '4' || $reporte === 'todos');
+
 try {
     $modelo = new ReporteTerreno();
+    // El reporte 1 también alimenta el resumen general (Aedes/pupas/Culex),
+    // por eso se consulta siempre.
     $reporteSitios = $modelo->reporteSitios($filtros);
-    $reporteActividad = $modelo->reportePorActividad($filtros);
-    $reporteAuxiliar = $modelo->reportePorAuxiliar($filtros);
-    $reporteTipoDeposito = $modelo->reportePorTipoDeposito($filtros);
+    $reporteActividad = $imprimeReporte2 ? $modelo->reportePorActividad($filtros) : [];
+    $reporteAuxiliar = $imprimeReporte3 ? $modelo->reportePorAuxiliar($filtros) : [];
+    $reporteTipoDeposito = $imprimeReporte4 ? $modelo->reportePorTipoDeposito($filtros) : [];
+
+    $comunas = $modelo->obtenerComunas();
+    $barrios = $modelo->obtenerBarrios();
+    $tiposDeposito = $modelo->obtenerTiposDeposito();
 } catch (Throwable $e) {
     http_response_code(500);
     die('No fue posible generar el reporte. Revise la configuración de PostgreSQL.');
@@ -65,20 +103,41 @@ $totalAedes = array_sum(array_column($reporteSitios, 'larvas_aedes'));
 $totalPupas = array_sum(array_column($reporteSitios, 'pupas'));
 $totalCulex = array_sum(array_column($reporteSitios, 'larvas_culex'));
 
+// Títulos y nombres de archivo propios de cada reporte.
+$titulosReporte = [
+    '1' => 'Reporte 1 - Detalle de sitios',
+    '2' => 'Reporte 2 - Registros por tipo de actividad',
+    '3' => 'Reporte 3 - Actividades por auxiliar',
+    '4' => 'Reporte 4 - Registros por tipo de deposito',
+    'todos' => 'Reportes de Terreno',
+];
+$archivosReporte = [
+    '1' => 'terreno_r1_detalle_sitios',
+    '2' => 'terreno_r2_por_actividad',
+    '3' => 'terreno_r3_por_auxiliar',
+    '4' => 'terreno_r4_por_tipo_deposito',
+    'todos' => 'terreno_reportes_completos',
+];
+
 class ReporteTerrenoPDF extends FPDF
 {
     public string $subtitulo = '';
+    public string $titulo = 'GEMO - Reporte de Terreno';
 
     public function Header(): void
     {
-        $this->SetFillColor(20, 83, 45);
+        $this->SetFillColor(21, 61, 107);
         $this->Rect(0, 0, 210, 24, 'F');
+        $logoAlcaldia = __DIR__ . '/../assets/img/branding/alcaldia-cali.jpg';
+        if (is_readable($logoAlcaldia)) {
+            $this->Image($logoAlcaldia, 188, 4, 16, 16, 'JPG');
+        }
         $this->SetTextColor(255, 255, 255);
         $this->SetXY(10, 6);
-        $this->SetFont('Helvetica', 'B', 16);
-        $this->Cell(0, 8, 'GEMO - Reporte de Terreno', 0, 1);
+        $this->SetFont('Helvetica', 'B', 15);
+        $this->Cell(0, 8, pdfTexto($this->titulo), 0, 1);
         $this->SetX(10);
-        $this->SetFont('Helvetica', '', 10);
+        $this->SetFont('Helvetica', '', 9);
         $this->Cell(0, 6, $this->subtitulo, 0, 1);
         $this->SetTextColor(0, 0, 0);
         $this->SetY(30);
@@ -107,23 +166,48 @@ class ReporteTerrenoPDF extends FPDF
     }
 }
 
+// Subtítulo con los filtros aplicados, ahora con los nombres reales y no
+// con el texto genérico "Comuna filtrada".
+$nombreComuna = '';
+foreach ($comunas as $c) {
+    if (!empty($filtros['id_comuna']) && (int) $c['id_comuna'] === (int) $filtros['id_comuna']) {
+        $nombreComuna = $c['nombre'];
+        break;
+    }
+}
+$nombreBarrio = '';
+foreach ($barrios as $b) {
+    if (!empty($filtros['id_barrio']) && (int) $b['id_barrio'] === (int) $filtros['id_barrio']) {
+        $nombreBarrio = $b['nombre'];
+        break;
+    }
+}
+$nombreTipoDeposito = '';
+foreach ($tiposDeposito as $t) {
+    if (!empty($filtros['id_tipo_deposito']) && (int) $t['id_tipo_deposito'] === (int) $filtros['id_tipo_deposito']) {
+        $nombreTipoDeposito = $t['descripcion'];
+        break;
+    }
+}
+
 $partesFiltro = [];
 if (!empty($filtros['fecha_desde']) || !empty($filtros['fecha_hasta'])) {
     $partesFiltro[] = 'Fechas: ' . ($filtros['fecha_desde'] ?: '...') . ' al ' . ($filtros['fecha_hasta'] ?: '...');
 }
-if (!empty($filtros['id_comuna'])) {
-    $partesFiltro[] = 'Comuna filtrada';
+if ($nombreComuna !== '') {
+    $partesFiltro[] = 'Comuna: ' . $nombreComuna;
 }
-if (!empty($filtros['id_barrio'])) {
-    $partesFiltro[] = 'Barrio filtrado';
+if ($nombreBarrio !== '') {
+    $partesFiltro[] = 'Barrio: ' . $nombreBarrio;
 }
-if (!empty($filtros['id_tipo_deposito'])) {
-    $partesFiltro[] = 'Tipo de deposito filtrado';
+if ($nombreTipoDeposito !== '') {
+    $partesFiltro[] = 'Tipo de deposito: ' . $nombreTipoDeposito;
 }
 $resumenFiltros = $partesFiltro ? implode('  -  ', $partesFiltro) : 'Sin filtros aplicados';
 
 $pdf = new ReporteTerrenoPDF();
 $pdf->AliasNbPages();
+$pdf->titulo = 'GEMO - ' . ($reporte === 'todos' ? 'Reportes de Terreno' : $titulosReporte[$reporte]);
 $pdf->subtitulo = pdfTexto($resumenFiltros . '  -  Generado: ' . date('d/m/Y H:i'));
 $pdf->SetMargins(10, 10, 10);
 $pdf->AddPage();
@@ -136,108 +220,124 @@ $pdf->filaResumen('Larvas Culex encontradas', (string) $totalCulex);
 $pdf->Ln(8);
 
 // ---- Reporte 2: por tipo de actividad ----
-$pdf->tituloSeccion('Reporte 2 - Registros por tipo de actividad');
-$pdf->SetFillColor(234, 245, 238);
-$pdf->SetFont('Helvetica', 'B', 9);
-$pdf->Cell(140, 7, pdfTexto('Actividad'), 1, 0, 'C', true);
-$pdf->Cell(50, 7, pdfTexto('Total registros'), 1, 1, 'C', true);
-$pdf->SetFont('Helvetica', '', 9);
-if (empty($reporteActividad)) {
-    $pdf->Cell(190, 8, pdfTexto('No hay datos con estos filtros.'), 1, 1, 'C');
+if ($imprimeReporte2) {
+    $pdf->tituloSeccion('Reporte 2 - Registros por tipo de actividad');
+    $pdf->SetFillColor(230, 236, 242);
+    $pdf->SetFont('Helvetica', 'B', 9);
+    $pdf->Cell(140, 7, pdfTexto('Actividad'), 1, 0, 'C', true);
+    $pdf->Cell(50, 7, pdfTexto('Total registros'), 1, 1, 'C', true);
+    $pdf->SetFont('Helvetica', '', 9);
+    if (empty($reporteActividad)) {
+        $pdf->Cell(190, 8, pdfTexto('No hay datos con estos filtros.'), 1, 1, 'C');
+    }
+    foreach ($reporteActividad as $a) {
+        if ($pdf->GetY() > 270) {
+            $pdf->AddPage();
+        }
+        $pdf->Cell(140, 7, pdfTexto($a['etiqueta']), 1);
+        $pdf->Cell(50, 7, (string) $a['total'], 1, 1, 'C');
+    }
+    $pdf->Ln(6);
 }
-foreach ($reporteActividad as $a) {
-    $pdf->Cell(140, 7, pdfTexto($a['etiqueta']), 1);
-    $pdf->Cell(50, 7, (string) $a['total'], 1, 1, 'C');
-}
-$pdf->Ln(6);
 
 // ---- Reporte 4: por tipo de depósito ----
-if ($pdf->GetY() > 240) {
-    $pdf->AddPage();
+if ($imprimeReporte4) {
+    if ($reporte === 'todos' && $pdf->GetY() > 240) {
+        $pdf->AddPage();
+    }
+    $pdf->tituloSeccion('Reporte 4 - Registros por tipo de deposito');
+    $pdf->SetFillColor(230, 236, 242);
+    $pdf->SetFont('Helvetica', 'B', 9);
+    $pdf->Cell(140, 7, pdfTexto('Tipo de deposito'), 1, 0, 'C', true);
+    $pdf->Cell(50, 7, pdfTexto('Total registros'), 1, 1, 'C', true);
+    $pdf->SetFont('Helvetica', '', 9);
+    if (empty($reporteTipoDeposito)) {
+        $pdf->Cell(190, 8, pdfTexto('No hay datos con estos filtros.'), 1, 1, 'C');
+    }
+    foreach ($reporteTipoDeposito as $t) {
+        if ($pdf->GetY() > 270) {
+            $pdf->AddPage();
+        }
+        $pdf->Cell(140, 7, pdfTexto($t['etiqueta']), 1);
+        $pdf->Cell(50, 7, (string) $t['total'], 1, 1, 'C');
+    }
+    $pdf->Ln(6);
 }
-$pdf->tituloSeccion('Reporte 4 - Registros por tipo de deposito');
-$pdf->SetFillColor(234, 245, 238);
-$pdf->SetFont('Helvetica', 'B', 9);
-$pdf->Cell(140, 7, pdfTexto('Tipo de deposito'), 1, 0, 'C', true);
-$pdf->Cell(50, 7, pdfTexto('Total registros'), 1, 1, 'C', true);
-$pdf->SetFont('Helvetica', '', 9);
-if (empty($reporteTipoDeposito)) {
-    $pdf->Cell(190, 8, pdfTexto('No hay datos con estos filtros.'), 1, 1, 'C');
-}
-foreach ($reporteTipoDeposito as $t) {
-    $pdf->Cell(140, 7, pdfTexto($t['etiqueta']), 1);
-    $pdf->Cell(50, 7, (string) $t['total'], 1, 1, 'C');
-}
-$pdf->Ln(6);
 
 // ---- Reporte 3: por auxiliar ----
-if ($pdf->GetY() > 220) {
-    $pdf->AddPage();
-}
-$pdf->tituloSeccion('Reporte 3 - Actividades por auxiliar');
-$pdf->SetFillColor(234, 245, 238);
-$pdf->SetFont('Helvetica', 'B', 9);
-$pdf->Cell(60, 7, pdfTexto('Auxiliar'), 1, 0, 'C', true);
-$pdf->Cell(25, 7, pdfTexto('Total'), 1, 0, 'C', true);
-$pdf->Cell(105, 7, pdfTexto('Detalle por actividad'), 1, 1, 'C', true);
-$pdf->SetFont('Helvetica', '', 8);
-if (empty($reporteAuxiliar)) {
-    $pdf->Cell(190, 8, pdfTexto('No hay datos con estos filtros.'), 1, 1, 'C');
-}
-foreach ($reporteAuxiliar as $aux) {
-    if ($pdf->GetY() > 270) {
+if ($imprimeReporte3) {
+    if ($reporte === 'todos' && $pdf->GetY() > 220) {
         $pdf->AddPage();
     }
-    $pdf->Cell(60, 7, pdfTexto(pdfCorta($aux['auxiliar'], 34)), 1);
-    $pdf->Cell(25, 7, (string) $aux['total'], 1, 0, 'C');
-    $pdf->Cell(105, 7, pdfTexto(pdfCorta(implode(' | ', $aux['actividades']), 60)), 1, 1);
+    $pdf->tituloSeccion('Reporte 3 - Actividades por auxiliar');
+    $pdf->SetFillColor(230, 236, 242);
+    $pdf->SetFont('Helvetica', 'B', 9);
+    $pdf->Cell(60, 7, pdfTexto('Auxiliar'), 1, 0, 'C', true);
+    $pdf->Cell(25, 7, pdfTexto('Total'), 1, 0, 'C', true);
+    $pdf->Cell(105, 7, pdfTexto('Detalle por actividad'), 1, 1, 'C', true);
+    $pdf->SetFont('Helvetica', '', 8);
+    if (empty($reporteAuxiliar)) {
+        $pdf->Cell(190, 8, pdfTexto('No hay datos con estos filtros.'), 1, 1, 'C');
+    }
+    foreach ($reporteAuxiliar as $aux) {
+        if ($pdf->GetY() > 270) {
+            $pdf->AddPage();
+        }
+        $pdf->Cell(60, 7, pdfTexto(pdfCorta($aux['auxiliar'], 34)), 1);
+        $pdf->Cell(25, 7, (string) $aux['total'], 1, 0, 'C');
+        $pdf->Cell(105, 7, pdfTexto(pdfCorta(implode(' | ', $aux['actividades']), 60)), 1, 1);
+    }
+    $pdf->Ln(6);
 }
-$pdf->Ln(6);
 
 // ---- Reporte 1: detalle de sitios ----
-$pdf->AddPage();
-$pdf->tituloSeccion('Reporte 1 - Detalle de sitios');
-
-$anchos = [16, 30, 20, 18, 22, 22, 12, 12, 12, 26];
-$encabezados = ['Fecha', 'Sitio', 'Barrio', 'Comuna', 'Tipo', 'Actividad', 'Aedes', 'Pupas', 'Culex', 'Auxiliar'];
-
-$pdf->SetFillColor(234, 245, 238);
-$pdf->SetFont('Helvetica', 'B', 7);
-foreach ($encabezados as $i => $h) {
-    $pdf->Cell($anchos[$i], 7, pdfTexto($h), 1, 0, 'C', true);
-}
-$pdf->Ln();
-
-$pdf->SetFont('Helvetica', '', 7);
-if (empty($reporteSitios)) {
-    $pdf->Cell(array_sum($anchos), 8, pdfTexto('No hay registros con estos filtros.'), 1, 1, 'C');
-}
-
-foreach ($reporteSitios as $r) {
-    if ($pdf->GetY() > 270) {
+if ($imprimeReporte1) {
+    if ($reporte === 'todos') {
         $pdf->AddPage();
-        $pdf->SetFillColor(234, 245, 238);
-        $pdf->SetFont('Helvetica', 'B', 7);
-        foreach ($encabezados as $i => $h) {
-            $pdf->Cell($anchos[$i], 7, pdfTexto($h), 1, 0, 'C', true);
-        }
-        $pdf->Ln();
-        $pdf->SetFont('Helvetica', '', 7);
+    }
+    $pdf->tituloSeccion('Reporte 1 - Detalle de sitios');
+
+    $anchos = [16, 30, 20, 18, 22, 22, 12, 12, 12, 26];
+    $encabezados = ['Fecha', 'Sitio', 'Barrio', 'Comuna', 'Tipo', 'Actividad', 'Aedes', 'Pupas', 'Culex', 'Auxiliar'];
+
+    $pdf->SetFillColor(230, 236, 242);
+    $pdf->SetFont('Helvetica', 'B', 7);
+    foreach ($encabezados as $i => $h) {
+        $pdf->Cell($anchos[$i], 7, pdfTexto($h), 1, 0, 'C', true);
+    }
+    $pdf->Ln();
+
+    $pdf->SetFont('Helvetica', '', 7);
+    if (empty($reporteSitios)) {
+        $pdf->Cell(array_sum($anchos), 8, pdfTexto('No hay registros con estos filtros.'), 1, 1, 'C');
     }
 
-    $pdf->Cell($anchos[0], 6, date('d/m/Y', strtotime($r['fecha'])), 1);
-    $pdf->Cell($anchos[1], 6, pdfTexto(pdfCorta((string) $r['direccion'], 18)), 1);
-    $pdf->Cell($anchos[2], 6, pdfTexto(pdfCorta((string) ($r['barrios'] ?? '-'), 12)), 1);
-    $pdf->Cell($anchos[3], 6, pdfTexto(pdfCorta((string) ($r['comunas'] ?? '-'), 10)), 1);
-    $pdf->Cell($anchos[4], 6, pdfTexto(pdfCorta((string) $r['tipo_deposito'], 14)), 1);
-    $pdf->Cell($anchos[5], 6, pdfTexto(pdfCorta((string) $r['actividad'], 14)), 1);
-    $pdf->Cell($anchos[6], 6, (string) $r['larvas_aedes'], 1, 0, 'C');
-    $pdf->Cell($anchos[7], 6, (string) $r['pupas'], 1, 0, 'C');
-    $pdf->Cell($anchos[8], 6, (string) $r['larvas_culex'], 1, 0, 'C');
-    $pdf->Cell($anchos[9], 6, pdfTexto(pdfCorta((string) $r['auxiliar'], 16)), 1);
-    $pdf->Ln();
+    foreach ($reporteSitios as $r) {
+        if ($pdf->GetY() > 270) {
+            $pdf->AddPage();
+            $pdf->SetFillColor(230, 236, 242);
+            $pdf->SetFont('Helvetica', 'B', 7);
+            foreach ($encabezados as $i => $h) {
+                $pdf->Cell($anchos[$i], 7, pdfTexto($h), 1, 0, 'C', true);
+            }
+            $pdf->Ln();
+            $pdf->SetFont('Helvetica', '', 7);
+        }
+
+        $pdf->Cell($anchos[0], 6, date('d/m/Y', strtotime($r['fecha'])), 1);
+        $pdf->Cell($anchos[1], 6, pdfTexto(pdfCorta((string) $r['direccion'], 18)), 1);
+        $pdf->Cell($anchos[2], 6, pdfTexto(pdfCorta((string) ($r['barrios'] ?? '-'), 12)), 1);
+        $pdf->Cell($anchos[3], 6, pdfTexto(pdfCorta((string) ($r['comunas'] ?? '-'), 10)), 1);
+        $pdf->Cell($anchos[4], 6, pdfTexto(pdfCorta((string) $r['tipo_deposito'], 14)), 1);
+        $pdf->Cell($anchos[5], 6, pdfTexto(pdfCorta((string) $r['actividad'], 14)), 1);
+        $pdf->Cell($anchos[6], 6, (string) $r['larvas_aedes'], 1, 0, 'C');
+        $pdf->Cell($anchos[7], 6, (string) $r['pupas'], 1, 0, 'C');
+        $pdf->Cell($anchos[8], 6, (string) $r['larvas_culex'], 1, 0, 'C');
+        $pdf->Cell($anchos[9], 6, pdfTexto(pdfCorta((string) $r['auxiliar'], 16)), 1);
+        $pdf->Ln();
+    }
 }
 
-$nombreArchivo = 'reporte_terreno_gemo_' . date('Y-m-d') . '.pdf';
+$nombreArchivo = $archivosReporte[$reporte] . '_' . date('Y-m-d') . '.pdf';
 $pdf->Output('D', $nombreArchivo);
 exit;
