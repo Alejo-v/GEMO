@@ -124,7 +124,6 @@ $traverser = new NodeTraverser();
 $traverser->addVisitor(new class extends NodeVisitorAbstract {
     public function enterNode(Node $node) {
         if ($node instanceof Function_) {
-            // Clean out the function body
             $node->stmts = [];
         }
     }

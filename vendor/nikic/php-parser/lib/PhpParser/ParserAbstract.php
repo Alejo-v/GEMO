@@ -192,9 +192,6 @@ abstract class ParserAbstract implements Parser {
         $this->tokens = $this->lexer->tokenize($code, $this->errorHandler);
         $result = $this->doParse();
 
-        // Report errors for any empty elements used inside arrays. This is delayed until after the main parse,
-        // because we don't know a priori whether a given array expression will be used in a destructuring context
-        // or not.
         foreach ($this->createdArrays as $node) {
             foreach ($node->items as $item) {
                 if ($item->value instanceof Expr\Error) {
@@ -204,8 +201,6 @@ abstract class ParserAbstract implements Parser {
             }
         }
 
-        // Clear out some of the interior state, so we don't hold onto unnecessary
-        // memory between uses of the parser
         $this->tokenStartStack = [];
         $this->tokenEndStack = [];
         $this->semStack = [];
@@ -227,29 +222,22 @@ abstract class ParserAbstract implements Parser {
 
     /** @return Stmt[]|null */
     protected function doParse(): ?array {
-        // We start off with no lookahead-token
         $symbol = self::SYMBOL_NONE;
         $tokenValue = null;
         $this->tokenPos = -1;
 
-        // Keep stack of start and end attributes
         $this->tokenStartStack = [];
         $this->tokenEndStack = [0];
-
-        // Start off in the initial state and keep a stack of previous states
         $state = 0;
         $stateStack = [$state];
 
-        // Semantic value stack (contains values of tokens and semantic action results)
         $this->semStack = [];
 
-        // Current position in the stack(s)
         $stackPos = 0;
 
         $this->errorState = 0;
 
         for (;;) {
-            //$this->traceNewState($state, $symbol);
 
             if ($this->actionBase[$state] === 0) {
                 $rule = $this->actionDefault[$state];
@@ -260,7 +248,6 @@ abstract class ParserAbstract implements Parser {
                         $tokenId = $token->id;
                     } while (isset($this->dropTokens[$tokenId]));
 
-                    // Map the lexer token id to the internally used symbols.
                     $tokenValue = $token->text;
                     if (!isset($this->phpTokenToSymbol[$tokenId])) {
                         throw new \RangeException(sprintf(
@@ -270,7 +257,6 @@ abstract class ParserAbstract implements Parser {
                     }
                     $symbol = $this->phpTokenToSymbol[$tokenId];
 
-                    //$this->traceRead($symbol);
                 }
 
                 $idx = $this->actionBase[$state] + $symbol;
@@ -279,16 +265,7 @@ abstract class ParserAbstract implements Parser {
                          && ($idx = $this->actionBase[$state + $this->numNonLeafStates] + $symbol) >= 0
                          && $idx < $this->actionTableSize && $this->actionCheck[$idx] === $symbol))
                     && ($action = $this->action[$idx]) !== $this->defaultAction) {
-                    /*
-                     * >= numNonLeafStates: shift and reduce
-                     * > 0: shift
-                     * = 0: accept
-                     * < 0: reduce
-                     * = -YYUNEXPECTED: error
-                     */
                     if ($action > 0) {
-                        /* shift */
-                        //$this->traceShift($symbol);
 
                         ++$stackPos;
                         $stateStack[$stackPos] = $state = $action;
@@ -304,8 +281,6 @@ abstract class ParserAbstract implements Parser {
                         if ($action < $this->numNonLeafStates) {
                             continue;
                         }
-
-                        /* $yyn >= numNonLeafStates means shift-and-reduce */
                         $rule = $action - $this->numNonLeafStates;
                     } else {
                         $rule = -$action;
@@ -317,13 +292,9 @@ abstract class ParserAbstract implements Parser {
 
             for (;;) {
                 if ($rule === 0) {
-                    /* accept */
-                    //$this->traceAccept();
                     return $this->semValue;
                 }
                 if ($rule !== $this->unexpectedTokenRule) {
-                    /* reduce */
-                    //$this->traceReduce($rule);
 
                     $ruleLength = $this->ruleToLength[$rule];
                     try {
@@ -339,11 +310,9 @@ abstract class ParserAbstract implements Parser {
                         }
 
                         $this->emitError($e);
-                        // Can't recover from this type of error
                         return null;
                     }
 
-                    /* Goto - shift nonterminal */
                     $lastTokenEnd = $this->tokenEndStack[$stackPos];
                     $stackPos -= $ruleLength;
                     $nonTerminal = $this->ruleToNonTerminal[$rule];
@@ -359,7 +328,6 @@ abstract class ParserAbstract implements Parser {
                     $this->semStack[$stackPos] = $this->semValue;
                     $this->tokenEndStack[$stackPos] = $lastTokenEnd;
                     if ($ruleLength === 0) {
-                        // Empty productions use the start attributes of the lookahead token.
                         $this->tokenStartStack[$stackPos] = $this->tokenPos;
                     }
                 } else {

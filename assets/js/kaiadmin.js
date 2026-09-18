@@ -10,10 +10,10 @@ $(".nav-search .input-group > input").focus(function(e){
 });
 
 $(function () {
-// Show Tooltip
+
 	const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
 	const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-	// Show Popover
+	
 	const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
 	const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
 	layoutsColors();
@@ -292,7 +292,7 @@ $(document).ready(function(){
 		}
 	});
 
-	// addClass if nav-item click and has subnav
+	
 
 	$(".nav-item a").on('click', (function(){
 		if ( $(this).parent().find('.collapse').hasClass("show") ) {
@@ -303,7 +303,7 @@ $(document).ready(function(){
 	}));
 
 
-	//Chat Open
+	
 	$('.messages-contact .user a').on('click', function(){
 		$('.tab-chat').addClass('show-chat')
 	});
@@ -312,13 +312,12 @@ $(document).ready(function(){
 		$('.tab-chat').removeClass('show-chat')
 	});
 
-	//select all
 	$('[data-select="checkbox"]').change(function(){
 		var target = $(this).attr('data-target');
 		$(target).prop('checked', $(this).prop("checked"));
 	})
 
-	//form-group-default active if input focus
+	
 	$(".form-group-default .form-control").focus(function(){
 		$(this).parent().addClass("active");
 	}).blur(function(){
@@ -327,7 +326,7 @@ $(document).ready(function(){
 
 });
 
-// Input File Image
+
 
 function readURL(input) {
 	if (input.files && input.files[0]) {
@@ -345,7 +344,7 @@ $('.input-file-image input[type="file"').change(function () {
 	readURL(this);
 });
 
-// Show Password
+
 
 function showPassword(button) {
 	var inputPassword = $(button).parent().find('input');
@@ -360,7 +359,6 @@ $('.show-password').on('click', function(){
 	showPassword(this);
 })
 
-// Sign In & Sign Up
 var containerSignIn = $('.container-login'),
 containerSignUp = $('.container-signup'),
 showSignIn = true,
@@ -394,7 +392,7 @@ $('#show-signin').on('click', function(){
 
 changeContainer();
 
-//Input with Floating Label
+
 
 $('.form-floating-label .form-control').keyup(function(){
 	if($(this).val() !== '') {

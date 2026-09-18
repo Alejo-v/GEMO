@@ -41,7 +41,6 @@ class Lexer {
     private function handleInvalidCharacter(Token $token, ErrorHandler $errorHandler): void {
         $chr = $token->text;
         if ($chr === "\0") {
-            // PHP cuts error message after null byte, so need special case
             $errorMsg = 'Unexpected null byte';
         } else {
             $errorMsg = sprintf(
@@ -67,15 +66,9 @@ class Lexer {
      * @param list<Token> $tokens
      */
     protected function postprocessTokens(array &$tokens, ErrorHandler $errorHandler): void {
-        // This function reports errors (bad characters and unterminated comments) in the token
-        // array, and performs certain canonicalizations:
-        //  * Use PHP 8.1 T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG and
-        //    T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG tokens used to disambiguate intersection types.
-        //  * Add a sentinel token with ID 0.
 
         $numTokens = \count($tokens);
         if ($numTokens === 0) {
-            // Empty input edge case: Just add the sentinel token.
             $tokens[] = new Token(0, "\0", 1, 0);
             return;
         }
@@ -99,7 +92,6 @@ class Lexer {
             }
         }
 
-        // Check for unterminated comment
         $lastToken = $tokens[$numTokens - 1];
         if ($this->isUnterminatedComment($lastToken)) {
             $errorHandler->handleError(new Error('Unterminated comment', [
@@ -110,7 +102,6 @@ class Lexer {
             ]));
         }
 
-        // Add sentinel token.
         $tokens[] = new Token(0, "\0", $lastToken->getEndLine(), $lastToken->getEndPos());
     }
 }

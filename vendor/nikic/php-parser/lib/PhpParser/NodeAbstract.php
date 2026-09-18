@@ -136,14 +136,11 @@ abstract class NodeAbstract implements Node, \JsonSerializable {
         $comments = $this->getComments();
         for ($i = count($comments) - 1; $i >= 0; $i--) {
             if ($comments[$i] instanceof Comment\Doc) {
-                // Replace existing doc comment.
                 $comments[$i] = $docComment;
                 $this->setAttribute('comments', $comments);
                 return;
             }
         }
-
-        // Append new doc comment.
         $comments[] = $docComment;
         $this->setAttribute('comments', $comments);
     }

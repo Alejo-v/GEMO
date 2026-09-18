@@ -165,15 +165,6 @@ const modalShowcase = `
 <!-- End Demo Showcase -->
 `;
 
-// window.addEventListener('load', function(event) {
-//   $("body").append(modalShowcase);
-
-//   const myModal = new bootstrap.Modal("#modalShowcase");
-//   myModal.show();
-// });
-
-
-// Cicle Chart
 Circles.create({
 	id:           'task-complete',
 	radius:       50,
@@ -189,7 +180,7 @@ Circles.create({
 	styleText:    true
 })
 
-//Notify
+
 $.notify({
 	icon: 'icon-bell',
 	title: 'Kaiadmin',
@@ -203,7 +194,7 @@ $.notify({
 	time: 1000,
 });
 
-// Jsvectormap
+
 var world_map = new jsVectorMap({
 	selector: "#world-map",
 	map: "world",
@@ -265,7 +256,7 @@ var world_map = new jsVectorMap({
 	}
 });
 
-//Chart
+
 
 var ctx = document.getElementById('statisticsChart').getContext('2d');
 
@@ -364,10 +355,9 @@ var statisticsChart = new Chart(ctx, {
 
 var myLegendContainer = document.getElementById("myChartLegend");
 
-// generate HTML legend
 myLegendContainer.innerHTML = statisticsChart.generateLegend();
 
-// bind onClick event to all LI-tags of the legend
+
 var legendItems = myLegendContainer.getElementsByTagName('li');
 for (var i = 0; i < legendItems.length; i += 1) {
 	legendItems[i].addEventListener("click", legendClickCallback, false);

@@ -151,7 +151,6 @@ The `PropertyNameMatcher` will match a property by its name:
 ```php
 use DeepCopy\Matcher\PropertyNameMatcher;
 
-// Will apply a filter to any property of any objects named "id"
 $matcher = new PropertyNameMatcher('id');
 ```
 
@@ -163,7 +162,6 @@ The `PropertyMatcher` will match a specific property of a specific class:
 ```php
 use DeepCopy\Matcher\PropertyMatcher;
 
-// Will apply a filter to the property "id" of any objects of the class "MyClass"
 $matcher = new PropertyMatcher('MyClass', 'id');
 ```
 
@@ -176,7 +174,6 @@ The `TypeMatcher` will match any element by its type (instance of a class or any
 ```php
 use DeepCopy\TypeMatcher\TypeMatcher;
 
-// Will apply a filter to any object that is an instance of Doctrine\Common\Collections\Collection
 $matcher = new TypeMatcher('Doctrine\Common\Collections\Collection');
 ```
 
@@ -225,7 +222,6 @@ $copier = new DeepCopy();
 $copier->addFilter(new KeepFilter(), new PropertyMatcher('MyClass', 'category'));
 
 $copy = $copier->copy($object);
-// $copy->category has not been touched
 ```
 
 
@@ -288,7 +284,6 @@ $copier->addFilter(new DoctrineEmptyCollectionFilter(), new PropertyMatcher('MyC
 
 $copy = $copier->copy($object);
 
-// $copy->myProperty will return an empty collection
 ```
 
 
@@ -312,7 +307,6 @@ $copier->addFilter(new ChainableFilter(new DoctrineProxyFilter()), new DoctrineP
 
 $copy = $copier->copy($object);
 
-// $copy should now contain a clone of all entities, including those that were not yet fully loaded.
 ```
 
 
@@ -333,7 +327,6 @@ $copier->addFilter(new ReplaceFilter($callback), new PropertyMatcher('MyClass', 
 
 $copy = $copier->copy($object);
 
-// $copy->title will contain the data returned by the callback, e.g. 'The title (copy)'
 ```
 
 2. If you want to replace whole element:
@@ -351,7 +344,7 @@ $copier->addTypeFilter(new ReplaceFilter($callback), new TypeMatcher('MyClass'))
 
 $copy = $copier->copy([new MyClass, 'some string', new MyClass]);
 
-// $copy will contain ['MyClass', 'some string', 'MyClass']
+
 ```
 
 
@@ -375,7 +368,6 @@ $this->deepCopy->addTypeFilter(
 );
 
 $myServiceWithMocks = new MyService(m::mock(MyDependency1::class), m::mock(MyDependency2::class));
-// All mocks will be just cloned, not deep copied
 ```
 
 

@@ -42,7 +42,7 @@ unset($_SESSION['error_login'], $_SESSION['recuperacion_exito_login']);
     campo.focus();
   });
 
-  // Al enviar el formulario se vuelve a ocultar el texto, por seguridad.
+
   var formulario = campo.closest('form');
   if (formulario) {
     formulario.addEventListener('submit', function () { campo.type = 'password'; });
