@@ -158,6 +158,4 @@ class UsuarioTest extends TestCase
         
         $this->assertEquals(1, $intentosActuales, "La base de datos debió sumar 1 a la columna intentos.");
     }
-
-
 }
