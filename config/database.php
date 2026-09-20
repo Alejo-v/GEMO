@@ -8,6 +8,15 @@ class Database
     private string $username = 'postgres';
     private string $password = 'kevin1913';
 
+    public function __construct()
+    {
+        $this->host     = getenv('DB_HOST') ?: 'localhost';
+        $this->port     = getenv('DB_PORT') ?: '5432';
+        $this->dbname   = getenv('DB_NAME') ?: 'bd_gemo';
+        $this->username = getenv('DB_USER') ?: 'postgres';
+        $this->password = getenv('DB_PASS') ?: 'aleCV12';
+    }
+
     public function conectar(): PDO
     {
         $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->dbname}";
