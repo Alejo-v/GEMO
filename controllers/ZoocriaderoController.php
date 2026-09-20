@@ -26,6 +26,7 @@ try {
         $orientacion = trim($_POST['orientacion'] ?? '');
         $numeroPlaca = trim($_POST['numero_placa'] ?? '');
         $letraPlaca = strtoupper(trim($_POST['letra_placa'] ?? ''));
+        $numeroMetros = trim($_POST['numero_metros'] ?? '');
         $complemento = trim($_POST['complemento'] ?? '');
         $idUsuario = (int) ($_POST['id_usuario'] ?? 0);
         $idBarrio = (int) ($_POST['id_barrio'] ?? 0);
@@ -38,8 +39,9 @@ try {
         if ($orientacion !== '' && !in_array($orientacion, $orientaciones, true)) volverZoocriaderoConError('La orientación no es válida.');
         if (!preg_match('/^[0-9]{1,4}$/', $numeroPlaca)) volverZoocriaderoConError('El número de placa debe contener entre 1 y 4 dígitos.');
         if ($letraPlaca !== '' && !preg_match('/^[A-Z]{1,2}$/', $letraPlaca)) volverZoocriaderoConError('La letra de la placa no es válida.');
+        if (!preg_match('/^[0-9]{1,4}$/', $numeroMetros)) volverZoocriaderoConError('El número después del guion debe contener entre 1 y 4 dígitos.');
         if ($complemento !== '' && (mb_strlen($complemento) > 20 || !preg_match('/^[\p{L}\p{N} .#\/\-]+$/u', $complemento))) volverZoocriaderoConError('El complemento de la dirección contiene caracteres no válidos.');
-        $direccion = $tipoVia . ' ' . $numeroVia . $letraVia . ($orientacion !== '' ? ' ' . $orientacion : '') . ' # ' . $numeroPlaca . $letraPlaca . ($complemento !== '' ? '-' . $complemento : '');
+        $direccion = $tipoVia . ' ' . $numeroVia . $letraVia . ($orientacion !== '' ? ' ' . $orientacion : '') . ' # ' . $numeroPlaca . $letraPlaca . '-' . $numeroMetros . ($complemento !== '' ? ' ' . $complemento : '');
         if (mb_strlen($direccion) > 50) volverZoocriaderoConError('La dirección completa no puede superar 50 caracteres.');
 
         if ($idBarrio <= 0 || !$modelo->barrioExiste($idBarrio)) {

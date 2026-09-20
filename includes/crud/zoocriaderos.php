@@ -32,14 +32,15 @@ $exito = $_SESSION['zoocriadero_exito'] ?? null; unset($_SESSION['zoocriadero_ex
                     <div class="row g-2">
                         <div class="col-md-3"><label class="form-label small">Tipo de vía *</label><select name="tipo_via" id="f-tipo_via" class="form-select" required><option value="">Seleccione</option><option>Calle</option><option>Carrera</option><option>Avenida</option><option>Diagonal</option><option>Transversal</option><option>Circular</option><option>Autopista</option><option>Vía</option><option>Kilómetro</option></select></div>
                         <div class="col-md-2"><label class="form-label small">Número *</label><input type="text" name="numero_via" id="f-numero_via" class="form-control" maxlength="4" pattern="[0-9]{1,4}" inputmode="numeric" required></div>
-                        <div class="col-md-2"><label class="form-label small">Letra</label><input type="text" name="letra_via" id="f-letra_via" class="form-control" maxlength="2" pattern="[A-Za-z]{1,2}"></div>
+                        <div class="col-md-1"><label class="form-label small">Letra</label><input type="text" name="letra_via" id="f-letra_via" class="form-control" maxlength="2" pattern="[A-Za-z]{1,2}"></div>
                         <div class="col-md-2"><label class="form-label small">Orientación</label><select name="orientacion" id="f-orientacion" class="form-select"><option value="">Sin orientación</option><option>Norte</option><option>Sur</option><option>Este</option><option>Oeste</option></select></div>
-                        <div class="col-md-2"><label class="form-label small">Placa *</label><input type="text" name="numero_placa" id="f-numero_placa" class="form-control" maxlength="4" pattern="[0-9]{1,4}" inputmode="numeric" required></div>
+                        <div class="col-md-1"><label class="form-label small">Placa *</label><input type="text" name="numero_placa" id="f-numero_placa" class="form-control" maxlength="4" pattern="[0-9]{1,4}" inputmode="numeric" required></div>
                         <div class="col-md-1"><label class="form-label small">Letra</label><input type="text" name="letra_placa" id="f-letra_placa" class="form-control" maxlength="2" pattern="[A-Za-z]{1,2}"></div>
+                        <div class="col-md-2"><label class="form-label small">Metros *</label><input type="text" name="numero_metros" id="f-numero_metros" class="form-control" maxlength="4" pattern="[0-9]{1,4}" inputmode="numeric" required></div>
                         <div class="col-12"><label class="form-label small">Complemento / sede (opcional)</label><input type="text" name="complemento" id="f-complemento" class="form-control" maxlength="20" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü0-9 .#\-/]+"></div>
                     </div>
                     <input type="hidden" name="direccion" id="f-direccion">
-                    <small class="text-muted">Ejemplo: Carrera 15 # 8-30. La dirección se guarda completa en el campo existente de la base de datos.</small>
+                    <small class="text-muted">Ejemplo: Carrera 15 # 8-30</small>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Barrio *</label>
@@ -129,6 +130,7 @@ function nuevoZoocriadero() {
     document.getElementById('f-orientacion').value = '';
     document.getElementById('f-numero_placa').value = '';
     document.getElementById('f-letra_placa').value = '';
+    document.getElementById('f-numero_metros').value = '';
     document.getElementById('f-complemento').value = '';
     document.getElementById('f-direccion').value = '';
     document.getElementById('f-id_barrio').value = '';
@@ -150,19 +152,24 @@ function editarZoocriadero(zoocriadero) {
 
 function cargarDireccion(direccion) {
     var d = String(direccion || '').trim();
-    var m = d.match(/^(Calle|Carrera|Avenida|Diagonal|Transversal|Circular|Autopista|Vía|Via|Kilómetro)\s+([0-9]{1,4})([A-Za-z]{1,2})?(?:\s+(Norte|Sur|Este|Oeste))?\s*#\s*([0-9]{1,4})([A-Za-z]{1,2})?\s*[- ]\s*([0-9]{1,4})(?:\s+(.*))?$/i);
-    if (!m) { alert('La dirección existente no tiene el formato estructurado esperado. Revísela antes de guardar.'); return; }
+    var m = d.match(/^(Calle|Carrera|Avenida|Diagonal|Transversal|Circular|Autopista|Vía|Via|Kilómetro)\s+([0-9]{1,4})([A-Za-z]{1,2})?(?:\s+(Norte|Sur|Este|Oeste))?\s*#\s*([0-9]{1,4})([A-Za-z]{1,2})?\s*-\s*([0-9]{1,4})(?:\s+(.*))?$/i);
+    if (!m) {
+        alert('La dirección existente no tiene el formato estructurado esperado. Revísela antes de guardar.');
+        ['f-tipo_via','f-numero_via','f-letra_via','f-orientacion','f-numero_placa','f-letra_placa','f-numero_metros','f-complemento'].forEach(function(id){ document.getElementById(id).value=''; });
+        return;
+    }
     document.getElementById('f-tipo_via').value = m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase();
     document.getElementById('f-numero_via').value = m[2];
     document.getElementById('f-letra_via').value = m[3] || '';
     document.getElementById('f-orientacion').value = m[4] ? m[4].charAt(0).toUpperCase() + m[4].slice(1).toLowerCase() : '';
     document.getElementById('f-numero_placa').value = m[5];
     document.getElementById('f-letra_placa').value = m[6] || '';
+    document.getElementById('f-numero_metros').value = m[7];
     document.getElementById('f-complemento').value = m[8] || '';
 }
 function construirDireccion() {
-    var tipo=document.getElementById('f-tipo_via').value.trim(), numero=document.getElementById('f-numero_via').value.trim(), letra=document.getElementById('f-letra_via').value.trim().toUpperCase(), orientacion=document.getElementById('f-orientacion').value.trim(), placa=document.getElementById('f-numero_placa').value.trim(), letraPlaca=document.getElementById('f-letra_placa').value.trim().toUpperCase(), complemento=document.getElementById('f-complemento').value.trim();
-    var direccion=tipo+' '+numero+letra+(orientacion?' '+orientacion:'')+' # '+placa+letraPlaca+(complemento?'-'+complemento:'');
+    var tipo=document.getElementById('f-tipo_via').value.trim(), numero=document.getElementById('f-numero_via').value.trim(), letra=document.getElementById('f-letra_via').value.trim().toUpperCase(), orientacion=document.getElementById('f-orientacion').value.trim(), placa=document.getElementById('f-numero_placa').value.trim(), letraPlaca=document.getElementById('f-letra_placa').value.trim().toUpperCase(), numeroMetros=document.getElementById('f-numero_metros').value.trim(), complemento=document.getElementById('f-complemento').value.trim();
+    var direccion=tipo+' '+numero+letra+(orientacion?' '+orientacion:'')+' # '+placa+letraPlaca+'-'+numeroMetros+(complemento?' '+complemento:'');
     document.getElementById('f-direccion').value=direccion; return direccion;
 }
 document.getElementById('form-zoocriadero').addEventListener('submit',function(e){if(construirDireccion().length>50){e.preventDefault();alert('La dirección completa no puede superar 50 caracteres.');}});
