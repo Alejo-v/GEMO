@@ -1,12 +1,7 @@
 <?php
-/**
- * Contenido de la página "Acerca de GEMO".
- * Es compartido por los 6 roles: cada vista solo incluye su header, este archivo y su footer.
- * Para cambiar nombres o agregar personas, edite únicamente los arreglos de abajo.
- */
 $acercaDeEquipo = [
     'Maria Elena Guzman Perez',
-    'Luna Alejandra Valencia Cossio',
+    'Luna Alejandra Cossio Valencia',
     'Nicolas Bonilla Grueso',
     'Kevin Santiago Morales Cardenas',
     'Jhon Alejandro Vanegas Morcillo',
@@ -16,7 +11,7 @@ $acercaDeAgradecimientos = [
     ['nombre' => 'Paula Andrea Martínez Espinosa', 'rol' => 'Instructora'],
     ['nombre' => 'Nicolas Riascos',                'rol' => 'Instructor'],
     ['nombre' => 'José Fredy Caicedo',             'rol' => 'Instructor'],
-    ['nombre' => 'Andrés Sanchéz',                 'rol' => 'Instructor'],
+    ['nombre' => 'Andrés Sánchez',                 'rol' => 'Instructor'],
 ];
 ?>
 <div class="gemo-about-badge">Información general</div>
