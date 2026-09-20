@@ -3,7 +3,7 @@
         'name' => 'sants/gemo',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '7a78d9e1b420b79ba44b426eee0c411d9a8199ae',
+        'reference' => '6e4e1aac56344cb198518b9bc7c0620268a7b477',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -103,7 +103,7 @@
         'sants/gemo' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '7a78d9e1b420b79ba44b426eee0c411d9a8199ae',
+            'reference' => '6e4e1aac56344cb198518b9bc7c0620268a7b477',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

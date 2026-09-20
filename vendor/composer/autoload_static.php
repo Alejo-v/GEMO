@@ -34,7 +34,12 @@ class ComposerStaticInit1f9ecc87add0e40121054755708299ba
     );
 
     public static $classMap = array (
+        'ActividadTerreno' => __DIR__ . '/../..' . '/models/ActividadTerreno.php',
+        'ActividadZoocriadero' => __DIR__ . '/../..' . '/models/ActividadZoocriadero.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'Database' => __DIR__ . '/../..' . '/config/database.php',
+        'Deposito' => __DIR__ . '/../..' . '/models/Deposito.php',
+        'FPDF' => __DIR__ . '/../..' . '/lib/fpdf/fpdf.php',
         'PHPUnit\\Event\\Application\\Finished' => __DIR__ . '/..' . '/phpunit/phpunit/src/Event/Events/Application/Finished.php',
         'PHPUnit\\Event\\Application\\FinishedSubscriber' => __DIR__ . '/..' . '/phpunit/phpunit/src/Event/Events/Application/FinishedSubscriber.php',
         'PHPUnit\\Event\\Application\\Started' => __DIR__ . '/..' . '/phpunit/phpunit/src/Event/Events/Application/Started.php',
@@ -928,6 +933,7 @@ class ComposerStaticInit1f9ecc87add0e40121054755708299ba
         'PHPUnit\\Util\\Xml' => __DIR__ . '/..' . '/phpunit/phpunit/src/Util/Xml/Xml.php',
         'PHPUnit\\Util\\Xml\\Loader' => __DIR__ . '/..' . '/phpunit/phpunit/src/Util/Xml/Loader.php',
         'PHPUnit\\Util\\Xml\\XmlException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Util/Exception/XmlException.php',
+        'Permiso' => __DIR__ . '/../..' . '/models/Permiso.php',
         'PharIo\\Manifest\\Application' => __DIR__ . '/..' . '/phar-io/manifest/src/values/Application.php',
         'PharIo\\Manifest\\ApplicationName' => __DIR__ . '/..' . '/phar-io/manifest/src/values/ApplicationName.php',
         'PharIo\\Manifest\\Author' => __DIR__ . '/..' . '/phar-io/manifest/src/values/Author.php',
@@ -1000,6 +1006,10 @@ class ComposerStaticInit1f9ecc87add0e40121054755708299ba
         'PharIo\\Version\\VersionConstraintParser' => __DIR__ . '/..' . '/phar-io/version/src/VersionConstraintParser.php',
         'PharIo\\Version\\VersionConstraintValue' => __DIR__ . '/..' . '/phar-io/version/src/VersionConstraintValue.php',
         'PharIo\\Version\\VersionNumber' => __DIR__ . '/..' . '/phar-io/version/src/VersionNumber.php',
+        'RecuperacionController' => __DIR__ . '/../..' . '/controllers/RecuperacionController.php',
+        'ReportePDF' => __DIR__ . '/../..' . '/controllers/ReporteController.php',
+        'ReporteTerreno' => __DIR__ . '/../..' . '/models/ReporteTerreno.php',
+        'ReporteTerrenoPDF' => __DIR__ . '/../..' . '/controllers/ReporteTerrenoController.php',
         'SebastianBergmann\\CliParser\\AmbiguousOptionException' => __DIR__ . '/..' . '/sebastian/cli-parser/src/exceptions/AmbiguousOptionException.php',
         'SebastianBergmann\\CliParser\\Exception' => __DIR__ . '/..' . '/sebastian/cli-parser/src/exceptions/Exception.php',
         'SebastianBergmann\\CliParser\\OptionDoesNotAllowArgumentException' => __DIR__ . '/..' . '/sebastian/cli-parser/src/exceptions/OptionDoesNotAllowArgumentException.php',
@@ -1203,6 +1213,10 @@ class ComposerStaticInit1f9ecc87add0e40121054755708299ba
         'SebastianBergmann\\Type\\UnknownType' => __DIR__ . '/..' . '/sebastian/type/src/type/UnknownType.php',
         'SebastianBergmann\\Type\\VoidType' => __DIR__ . '/..' . '/sebastian/type/src/type/VoidType.php',
         'SebastianBergmann\\Version' => __DIR__ . '/..' . '/sebastian/version/src/Version.php',
+        'SeguimientoTerreno' => __DIR__ . '/../..' . '/models/SeguimientoTerreno.php',
+        'SeguimientoZoocriadero' => __DIR__ . '/../..' . '/models/SeguimientoZoocriadero.php',
+        'Sitio' => __DIR__ . '/../..' . '/models/Sitio.php',
+        'Tanque' => __DIR__ . '/../..' . '/models/Tanque.php',
         'TheSeer\\Tokenizer\\Exception' => __DIR__ . '/..' . '/theseer/tokenizer/src/Exception.php',
         'TheSeer\\Tokenizer\\NamespaceUri' => __DIR__ . '/..' . '/theseer/tokenizer/src/NamespaceUri.php',
         'TheSeer\\Tokenizer\\NamespaceUriException' => __DIR__ . '/..' . '/theseer/tokenizer/src/NamespaceUriException.php',
@@ -1211,6 +1225,11 @@ class ComposerStaticInit1f9ecc87add0e40121054755708299ba
         'TheSeer\\Tokenizer\\TokenCollectionException' => __DIR__ . '/..' . '/theseer/tokenizer/src/TokenCollectionException.php',
         'TheSeer\\Tokenizer\\Tokenizer' => __DIR__ . '/..' . '/theseer/tokenizer/src/Tokenizer.php',
         'TheSeer\\Tokenizer\\XMLSerializer' => __DIR__ . '/..' . '/theseer/tokenizer/src/XMLSerializer.php',
+        'TipoDeposito' => __DIR__ . '/../..' . '/models/TipoDeposito.php',
+        'TipoTanque' => __DIR__ . '/../..' . '/models/TipoTanque.php',
+        'Ubicacion' => __DIR__ . '/../..' . '/models/Ubicacion.php',
+        'Usuario' => __DIR__ . '/../..' . '/models/Usuario.php',
+        'Zoocriadero' => __DIR__ . '/../..' . '/models/Zoocriadero.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

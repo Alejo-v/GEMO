@@ -6,7 +6,10 @@
             "email": "moralesantiago918@gmail.com"
         }
     ],
+    "autoload": {
+        "classmap": ["models/", "controllers/", "config/", "lib/"]
+    },
     "require-dev": {
-        "phpunit/phpunit": "10.*"
+        "phpunit/phpunit": "^10.5"
     }
 }
