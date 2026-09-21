@@ -537,10 +537,9 @@ class Usuario
              WHERE id_usuario = :id_usuario'
         );
 
-        return $stmt->execute([
-            ':activo' => $activo,
-            ':id_usuario' => $idUsuario
-        ]);
+        $stmt->bindValue(':activo', $activo, PDO::PARAM_BOOL);
+        $stmt->bindValue(':id_usuario', $idUsuario, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 
     /*

@@ -71,6 +71,8 @@ class ActividadZoocriadero
         $stmt = $this->conexion->prepare(
             'UPDATE actividad_zoocriadero SET activo = :activo WHERE id_actividad_zoocriadero = :id'
         );
-        return $stmt->execute([':activo' => $activo, ':id' => $id]);
+        $stmt->bindValue(':activo', $activo, PDO::PARAM_BOOL);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 }

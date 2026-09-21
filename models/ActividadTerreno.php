@@ -71,6 +71,8 @@ class ActividadTerreno
         $stmt = $this->conexion->prepare(
             'UPDATE actividad_terreno SET activo = :activo WHERE id_actividad_terreno = :id'
         );
-        return $stmt->execute([':activo' => $activo, ':id' => $id]);
+        $stmt->bindValue(':activo', $activo, PDO::PARAM_BOOL);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 }

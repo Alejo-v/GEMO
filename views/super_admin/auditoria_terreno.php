@@ -1,7 +1,7 @@
 <?php
 $pageTitle='GEMO | Auditoría de terreno';
-require_once '../../includes/superadmin_header.php';
-require_once '../../models/SeguimientoTerreno.php';
+require_once __DIR__ . '/../../includes/superadmin_header.php';
+require_once __DIR__ . '/../../models/SeguimientoTerreno.php';
 
 $modelo = new SeguimientoTerreno();
 
@@ -105,4 +105,4 @@ $registros = $modelo->obtenerAuditoriaTerreno(
 </div>
 </div>
 </div>
-<?php require_once '../../includes/superadmin_footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/superadmin_footer.php'; ?>

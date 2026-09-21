@@ -93,6 +93,8 @@ class Permiso
         $stmt = $this->conexion->prepare(
             'UPDATE permiso_rol SET activo = :activo WHERE id_permiso = :id_permiso'
         );
-        return $stmt->execute([':activo' => $activo, ':id_permiso' => $idPermiso]);
+        $stmt->bindValue(':activo', $activo, PDO::PARAM_BOOL);
+        $stmt->bindValue(':id_permiso', $idPermiso, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 }

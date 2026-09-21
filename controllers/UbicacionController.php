@@ -53,6 +53,9 @@ try {
         if ($idComuna <= 0 || !$modelo->comunaExiste($idComuna)) {
             volverUbicacion('Debe seleccionar una comuna válida.');
         }
+        if (!$modelo->comunaActiva($idComuna)) {
+            volverUbicacion('La comuna seleccionada está inhabilitada.');
+        }
         if ($id !== null && (!$modelo->barrioExiste($id) || $id <= 0)) {
             volverUbicacion('El barrio seleccionado no existe.');
         }
@@ -68,27 +71,32 @@ try {
         volverUbicacion('Barrio actualizado correctamente.', false);
     }
 
-    if ($accion === 'eliminar_barrio' || $accion === 'eliminar_comuna') {
-        $id = (int) ($_POST[$accion === 'eliminar_barrio' ? 'id_barrio' : 'id_comuna'] ?? 0);
+    if (in_array($accion, ['inhabilitar_barrio', 'habilitar_barrio', 'inhabilitar_comuna', 'habilitar_comuna'], true)) {
+        $esBarrio = str_ends_with($accion, '_barrio');
+        $habilitar = str_starts_with($accion, 'habilitar');
+        $id = (int) ($_POST[$esBarrio ? 'id_barrio' : 'id_comuna'] ?? 0);
         if ($id <= 0) {
             volverUbicacion('Registro de ubicación no válido.');
         }
 
-        if ($accion === 'eliminar_barrio') {
+        if ($esBarrio) {
             if (!$modelo->barrioExiste($id)) volverUbicacion('El barrio no existe.');
-            if (!$modelo->barrioPuedeEliminarse($id)) {
-                volverUbicacion('No se puede eliminar este barrio porque está asociado a sitios o zoocriaderos.');
+            if ($habilitar && !$modelo->comunaDelBarrioActiva($id)) {
+                volverUbicacion('No se puede habilitar este barrio porque su comuna está inhabilitada. Habilite primero la comuna.');
             }
-            $modelo->eliminarBarrio($id);
-            volverUbicacion('Barrio eliminado correctamente.', false);
+            if (!$habilitar && !$modelo->barrioPuedeInhabilitarse($id)) {
+                volverUbicacion('No se puede inhabilitar este barrio porque está asociado a sitios o zoocriaderos activos.');
+            }
+            $modelo->cambiarEstadoBarrio($id, $habilitar);
+            volverUbicacion($habilitar ? 'Barrio habilitado correctamente.' : 'Barrio inhabilitado correctamente.', false);
         }
 
         if (!$modelo->comunaExiste($id)) volverUbicacion('La comuna no existe.');
-        if (!$modelo->comunaPuedeEliminarse($id)) {
-            volverUbicacion('No se puede eliminar esta comuna porque todavía tiene barrios asociados.');
+        if (!$habilitar && !$modelo->comunaPuedeInhabilitarse($id)) {
+            volverUbicacion('No se puede inhabilitar esta comuna porque todavía tiene barrios activos. Inhabilite primero sus barrios.');
         }
-        $modelo->eliminarComuna($id);
-        volverUbicacion('Comuna eliminada correctamente.', false);
+        $modelo->cambiarEstadoComuna($id, $habilitar);
+        volverUbicacion($habilitar ? 'Comuna habilitada correctamente.' : 'Comuna inhabilitada correctamente.', false);
     }
 
     volverUbicacion('Operación no válida.');

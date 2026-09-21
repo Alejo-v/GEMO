@@ -46,6 +46,7 @@ class Zoocriadero
         $sql = 'SELECT b.id_barrio, b.nombre, c.nombre AS comuna
                 FROM barrio b
                 INNER JOIN comuna c ON c.id_comuna = b.id_comuna
+                WHERE b.activo = TRUE AND c.activo = TRUE
                 ORDER BY c.nombre, b.nombre';
         return $this->conexion->query($sql)->fetchAll();
     }
@@ -62,7 +63,7 @@ class Zoocriadero
 
     public function barrioExiste(int $idBarrio): bool
     {
-        $stmt = $this->conexion->prepare('SELECT 1 FROM barrio WHERE id_barrio = :id LIMIT 1');
+        $stmt = $this->conexion->prepare('SELECT 1 FROM barrio WHERE id_barrio = :id AND activo = TRUE LIMIT 1');
         $stmt->execute([':id' => $idBarrio]);
         return (bool) $stmt->fetchColumn();
     }
@@ -97,6 +98,8 @@ class Zoocriadero
     public function cambiarEstado(int $id, bool $activo): bool
     {
         $stmt = $this->conexion->prepare('UPDATE zoocriadero SET activo = :activo WHERE id_zoocriadero = :id');
-        return $stmt->execute([':activo' => $activo, ':id' => $id]);
+        $stmt->bindValue(':activo', $activo, PDO::PARAM_BOOL);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 }

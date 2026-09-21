@@ -1,6 +1,7 @@
 <?php
 
 session_start();
+require_once __DIR__ . '/../includes/roles.php';
 require_once __DIR__ . '/../models/Usuario.php';
 require_once __DIR__ . '/../includes/password_validation.php';
 
@@ -13,21 +14,9 @@ if (!isset($_SESSION['usuario_id'])) {
 
 
 
-function carpetaDelRol(int $idRol): string
-{
-    return match ($idRol) {
-        1 => 'admin',
-        2 => 'coordinador_zoocriadero',
-        3 => 'auxiliar_zoocriadero',
-        4 => 'auxiliar_terreno',
-        5 => 'coordinador_terreno',
-        default => null,
-    } ?? 'admin';
-}
-
 $idUsuario = (int) $_SESSION['usuario_id'];
 $idRol = (int) ($_SESSION['usuario_rol_id'] ?? 0);
-$destino = '../views/' . carpetaDelRol($idRol) . '/informacion_personal.php';
+$destino = gemoVistaDelRol('informacion_personal.php');
 
 function volverConError(string $mensaje, string $destino): never
 {

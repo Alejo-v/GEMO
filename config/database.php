@@ -6,7 +6,7 @@ class Database
     private string $port = '5432';
     private string $dbname = 'bd_gemo';
     private string $username = 'postgres';
-    private string $password = 'maria';
+    private string $password = 'alejo';
 
     public function __construct()
     {
@@ -14,7 +14,7 @@ class Database
         $this->port     = getenv('DB_PORT') ?: '5432';
         $this->dbname   = getenv('DB_NAME') ?: 'bd_gemo';
         $this->username = getenv('DB_USER') ?: 'postgres';
-        $this->password = getenv('DB_PASS') ?: 'maria';
+        $this->password = getenv('DB_PASS') ?: 'alejo';
     }
 
     public function conectar(): PDO

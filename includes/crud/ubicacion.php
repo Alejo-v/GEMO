@@ -1,6 +1,7 @@
 <?php
 $modeloUbicacion = new Ubicacion();
 $comunas = $modeloUbicacion->obtenerComunas();
+$comunasActivas = $modeloUbicacion->obtenerComunasActivas();
 $barrios = $modeloUbicacion->obtenerBarrios();
 $error = $_SESSION['ubicacion_error'] ?? null; unset($_SESSION['ubicacion_error']);
 $exito = $_SESSION['ubicacion_exito'] ?? null; unset($_SESSION['ubicacion_exito']);
@@ -35,22 +36,35 @@ $exito = $_SESSION['ubicacion_exito'] ?? null; unset($_SESSION['ubicacion_exito'
                 </form>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
-                        <thead><tr><th>#</th><th>Comuna</th><th>Acciones</th></tr></thead>
+                        <thead><tr><th>#</th><th>Comuna</th><th>Estado</th><th>Acciones</th></tr></thead>
                         <tbody>
-                        <?php foreach ($comunas as $c): ?>
+                        <?php foreach ($comunas as $i => $c): ?>
                             <tr>
-                                <td><?= (int)$c['id_comuna'] ?></td>
+                                <td><?= $i + 1 ?></td>
                                 <td><?= htmlspecialchars($c['nombre']) ?></td>
+                                <td>
+                                    <?php if ($c['activo']): ?>
+                                        <span class="badge badge-success">Activo</span>
+                                    <?php else: ?>
+                                        <span class="badge badge-secondary">Inhabilitado</span>
+                                    <?php endif; ?>
+                                </td>
                                 <td class="text-nowrap">
                                     <button type="button" class="btn btn-sm btn-outline-primary" title="Editar" onclick='editarComuna(<?= json_encode($c, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_AMP|JSON_HEX_QUOT) ?>)'><i class="fas fa-edit"></i></button>
                                     <form method="post" action="../../controllers/UbicacionController.php" class="d-inline">
-                                        <input type="hidden" name="accion" value="eliminar_comuna"><input type="hidden" name="id_comuna" value="<?= (int)$c['id_comuna'] ?>">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="return confirm('Solo se puede eliminar si la comuna no tiene barrios asociados. ¿Continuar?')"><i class="fas fa-trash"></i></button>
+                                        <input type="hidden" name="id_comuna" value="<?= (int)$c['id_comuna'] ?>">
+                                        <?php if ($c['activo']): ?>
+                                            <input type="hidden" name="accion" value="inhabilitar_comuna">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Inhabilitar" onclick="return confirm('Solo se puede inhabilitar si la comuna no tiene barrios activos. ¿Continuar?')"><i class="fas fa-ban"></i></button>
+                                        <?php else: ?>
+                                            <input type="hidden" name="accion" value="habilitar_comuna">
+                                            <button type="submit" class="btn btn-sm btn-outline-success" title="Habilitar"><i class="fas fa-check"></i></button>
+                                        <?php endif; ?>
                                     </form>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
-                        <?php if (!$comunas): ?><tr><td colspan="3" class="text-center text-muted">No hay comunas registradas.</td></tr><?php endif; ?>
+                        <?php if (!$comunas): ?><tr><td colspan="4" class="text-center text-muted">No hay comunas registradas.</td></tr><?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -70,7 +84,7 @@ $exito = $_SESSION['ubicacion_exito'] ?? null; unset($_SESSION['ubicacion_exito'
                     <input type="hidden" name="id_barrio" id="barrio-id">
                     <div class="row g-3">
                         <div class="col-md-7"><label class="form-label">Nombre del barrio *</label><input type="text" name="nombre" id="barrio-nombre" class="form-control" maxlength="120" minlength="1" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü0-9 .'-]+" required></div>
-                        <div class="col-md-5"><label class="form-label">Comuna *</label><select name="id_comuna" id="barrio-comuna" class="form-select" required><option value="">Seleccione</option><?php foreach($comunas as $c): ?><option value="<?= (int)$c['id_comuna'] ?>"><?= htmlspecialchars($c['nombre']) ?></option><?php endforeach; ?></select></div>
+                        <div class="col-md-5"><label class="form-label">Comuna *</label><select name="id_comuna" id="barrio-comuna" class="form-select" required><option value="">Seleccione</option><?php foreach($comunasActivas as $c): ?><option value="<?= (int)$c['id_comuna'] ?>"><?= htmlspecialchars($c['nombre']) ?></option><?php endforeach; ?></select></div>
                     </div>
                     <div class="d-flex gap-2 mt-3">
                         <button class="btn btn-gemo" type="submit"><i class="fas fa-save me-1"></i>Guardar</button>
@@ -79,12 +93,12 @@ $exito = $_SESSION['ubicacion_exito'] ?? null; unset($_SESSION['ubicacion_exito'
                 </form>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
-                        <thead><tr><th>#</th><th>Barrio</th><th>Comuna</th><th>Acciones</th></tr></thead>
+                        <thead><tr><th>#</th><th>Barrio</th><th>Comuna</th><th>Estado</th><th>Acciones</th></tr></thead>
                         <tbody>
-                        <?php foreach ($barrios as $b): ?>
-                            <tr><td><?= (int)$b['id_barrio'] ?></td><td><?= htmlspecialchars($b['nombre']) ?></td><td><?= htmlspecialchars($b['comuna']) ?></td><td class="text-nowrap"><button type="button" class="btn btn-sm btn-outline-primary" title="Editar" onclick='editarBarrio(<?= json_encode($b, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_AMP|JSON_HEX_QUOT) ?>)'><i class="fas fa-edit"></i></button><form method="post" action="../../controllers/UbicacionController.php" class="d-inline"><input type="hidden" name="accion" value="eliminar_barrio"><input type="hidden" name="id_barrio" value="<?= (int)$b['id_barrio'] ?>"><button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="return confirm('Si el barrio está siendo usado por un sitio o zoocriadero no se podrá eliminar. ¿Continuar?')"><i class="fas fa-trash"></i></button></form></td></tr>
+                        <?php foreach ($barrios as $i => $b): ?>
+                            <tr><td><?= $i + 1 ?></td><td><?= htmlspecialchars($b['nombre']) ?></td><td><?= htmlspecialchars($b['comuna']) ?></td><td><?php if ($b['activo']): ?><span class="badge badge-success">Activo</span><?php else: ?><span class="badge badge-secondary">Inhabilitado</span><?php endif; ?></td><td class="text-nowrap"><button type="button" class="btn btn-sm btn-outline-primary" title="Editar" onclick='editarBarrio(<?= json_encode($b, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_AMP|JSON_HEX_QUOT) ?>)'><i class="fas fa-edit"></i></button><form method="post" action="../../controllers/UbicacionController.php" class="d-inline"><input type="hidden" name="id_barrio" value="<?= (int)$b['id_barrio'] ?>"><?php if ($b['activo']): ?><input type="hidden" name="accion" value="inhabilitar_barrio"><button type="submit" class="btn btn-sm btn-outline-danger" title="Inhabilitar" onclick="return confirm('Si el barrio está siendo usado por un sitio o zoocriadero activo no se podrá inhabilitar. ¿Continuar?')"><i class="fas fa-ban"></i></button><?php else: ?><input type="hidden" name="accion" value="habilitar_barrio"><button type="submit" class="btn btn-sm btn-outline-success" title="Habilitar"><i class="fas fa-check"></i></button><?php endif; ?></form></td></tr>
                         <?php endforeach; ?>
-                        <?php if (!$barrios): ?><tr><td colspan="4" class="text-center text-muted">No hay barrios registrados.</td></tr><?php endif; ?>
+                        <?php if (!$barrios): ?><tr><td colspan="5" class="text-center text-muted">No hay barrios registrados.</td></tr><?php endif; ?>
                         </tbody>
                     </table>
                 </div>

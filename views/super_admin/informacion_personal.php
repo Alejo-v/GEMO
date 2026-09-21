@@ -1,7 +1,7 @@
 <?php
 $pageTitle = 'GEMO | Información personal';
-require_once '../../includes/superadmin_header.php';
-require_once '../../models/Usuario.php';
+require_once __DIR__ . '/../../includes/superadmin_header.php';
+require_once __DIR__ . '/../../models/Usuario.php';
 
 $usuario = (new Usuario())->buscarPorId((int) $_SESSION['usuario_id']);
 
@@ -125,4 +125,4 @@ $error = $_SESSION['perfil_error'] ?? null; unset($_SESSION['perfil_error']);
 </script>
 
 <?php endif; ?>
-<?php require_once '../../includes/superadmin_footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/superadmin_footer.php'; ?>

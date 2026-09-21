@@ -17,6 +17,7 @@ class Sitio
         $sql = 'SELECT b.id_barrio, b.nombre, c.nombre AS comuna
                 FROM barrio b
                 INNER JOIN comuna c ON c.id_comuna = b.id_comuna
+                WHERE b.activo = TRUE AND c.activo = TRUE
                 ORDER BY c.nombre, b.nombre';
         return $this->conexion->query($sql)->fetchAll();
     }
@@ -79,7 +80,7 @@ class Sitio
 
     public function barrioExiste(int $idBarrio): bool
     {
-        $stmt = $this->conexion->prepare('SELECT 1 FROM barrio WHERE id_barrio = :id LIMIT 1');
+        $stmt = $this->conexion->prepare('SELECT 1 FROM barrio WHERE id_barrio = :id AND activo = TRUE LIMIT 1');
         $stmt->execute([':id' => $idBarrio]);
         return (bool) $stmt->fetchColumn();
     }
@@ -147,6 +148,8 @@ class Sitio
     public function cambiarEstado(int $idSitio, bool $activo): bool
     {
         $stmt = $this->conexion->prepare('UPDATE sitio_terreno SET activo = :activo WHERE id_sitio = :id');
-        return $stmt->execute([':activo' => $activo, ':id' => $idSitio]);
+        $stmt->bindValue(':activo', $activo, PDO::PARAM_BOOL);
+        $stmt->bindValue(':id', $idSitio, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 }
