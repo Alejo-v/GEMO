@@ -60,3 +60,21 @@ html.gemo-a11y-contraste .btn-outline-secondary { color:#000!important;border-co
 html.gemo-a11y-contraste .btn-gemo { background:#000!important;color:#fff!important;border-color:#000!important }
 html.gemo-a11y-contraste .table th,
 html.gemo-a11y-contraste .table td { color:#000!important;border-color:#000!important }
+
+
+/* ===== Acerca de GEMO ===== */
+.gemo-about-badge{display:inline-block;background:var(--gemo-mid);color:#fff;font-weight:700;font-size:15px;padding:8px 16px;border-radius:8px;margin-bottom:26px}
+.gemo-about-timeline{position:relative;max-width:960px;padding-left:64px}
+.gemo-about-timeline:before{content:"";position:absolute;left:21px;top:22px;bottom:22px;width:3px;background:#c3d0df;border-radius:2px}
+.gemo-about-item{position:relative;margin-bottom:26px}
+.gemo-about-item:last-child{margin-bottom:0}
+.gemo-about-item .card{margin-bottom:0}
+.gemo-about-item .card-header{background:#f5f8fb;border-bottom:1px solid #e1e8f0}
+.gemo-about-icon{position:absolute;left:-64px;top:4px;width:44px;height:44px;border-radius:50%;background:var(--gemo-mid);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 0 6px var(--gemo-bg)}
+.gemo-about-list{list-style:none;margin:0;padding:0}
+.gemo-about-list li{padding:5px 0;color:var(--gemo-text)}
+.gemo-about-role{color:#5b6b7c}
+@media(max-width:575px){.gemo-about-timeline{padding-left:52px}.gemo-about-timeline:before{left:16px}.gemo-about-icon{left:-52px;width:34px;height:34px;font-size:15px;top:8px}}
+html.gemo-a11y-contraste .gemo-about-timeline:before{background:#000}
+html.gemo-a11y-contraste .gemo-about-item .card-header{background:#fff!important;border-bottom:1px solid #000}
+html.gemo-a11y-contraste .gemo-about-list li,html.gemo-a11y-contraste .gemo-about-role{color:#000!important}

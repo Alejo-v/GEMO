@@ -25,6 +25,7 @@
 <li class="nav-item <?= basename($_SERVER['PHP_SELF'])==='permisos.php'?'active':'' ?>"><a href="permisos.php"><i class="fas fa-user-shield"></i><p>Permisos</p></a></li>
 <li class="nav-section"><span class="sidebar-mini-icon"><i class="fa fa-ellipsis-h"></i></span><h4 class="text-section">Cuenta</h4></li>
 <li class="nav-item <?= basename($_SERVER['PHP_SELF'])==='informacion_personal.php'?'active':'' ?>"><a href="informacion_personal.php"><i class="fas fa-id-card"></i><p>Información personal</p></a></li>
+<li class="nav-item <?= basename($_SERVER['PHP_SELF'])==='acerca_de.php'?'active':'' ?>"><a href="acerca_de.php"><i class="fas fa-info-circle"></i><p>Acerca de GEMO</p></a></li>
 <li class="nav-item"><a href="../../logout.php"><i class="fas fa-sign-out-alt"></i><p>Cerrar sesión</p></a></li>
 </ul></div></div></div>
 <div class="main-panel"><div class="main-header"><div class="main-header-logo"><div class="logo-header gemo-logo-header"><a href="dashboard.php" class="logo"><img src="../../assets/img/branding/gemo-logo-white.png" alt="GEMO" class="gemo-top-brand-img"></a></div></div>
