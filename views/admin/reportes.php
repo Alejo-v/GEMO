@@ -24,9 +24,9 @@ require_once '../../includes/admin_header.php';
                     </div>
                 </div>
                 <ul class="mb-4">
-                    <li>Reporte 1 · Seguimiento de actividades (fechas, zoocriadero, actividad)</li>
-                    <li>Reporte 2 · Nacidos y muertos por tanque</li>
-                    <li>Reporte 3 · Tanques por zoocriadero (cantidad, tipo, encargado)</li>
+                    <li>Reporte 1 — Seguimiento de actividades (fechas, zoocriadero, actividad)</li>
+                    <li>Reporte 2 — Nacidos y muertos por tanque</li>
+                    <li>Reporte 3 — Tanques por zoocriadero (cantidad, tipo, encargado)</li>
                 </ul>
                 <a href="reportes_zoocriadero.php" class="btn btn-gemo mt-auto">
                     <i class="fas fa-arrow-right me-1"></i> Abrir reportes del zoocriadero
@@ -48,10 +48,10 @@ require_once '../../includes/admin_header.php';
                     </div>
                 </div>
                 <ul class="mb-4">
-                    <li>Reporte 1 · Detalle de sitios visitados</li>
-                    <li>Reporte 2 · Registros por tipo de actividad</li>
-                    <li>Reporte 3 · Actividades por auxiliar</li>
-                    <li>Reporte 4 · Registros por tipo de depósito</li>
+                    <li>Reporte 1 — Detalle de sitios visitados</li>
+                    <li>Reporte 2 — Registros por tipo de actividad</li>
+                    <li>Reporte 3 — Actividades por auxiliar</li>
+                    <li>Reporte 4 — Registros por tipo de depósito</li>
                 </ul>
                 <a href="reportes_terreno.php" class="btn btn-gemo mt-auto">
                     <i class="fas fa-arrow-right me-1"></i> Abrir reportes de terreno
