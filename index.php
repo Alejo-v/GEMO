@@ -18,6 +18,9 @@ if ((int)($_SESSION['usuario_rol_id'] ?? 0) === 4) {
 if ((int)($_SESSION['usuario_rol_id'] ?? 0) === 5) {
     header('Location: views/coordinador_terreno/inicio.php'); exit;
 }
+if ((int)($_SESSION['usuario_rol_id'] ?? 0) === 6) {
+    header('Location: views/super_admin/dashboard.php'); exit;
+}
 
 $nombreCompleto = trim(($_SESSION['usuario_nombre'] ?? '') . ' ' . ($_SESSION['usuario_apellido'] ?? ''));
 $rol = $_SESSION['usuario_rol'] ?? '';

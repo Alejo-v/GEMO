@@ -11,6 +11,8 @@ unset($_SESSION['recuperacion_error_nueva'], $_SESSION['recuperacion_exito_codig
 (function(){
   function toggle(id,btnId){var c=document.getElementById(id),b=document.getElementById(btnId);if(!c||!b)return;b.addEventListener('click',function(){c.type=c.type==='password'?'text':'password';b.querySelector('i').classList.toggle('fa-eye',c.type==='password');b.querySelector('i').classList.toggle('fa-eye-slash',c.type==='text');c.focus();});}
   toggle('password_nueva','verNueva'); toggle('password_confirmar','verConfirmar');
+  function bloquearPegado(id){var c=document.getElementById(id);if(!c)return;['paste','copy','cut','drop','contextmenu'].forEach(function(ev){c.addEventListener(ev,function(e){e.preventDefault();});});}
+  bloquearPegado('password_nueva'); bloquearPegado('password_confirmar');
   document.getElementById('formNuevaPassword').addEventListener('submit',function(e){var a=document.getElementById('password_nueva'),b=document.getElementById('password_confirmar');var p=/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$/;if(!p.test(a.value)){e.preventDefault();alert('La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.');a.focus();return;}if(a.value!==b.value){e.preventDefault();alert('Las contraseñas nuevas no coinciden.');b.focus();}});
 })();
 </script></body></html>

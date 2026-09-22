@@ -14,14 +14,21 @@ class Ubicacion
     public function obtenerComunas(): array
     {
         return $this->conexion->query(
-            'SELECT id_comuna, nombre FROM comuna ORDER BY nombre'
+            'SELECT id_comuna, nombre, activo FROM comuna ORDER BY nombre'
+        )->fetchAll();
+    }
+
+    public function obtenerComunasActivas(): array
+    {
+        return $this->conexion->query(
+            'SELECT id_comuna, nombre FROM comuna WHERE activo = TRUE ORDER BY nombre'
         )->fetchAll();
     }
 
     public function obtenerBarrios(): array
     {
         return $this->conexion->query(
-            'SELECT b.id_barrio, b.nombre, b.id_comuna, c.nombre AS comuna
+            'SELECT b.id_barrio, b.nombre, b.id_comuna, b.activo, c.nombre AS comuna
              FROM barrio b INNER JOIN comuna c ON c.id_comuna = b.id_comuna
              ORDER BY c.nombre, b.nombre'
         )->fetchAll();
@@ -38,6 +45,23 @@ class Ubicacion
     {
         $stmt = $this->conexion->prepare('SELECT 1 FROM barrio WHERE id_barrio = :id');
         $stmt->execute([':id' => $id]);
+        return (bool) $stmt->fetchColumn();
+    }
+
+    public function comunaActiva(int $id): bool
+    {
+        $stmt = $this->conexion->prepare('SELECT 1 FROM comuna WHERE id_comuna = :id AND activo = TRUE');
+        $stmt->execute([':id' => $id]);
+        return (bool) $stmt->fetchColumn();
+    }
+
+    public function comunaDelBarrioActiva(int $idBarrio): bool
+    {
+        $stmt = $this->conexion->prepare(
+            'SELECT 1 FROM barrio b INNER JOIN comuna c ON c.id_comuna = b.id_comuna
+             WHERE b.id_barrio = :id AND c.activo = TRUE'
+        );
+        $stmt->execute([':id' => $idBarrio]);
         return (bool) $stmt->fetchColumn();
     }
 
@@ -111,32 +135,43 @@ class Ubicacion
         return $stmt->execute([':id' => $id, ':nombre' => $nombre, ':id_comuna' => $idComuna]);
     }
 
-    public function barrioPuedeEliminarse(int $id): bool
+    public function barrioPuedeInhabilitarse(int $id): bool
     {
         $stmt = $this->conexion->prepare(
-            'SELECT NOT EXISTS (SELECT 1 FROM sitio_barrio WHERE id_barrio = :id)
-                    AND NOT EXISTS (SELECT 1 FROM zoocriadero WHERE id_barrio = :id)'
+            'SELECT NOT EXISTS (
+                        SELECT 1 FROM sitio_barrio sb
+                        INNER JOIN sitio_terreno st ON st.id_sitio = sb.id_sitio
+                        WHERE sb.id_barrio = :id_sitio AND st.activo = TRUE)
+                    AND NOT EXISTS (
+                        SELECT 1 FROM zoocriadero z
+                        WHERE z.id_barrio = :id_zoo AND z.activo = TRUE)'
+        );
+        $stmt->execute([':id_sitio' => $id, ':id_zoo' => $id]);
+        return (bool) $stmt->fetchColumn();
+    }
+
+    public function cambiarEstadoBarrio(int $id, bool $activo): bool
+    {
+        $stmt = $this->conexion->prepare('UPDATE barrio SET activo = :activo WHERE id_barrio = :id');
+        $stmt->bindValue(':activo', $activo, PDO::PARAM_BOOL);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    public function comunaPuedeInhabilitarse(int $id): bool
+    {
+        $stmt = $this->conexion->prepare(
+            'SELECT NOT EXISTS (SELECT 1 FROM barrio WHERE id_comuna = :id AND activo = TRUE)'
         );
         $stmt->execute([':id' => $id]);
         return (bool) $stmt->fetchColumn();
     }
 
-    public function eliminarBarrio(int $id): bool
+    public function cambiarEstadoComuna(int $id, bool $activo): bool
     {
-        $stmt = $this->conexion->prepare('DELETE FROM barrio WHERE id_barrio = :id');
-        return $stmt->execute([':id' => $id]);
-    }
-
-    public function comunaPuedeEliminarse(int $id): bool
-    {
-        $stmt = $this->conexion->prepare('SELECT NOT EXISTS (SELECT 1 FROM barrio WHERE id_comuna = :id)');
-        $stmt->execute([':id' => $id]);
-        return (bool) $stmt->fetchColumn();
-    }
-
-    public function eliminarComuna(int $id): bool
-    {
-        $stmt = $this->conexion->prepare('DELETE FROM comuna WHERE id_comuna = :id');
-        return $stmt->execute([':id' => $id]);
+        $stmt = $this->conexion->prepare('UPDATE comuna SET activo = :activo WHERE id_comuna = :id');
+        $stmt->bindValue(':activo', $activo, PDO::PARAM_BOOL);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 }

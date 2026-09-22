@@ -8,7 +8,6 @@ class Database
     private string $username = 'postgres';
     private string $password = 'aleCV12';
 
-
     public function __construct()
     {
         $this->host     = getenv('DB_HOST') ?: 'localhost';
@@ -38,4 +37,3 @@ class Database
     }
 }
 
-//hola

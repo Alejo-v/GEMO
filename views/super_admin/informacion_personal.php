@@ -1,7 +1,7 @@
 <?php
 $pageTitle = 'GEMO | Información personal';
-require_once '../../includes/superadmin_header.php';
-require_once '../../models/Usuario.php';
+require_once __DIR__ . '/../../includes/superadmin_header.php';
+require_once __DIR__ . '/../../models/Usuario.php';
 
 $usuario = (new Usuario())->buscarPorId((int) $_SESSION['usuario_id']);
 
@@ -67,6 +67,33 @@ $error = $_SESSION['perfil_error'] ?? null; unset($_SESSION['perfil_error']);
 
 <div class="card card-round mb-4">
     <div class="card-header d-flex align-items-center justify-content-between">
+        <h4 class="card-title mb-0">Correo electrónico</h4>
+        <button type="button" class="btn btn-outline-success btn-sm" id="btnCambiarCorreo">
+            <i class="fas fa-envelope me-1"></i> Cambiar correo
+        </button>
+    </div>
+    <div class="card-body" id="formCambiarCorreoWrap" style="display:none;">
+        <form method="post" action="../../controllers/PerfilController.php" id="formCambiarCorreo" novalidate>
+            <input type="hidden" name="accion" value="actualizar_correo">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Nuevo correo electrónico *</label>
+                    <input class="form-control" type="email" name="correo" maxlength="150" required
+                           value="<?= htmlspecialchars($usuario['correo']) ?>">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Contraseña actual *</label>
+                    <input class="form-control" type="password" name="password_actual_correo" required autocomplete="current-password">
+                </div>
+            </div>
+            <small class="text-muted d-block mt-2">Por seguridad, confirme su contraseña actual para cambiar el correo.</small>
+            <button type="submit" class="btn btn-gemo mt-3"><i class="fas fa-save me-1"></i> Guardar correo</button>
+        </form>
+    </div>
+</div>
+
+<div class="card card-round mb-4">
+    <div class="card-header d-flex align-items-center justify-content-between">
         <h4 class="card-title mb-0">Contraseña</h4>
         <button type="button" class="btn btn-outline-success btn-sm" id="btnCambiarPassword">
             <i class="fas fa-key me-1"></i> Cambiar contraseña
@@ -99,12 +126,30 @@ $error = $_SESSION['perfil_error'] ?? null; unset($_SESSION['perfil_error']);
 (function () {
     var btn = document.getElementById('btnCambiarPassword');
     var wrap = document.getElementById('formCambiarPasswordWrap');
-    if (!btn || !wrap) return;
-    btn.addEventListener('click', function () {
-        wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
-    });
+    if (btn && wrap) {
+        btn.addEventListener('click', function () {
+            wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
+        });
+    }
+
+    var btnCorreo = document.getElementById('btnCambiarCorreo');
+    var wrapCorreo = document.getElementById('formCambiarCorreoWrap');
+    if (btnCorreo && wrapCorreo) {
+        btnCorreo.addEventListener('click', function () {
+            wrapCorreo.style.display = wrapCorreo.style.display === 'none' ? 'block' : 'none';
+        });
+    }
+
+    function bloquearPegado(input) {
+        if (!input) return;
+        ['paste', 'copy', 'cut', 'drop', 'contextmenu'].forEach(function (ev) {
+            input.addEventListener(ev, function (e) { e.preventDefault(); });
+        });
+    }
 
     var form = document.getElementById('formCambiarPassword');
+    bloquearPegado(form.querySelector('[name="password_nueva"]'));
+    bloquearPegado(form.querySelector('[name="password_confirmar"]'));
     form.addEventListener('submit', function (e) {
         var nueva = form.querySelector('[name="password_nueva"]');
         var confirmar = form.querySelector('[name="password_confirmar"]');
@@ -125,4 +170,4 @@ $error = $_SESSION['perfil_error'] ?? null; unset($_SESSION['perfil_error']);
 </script>
 
 <?php endif; ?>
-<?php require_once '../../includes/superadmin_footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/superadmin_footer.php'; ?>

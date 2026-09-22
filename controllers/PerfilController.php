@@ -1,6 +1,7 @@
 <?php
 
 session_start();
+require_once __DIR__ . '/../includes/roles.php';
 require_once __DIR__ . '/../models/Usuario.php';
 require_once __DIR__ . '/../includes/password_validation.php';
 
@@ -13,21 +14,9 @@ if (!isset($_SESSION['usuario_id'])) {
 
 
 
-function carpetaDelRol(int $idRol): string
-{
-    return match ($idRol) {
-        1 => 'admin',
-        2 => 'coordinador_zoocriadero',
-        3 => 'auxiliar_zoocriadero',
-        4 => 'auxiliar_terreno',
-        5 => 'coordinador_terreno',
-        default => null,
-    } ?? 'admin';
-}
-
 $idUsuario = (int) $_SESSION['usuario_id'];
 $idRol = (int) ($_SESSION['usuario_rol_id'] ?? 0);
-$destino = '../views/' . carpetaDelRol($idRol) . '/informacion_personal.php';
+$destino = gemoVistaDelRol('informacion_personal.php');
 
 function volverConError(string $mensaje, string $destino): never
 {
@@ -45,7 +34,7 @@ function volverConExito(string $mensaje, string $destino): never
 
 $accion = $_POST['accion'] ?? '';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !in_array($accion, ['actualizar_telefono', 'actualizar_password'], true)) {
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !in_array($accion, ['actualizar_telefono', 'actualizar_correo', 'actualizar_password'], true)) {
     header('Location: ' . $destino);
     exit;
 }
@@ -66,6 +55,33 @@ try {
 
         $usuarioModel->actualizarTelefono($idUsuario, $telefono);
         volverConExito('Teléfono actualizado correctamente.', $destino);
+    }
+
+    if ($accion === 'actualizar_correo') {
+        $correo = trim($_POST['correo'] ?? '');
+        $passwordActual = $_POST['password_actual_correo'] ?? '';
+
+        if ($correo === '' || $passwordActual === '') {
+            volverConError('El correo y su contraseña actual son obligatorios.', $destino);
+        }
+
+        if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+            volverConError('El correo electrónico no es válido.', $destino);
+        }
+
+        $usuarioActual = $usuarioModel->buscarPorId($idUsuario);
+        $usuarioConHash = $usuarioModel->buscarPorCorreo($usuarioActual['correo'] ?? '');
+
+        if (!$usuarioConHash || !password_verify($passwordActual, $usuarioConHash['contraseña'])) {
+            volverConError('La contraseña actual no es correcta.', $destino);
+        }
+
+        if ($usuarioModel->correoExisteEnOtroUsuario($correo, $idUsuario)) {
+            volverConError('Ese correo electrónico ya está en uso por otro usuario.', $destino);
+        }
+
+        $usuarioModel->actualizarCorreo($idUsuario, $correo);
+        volverConExito('Correo electrónico actualizado correctamente.', $destino);
     }
 
     if ($accion === 'actualizar_password') {

@@ -196,6 +196,23 @@ class Usuario
         ]);
     }
 
+    public function actualizarCorreo(
+        int $idUsuario,
+        string $correo
+    ): bool {
+
+        $stmt = $this->conexion->prepare(
+            'UPDATE usuario
+             SET correo = :correo
+             WHERE id_usuario = :id_usuario'
+        );
+
+        return $stmt->execute([
+            ':correo' => $correo,
+            ':id_usuario' => $idUsuario
+        ]);
+    }
+
     public function actualizarPassword(
         int $idUsuario,
         string $hashPassword
@@ -537,10 +554,9 @@ class Usuario
              WHERE id_usuario = :id_usuario'
         );
 
-        return $stmt->execute([
-            ':activo' => $activo,
-            ':id_usuario' => $idUsuario
-        ]);
+        $stmt->bindValue(':activo', $activo, PDO::PARAM_BOOL);
+        $stmt->bindValue(':id_usuario', $idUsuario, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 
     /*

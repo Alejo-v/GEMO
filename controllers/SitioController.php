@@ -28,8 +28,6 @@ try {
         $letraPlaca = strtoupper(trim($_POST['letra_placa'] ?? ''));
         $numeroMetros = trim($_POST['numero_metros'] ?? '');
         $complemento = trim($_POST['complemento'] ?? '');
-        $latitud = trim($_POST['latitud'] ?? '');
-        $longitud = trim($_POST['longitud'] ?? '');
         $idsBarrios = array_map('intval', $_POST['barrios'] ?? []);
 
         $tiposVia = ['Calle','Carrera','Avenida','Diagonal','Transversal','Circular','Autopista','Vía','Kilómetro'];
@@ -46,14 +44,6 @@ try {
         $direccion = $tipoVia . ' ' . $numeroVia . $letraVia . ($orientacion !== '' ? ' ' . $orientacion : '') . ' # ' . $numeroPlaca . $letraPlaca . '-' . $numeroMetros . ($complemento !== '' ? ' ' . $complemento : '');
         if (mb_strlen($direccion) > 50) volverSitioConError('La dirección completa no puede superar 50 caracteres.');
 
-        if ($latitud !== '' && (!is_numeric($latitud) || $latitud < -90 || $latitud > 90)) {
-            volverSitioConError('La latitud debe estar entre -90 y 90.');
-        }
-
-        if ($longitud !== '' && (!is_numeric($longitud) || $longitud < -180 || $longitud > 180)) {
-            volverSitioConError('La longitud debe estar entre -180 y 180.');
-        }
-
         if (empty($idsBarrios)) {
             volverSitioConError('Debe seleccionar al menos un barrio.');
         }
@@ -66,8 +56,8 @@ try {
 
         $datos = [
             ':direccion' => $direccion,
-            ':latitud' => $latitud !== '' ? $latitud : null,
-            ':longitud' => $longitud !== '' ? $longitud : null,
+            ':latitud' => null,
+            ':longitud' => null,
         ];
 
         if ($accion === 'crear') {

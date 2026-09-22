@@ -5,6 +5,8 @@ require_once '../../models/ReporteTerreno.php';
 
 $modelo = new ReporteTerreno();
 
+$hoy = date('Y-m-d');
+
 $filtros = [
     'id_comuna' => $_GET['id_comuna'] ?? '',
     'id_barrio' => $_GET['id_barrio'] ?? '',
@@ -13,14 +15,37 @@ $filtros = [
     'fecha_hasta' => $_GET['fecha_hasta'] ?? '',
 ];
 
+$errorFechas = '';
+foreach (['fecha_desde', 'fecha_hasta'] as $campoFecha) {
+    if ($filtros[$campoFecha] !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $filtros[$campoFecha])) {
+        $errorFechas = 'La fecha ingresada no es válida.';
+    }
+}
+if ($errorFechas === '' && $filtros['fecha_desde'] !== '' && $filtros['fecha_desde'] > $hoy) {
+    $errorFechas = 'No hay reportes en ese rango de fechas.';
+}
+if ($errorFechas === '' && $filtros['fecha_hasta'] !== '' && $filtros['fecha_hasta'] > $hoy) {
+    $errorFechas = 'No hay reportes en ese rango de fechas.';
+}
+if ($errorFechas === '' && $filtros['fecha_desde'] !== '' && $filtros['fecha_hasta'] !== '' && $filtros['fecha_desde'] > $filtros['fecha_hasta']) {
+    $errorFechas = 'No hay reportes en ese rango de fechas.';
+}
+
 $comunas = $modelo->obtenerComunas();
 $barrios = $modelo->obtenerBarrios();
 $tipos = $modelo->obtenerTiposDeposito();
 
-$reporteSitios = $modelo->reporteSitios($filtros);
-$reporteActividad = $modelo->reportePorActividad($filtros);
-$reporteAuxiliar = $modelo->reportePorAuxiliar($filtros);
-$reporteTipoDeposito = $modelo->reportePorTipoDeposito($filtros);
+if ($errorFechas !== '') {
+    $reporteSitios = [];
+    $reporteActividad = [];
+    $reporteAuxiliar = [];
+    $reporteTipoDeposito = [];
+} else {
+    $reporteSitios = $modelo->reporteSitios($filtros);
+    $reporteActividad = $modelo->reportePorActividad($filtros);
+    $reporteAuxiliar = $modelo->reportePorAuxiliar($filtros);
+    $reporteTipoDeposito = $modelo->reportePorTipoDeposito($filtros);
+}
 
 $totalAedes = array_sum(array_column($reporteSitios, 'larvas_aedes'));
 $totalPupas = array_sum(array_column($reporteSitios, 'pupas'));
@@ -38,10 +63,14 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
         <h3 class="fw-bold mb-1">Reportes de terreno</h3>
         <p class="text-muted mb-0">Los 4 reportes del proceso de Trabajo de Terreno, con filtros por comuna, barrio, tipo de depósito y fechas.</p>
     </div>
-    <a href="<?= htmlspecialchars($urlPdf) ?>" class="btn btn-gemo" target="_blank">
-        <i class="fas fa-file-pdf me-1"></i> Descargar PDF
-    </a>
+    <div class="btn-group" role="group"><a href="<?= htmlspecialchars($urlPdf) ?>" class="btn btn-gemo" target="_blank" title="Previsualizar"><i class="fas fa-eye me-1"></i> Previsualizar</a><a href="<?= htmlspecialchars($urlPdf) ?>&amp;descargar=1" class="btn btn-gemo" title="Descargar"><i class="fas fa-download me-1"></i> Descargar</a></div>
 </div>
+
+<?php if ($errorFechas !== ''): ?>
+<div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
+    <i class="fas fa-triangle-exclamation"></i> <?= htmlspecialchars($errorFechas) ?>
+</div>
+<?php endif; ?>
 
 <div class="card card-round mb-4">
     <div class="card-header"><h4 class="card-title">Filtros</h4></div>
@@ -83,11 +112,11 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
             </div>
             <div class="col-md-3">
                 <label class="form-label">Fecha desde</label>
-                <input type="date" name="fecha_desde" class="form-control" value="<?= htmlspecialchars($filtros['fecha_desde']) ?>">
+                <input type="date" name="fecha_desde" class="form-control" value="<?= htmlspecialchars($filtros['fecha_desde']) ?>" max="<?= htmlspecialchars($hoy) ?>">
             </div>
             <div class="col-md-3">
                 <label class="form-label">Fecha hasta</label>
-                <input type="date" name="fecha_hasta" class="form-control" value="<?= htmlspecialchars($filtros['fecha_hasta']) ?>">
+                <input type="date" name="fecha_hasta" class="form-control" value="<?= htmlspecialchars($filtros['fecha_hasta']) ?>" max="<?= htmlspecialchars($hoy) ?>">
             </div>
             <div class="col-md-9 d-flex align-items-end gap-2">
                 <button type="submit" class="btn btn-gemo"><i class="fas fa-filter me-1"></i> Aplicar filtros</button>
@@ -122,7 +151,7 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
 </div>
 
 <div class="card card-round mb-4">
-    <div class="card-header"><h4 class="card-title">Reporte 1 — Información de sitios</h4></div>
+    <div class="card-header"><h4 class="card-title">Reporte 1 · Información de sitios</h4></div>
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-hover align-middle">
@@ -159,7 +188,7 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
 <div class="row">
     <div class="col-md-6">
         <div class="card card-round mb-4">
-            <div class="card-header"><h4 class="card-title">Reporte 2 — Por tipo de actividad</h4></div>
+            <div class="card-header"><h4 class="card-title">Reporte 2 · Por tipo de actividad</h4></div>
             <div class="card-body">
                 <?php if (empty($reporteActividad)): ?>
                     <p class="text-muted mb-0">No hay datos para graficar con estos filtros.</p>
@@ -171,7 +200,7 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
     </div>
     <div class="col-md-6">
         <div class="card card-round mb-4">
-            <div class="card-header"><h4 class="card-title">Reporte 4 — Por tipo de depósito</h4></div>
+            <div class="card-header"><h4 class="card-title">Reporte 4 · Por tipo de depósito</h4></div>
             <div class="card-body">
                 <?php if (empty($reporteTipoDeposito)): ?>
                     <p class="text-muted mb-0">No hay datos para graficar con estos filtros.</p>
@@ -184,7 +213,7 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
 </div>
 
 <div class="card card-round mb-4">
-    <div class="card-header"><h4 class="card-title">Reporte 3 — Actividades por auxiliar</h4></div>
+    <div class="card-header"><h4 class="card-title">Reporte 3 · Actividades por auxiliar</h4></div>
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-hover align-middle">

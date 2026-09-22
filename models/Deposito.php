@@ -86,6 +86,8 @@ class Deposito
     public function cambiarEstado(int $idDeposito, bool $activo): bool
     {
         $stmt = $this->conexion->prepare('UPDATE deposito SET activo = :activo WHERE id_deposito = :id');
-        return $stmt->execute([':activo' => $activo, ':id' => $idDeposito]);
+        $stmt->bindValue(':activo', $activo, PDO::PARAM_BOOL);
+        $stmt->bindValue(':id', $idDeposito, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 }

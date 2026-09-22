@@ -1,6 +1,6 @@
 <?php
 $pageTitle='GEMO | Super Administrador';
-require_once '../../includes/superadmin_header.php';
+require_once __DIR__ . '/../../includes/superadmin_header.php';
 ?>
 <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
   <div>
@@ -28,4 +28,4 @@ require_once '../../includes/superadmin_header.php';
 <p class="card-text">La auditoría se basa en <strong>seguimiento_terreno</strong>, tabla que relaciona cada registro con el usuario, la fecha y la actividad de terreno. Desde la consulta puedes filtrar por rango de fechas, usuario y actividad.</p>
 <a href="auditoria_terreno.php" class="btn btn-outline-success">Abrir historial</a>
 </div></div>
-<?php require_once '../../includes/superadmin_footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/superadmin_footer.php'; ?>

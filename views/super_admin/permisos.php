@@ -1,7 +1,7 @@
 <?php
 $pageTitle = 'GEMO | Permisos';
-require_once '../../includes/superadmin_header.php';
-require_once '../../models/Permiso.php';
+require_once __DIR__ . '/../../includes/superadmin_header.php';
+require_once __DIR__ . '/../../models/Permiso.php';
 
 $modelo = new Permiso();
 $rolesConPermisos = $modelo->obtenerAgrupadoPorRol();
@@ -82,4 +82,4 @@ $error = $_SESSION['permiso_error'] ?? null; unset($_SESSION['permiso_error']);
 })();
 </script>
 
-<?php require_once '../../includes/superadmin_footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/superadmin_footer.php'; ?>

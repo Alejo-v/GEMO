@@ -5,6 +5,8 @@ require_once '../../models/ReporteTerreno.php';
 
 $modelo = new ReporteTerreno();
 
+$hoy = date('Y-m-d');
+
 $filtros = [
     'id_comuna' => $_GET['id_comuna'] ?? '',
     'id_barrio' => $_GET['id_barrio'] ?? '',
@@ -13,23 +15,37 @@ $filtros = [
     'fecha_hasta' => $_GET['fecha_hasta'] ?? '',
 ];
 
+$errorFechas = '';
 foreach (['fecha_desde', 'fecha_hasta'] as $campoFecha) {
     if ($filtros[$campoFecha] !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $filtros[$campoFecha])) {
-        $filtros[$campoFecha] = '';
+        $errorFechas = 'La fecha ingresada no es válida.';
     }
 }
-if ($filtros['fecha_desde'] !== '' && $filtros['fecha_hasta'] !== '' && $filtros['fecha_desde'] > $filtros['fecha_hasta']) {
-    [$filtros['fecha_desde'], $filtros['fecha_hasta']] = [$filtros['fecha_hasta'], $filtros['fecha_desde']];
+if ($errorFechas === '' && $filtros['fecha_desde'] !== '' && $filtros['fecha_desde'] > $hoy) {
+    $errorFechas = 'No hay reportes en ese rango de fechas.';
+}
+if ($errorFechas === '' && $filtros['fecha_hasta'] !== '' && $filtros['fecha_hasta'] > $hoy) {
+    $errorFechas = 'No hay reportes en ese rango de fechas.';
+}
+if ($errorFechas === '' && $filtros['fecha_desde'] !== '' && $filtros['fecha_hasta'] !== '' && $filtros['fecha_desde'] > $filtros['fecha_hasta']) {
+    $errorFechas = 'No hay reportes en ese rango de fechas.';
 }
 
 $comunas = $modelo->obtenerComunas();
 $barrios = $modelo->obtenerBarrios();
 $tipos = $modelo->obtenerTiposDeposito();
 
-$reporteSitios = $modelo->reporteSitios($filtros);
-$reporteActividad = $modelo->reportePorActividad($filtros);
-$reporteAuxiliar = $modelo->reportePorAuxiliar($filtros);
-$reporteTipoDeposito = $modelo->reportePorTipoDeposito($filtros);
+if ($errorFechas !== '') {
+    $reporteSitios = [];
+    $reporteActividad = [];
+    $reporteAuxiliar = [];
+    $reporteTipoDeposito = [];
+} else {
+    $reporteSitios = $modelo->reporteSitios($filtros);
+    $reporteActividad = $modelo->reportePorActividad($filtros);
+    $reporteAuxiliar = $modelo->reportePorAuxiliar($filtros);
+    $reporteTipoDeposito = $modelo->reportePorTipoDeposito($filtros);
+}
 
 $totalAedes = array_sum(array_column($reporteSitios, 'larvas_aedes'));
 $totalPupas = array_sum(array_column($reporteSitios, 'pupas'));
@@ -58,10 +74,14 @@ function urlPdfTerreno(array $filtros, string $reporte): string
             <a href="reportes_zoocriadero.php">su propia pantalla</a>.
         </p>
     </div>
-    <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, 'todos')) ?>" class="btn btn-outline-success" target="_blank">
-        <i class="fas fa-file-pdf me-1"></i> Descargar los 4 en un PDF
-    </a>
+    <div class="btn-group" role="group"><a href="<?= htmlspecialchars(urlPdfTerreno($filtros, 'todos')) ?>" class="btn btn-outline-success" target="_blank" title="Previsualizar"><i class="fas fa-eye me-1"></i> Previsualizar</a><a href="<?= htmlspecialchars(urlPdfTerreno($filtros, 'todos')) ?>&amp;descargar=1" class="btn btn-outline-success" title="Descargar"><i class="fas fa-download me-1"></i> Descargar</a></div>
 </div>
+
+<?php if ($errorFechas !== ''): ?>
+<div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
+    <i class="fas fa-triangle-exclamation"></i> <?= htmlspecialchars($errorFechas) ?>
+</div>
+<?php endif; ?>
 
 <div class="card card-round mb-4">
     <div class="card-header"><h4 class="card-title">Filtros</h4></div>
@@ -103,11 +123,11 @@ function urlPdfTerreno(array $filtros, string $reporte): string
             </div>
             <div class="col-md-3">
                 <label class="form-label">Fecha desde</label>
-                <input type="date" name="fecha_desde" class="form-control" value="<?= htmlspecialchars($filtros['fecha_desde']) ?>">
+                <input type="date" name="fecha_desde" class="form-control" value="<?= htmlspecialchars($filtros['fecha_desde']) ?>" max="<?= htmlspecialchars($hoy) ?>">
             </div>
             <div class="col-md-3">
                 <label class="form-label">Fecha hasta</label>
-                <input type="date" name="fecha_hasta" class="form-control" value="<?= htmlspecialchars($filtros['fecha_hasta']) ?>">
+                <input type="date" name="fecha_hasta" class="form-control" value="<?= htmlspecialchars($filtros['fecha_hasta']) ?>" max="<?= htmlspecialchars($hoy) ?>">
             </div>
             <div class="col-md-9 d-flex align-items-end gap-2">
                 <button type="submit" class="btn btn-gemo"><i class="fas fa-filter me-1"></i> Aplicar filtros</button>
@@ -145,12 +165,10 @@ function urlPdfTerreno(array $filtros, string $reporte): string
 <div class="card card-round mb-4">
     <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div>
-            <h4 class="card-title mb-0">Reporte 1 — Información de sitios</h4>
+            <h4 class="card-title mb-0">Reporte 1 · Información de sitios</h4>
             <small class="text-muted">Detalle de cada visita registrada en campo</small>
         </div>
-        <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '1')) ?>" class="btn btn-gemo btn-sm" target="_blank">
-            <i class="fas fa-file-pdf me-1"></i> Descargar reporte 1
-        </a>
+        <div class="btn-group" role="group"><a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '1')) ?>" class="btn btn-gemo btn-sm" target="_blank" title="Previsualizar"><i class="fas fa-eye me-1"></i> Previsualizar</a><a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '1')) ?>&amp;descargar=1" class="btn btn-gemo btn-sm" title="Descargar"><i class="fas fa-download me-1"></i> Descargar</a></div>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -190,10 +208,8 @@ function urlPdfTerreno(array $filtros, string $reporte): string
     <div class="col-md-6">
         <div class="card card-round mb-4">
             <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <h4 class="card-title mb-0">Reporte 2 — Por tipo de actividad</h4>
-                <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '2')) ?>" class="btn btn-gemo btn-sm" target="_blank">
-                    <i class="fas fa-file-pdf me-1"></i> Descargar
-                </a>
+                <h4 class="card-title mb-0">Reporte 2 · Por tipo de actividad</h4>
+                <div class="btn-group" role="group"><a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '2')) ?>" class="btn btn-gemo btn-sm" target="_blank" title="Previsualizar"><i class="fas fa-eye me-1"></i> Previsualizar</a><a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '2')) ?>&amp;descargar=1" class="btn btn-gemo btn-sm" title="Descargar"><i class="fas fa-download me-1"></i> Descargar</a></div>
             </div>
             <div class="card-body">
                 <?php if (empty($reporteActividad)): ?>
@@ -207,10 +223,8 @@ function urlPdfTerreno(array $filtros, string $reporte): string
     <div class="col-md-6">
         <div class="card card-round mb-4">
             <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <h4 class="card-title mb-0">Reporte 4 — Por tipo de depósito</h4>
-                <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '4')) ?>" class="btn btn-gemo btn-sm" target="_blank">
-                    <i class="fas fa-file-pdf me-1"></i> Descargar
-                </a>
+                <h4 class="card-title mb-0">Reporte 4 · Por tipo de depósito</h4>
+                <div class="btn-group" role="group"><a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '4')) ?>" class="btn btn-gemo btn-sm" target="_blank" title="Previsualizar"><i class="fas fa-eye me-1"></i> Previsualizar</a><a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '4')) ?>&amp;descargar=1" class="btn btn-gemo btn-sm" title="Descargar"><i class="fas fa-download me-1"></i> Descargar</a></div>
             </div>
             <div class="card-body">
                 <?php if (empty($reporteTipoDeposito)): ?>
@@ -226,10 +240,8 @@ function urlPdfTerreno(array $filtros, string $reporte): string
 <!-- ================= Reporte 3 ================= -->
 <div class="card card-round mb-4">
     <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
-        <h4 class="card-title mb-0">Reporte 3 — Actividades por auxiliar</h4>
-        <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '3')) ?>" class="btn btn-gemo btn-sm" target="_blank">
-            <i class="fas fa-file-pdf me-1"></i> Descargar reporte 3
-        </a>
+        <h4 class="card-title mb-0">Reporte 3 · Actividades por auxiliar</h4>
+        <div class="btn-group" role="group"><a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '3')) ?>" class="btn btn-gemo btn-sm" target="_blank" title="Previsualizar"><i class="fas fa-eye me-1"></i> Previsualizar</a><a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '3')) ?>&amp;descargar=1" class="btn btn-gemo btn-sm" title="Descargar"><i class="fas fa-download me-1"></i> Descargar</a></div>
     </div>
     <div class="card-body">
         <div class="table-responsive">
