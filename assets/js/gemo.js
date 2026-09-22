@@ -99,3 +99,176 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+/* ==== Menú lateral: fix definitivo hamburguesa (móvil) + minimize (desktop) ====
+ *
+ * Problema: kaiadmin.min.js al cargar hace:
+ *   $('.main-header .logo-header').html( $('.sidebar .logo-header').html() );
+ * y borra el botón .gemo-mobile-toggler / .navbar-toggler del header.
+ * Además enlaza .sidenav-toggler con un handler que a veces no coincide
+ * con el botón visible tras el overwrite.
+ *
+ * Solución:
+ * 1) Tras kaiadmin, reconstruimos un hamburguesa claro en el main-header.
+ * 2) Quitamos los handlers de click de kaiadmin sobre .sidenav-toggler.
+ * 3) Un solo handler (delegado) controla html.nav_open.
+ * 4) No tocamos .toggle-sidebar (minimize en desktop lo sigue manejando kaiadmin).
+ */
+(function () {
+  var NAV_OPEN = 'nav_open';
+
+  function isMobile() {
+    return window.matchMedia('(max-width: 991.5px)').matches;
+  }
+
+  function setNavOpen(open) {
+    var html = document.documentElement;
+    if (open) {
+      html.classList.add(NAV_OPEN);
+    } else {
+      html.classList.remove(NAV_OPEN);
+    }
+    document.querySelectorAll('.sidenav-toggler, .gemo-mobile-toggler').forEach(function (btn) {
+      if (open) {
+        btn.classList.add('toggled');
+      } else {
+        btn.classList.remove('toggled');
+      }
+    });
+  }
+
+  function toggleNavOpen() {
+    setNavOpen(!document.documentElement.classList.contains(NAV_OPEN));
+  }
+
+  /** Botón hamburguesa estándar que KaiAdmin espera en móvil */
+  function buildHamburgerButton() {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'navbar-toggler sidenav-toggler gemo-mobile-toggler';
+    btn.setAttribute('aria-label', 'Abrir o cerrar menú');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.innerHTML =
+      '<span class="navbar-toggler-icon">' +
+      '<i class="fas fa-bars" aria-hidden="true"></i>' +
+      '</span>';
+    return btn;
+  }
+
+  /**
+   * Reconstruye el logo del main-header para móvil:
+   * [hamburguesa] [logo centrado]
+   * Sin depender del HTML copiado por kaiadmin.
+   */
+  function restoreMainHeaderToggler() {
+    var logoHeader = document.querySelector('.main-header .logo-header');
+    if (!logoHeader) return;
+
+    // URL del logo (si ya hay un <a class="logo"> lo reutilizamos)
+    var existingLogo = logoHeader.querySelector('a.logo');
+    var logoHtml = existingLogo
+      ? existingLogo.outerHTML
+      : '<a href="#" class="logo"><img src="../../assets/img/branding/gemo-logo-white.png" alt="GEMO" class="gemo-top-brand-img"></a>';
+
+    // Si el logo del sidebar tenía un href distinto, preferir el del sidebar
+    var sidebarLogo = document.querySelector('.sidebar .logo-header a.logo');
+    if (sidebarLogo && sidebarLogo.getAttribute('href')) {
+      logoHtml =
+        '<a href="' +
+        sidebarLogo.getAttribute('href') +
+        '" class="logo">' +
+        (sidebarLogo.querySelector('img')
+          ? sidebarLogo.querySelector('img').outerHTML.replace('gemo-brand-img', 'gemo-top-brand-img')
+          : sidebarLogo.innerHTML) +
+        '</a>';
+    }
+
+    // Limpiar y dejar solo hamburguesa + logo (estructura que el CSS móvil de KaiAdmin entiende)
+    logoHeader.innerHTML = '';
+    logoHeader.appendChild(buildHamburgerButton());
+    var wrap = document.createElement('div');
+    wrap.innerHTML = logoHtml;
+    while (wrap.firstChild) {
+      logoHeader.appendChild(wrap.firstChild);
+    }
+  }
+
+  /** Quitar handlers de jQuery/kaiadmin sobre sidenav-toggler para evitar doble toggle */
+  function unbindKaiadminSidenav() {
+    if (typeof jQuery === 'undefined') return;
+    try {
+      jQuery('.sidenav-toggler').off('click');
+      // Por si el handler quedó en document o en el collection original
+      jQuery(document).off('click', '.sidenav-toggler');
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  function bindOurToggle() {
+    // Delegación: funciona aunque se reemplace el HTML del logo
+    document.addEventListener(
+      'click',
+      function (e) {
+        var btn = e.target.closest('.sidenav-toggler, .gemo-mobile-toggler');
+        if (!btn) return;
+
+        // Solo en móvil el hamburguesa abre/cierra off-canvas.
+        // En desktop el sidenav-toggler no debe pelearse con el minimize.
+        if (!isMobile()) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+        if (typeof e.stopImmediatePropagation === 'function') {
+          e.stopImmediatePropagation();
+        }
+        toggleNavOpen();
+        btn.setAttribute(
+          'aria-expanded',
+          document.documentElement.classList.contains(NAV_OPEN) ? 'true' : 'false'
+        );
+      },
+      true // capture: nos adelantamos a cualquier otro listener
+    );
+
+    // Cerrar al hacer click fuera del sidebar (móvil)
+    document.addEventListener('click', function (e) {
+      if (!isMobile()) return;
+      if (!document.documentElement.classList.contains(NAV_OPEN)) return;
+      var sidebar = document.querySelector('.sidebar');
+      var btn = e.target.closest('.sidenav-toggler, .gemo-mobile-toggler');
+      if (btn) return;
+      if (sidebar && sidebar.contains(e.target)) return;
+      setNavOpen(false);
+    });
+
+    // Al pasar a desktop, quitar nav_open para no dejar el layout desplazado
+    window.addEventListener('resize', function () {
+      if (!isMobile() && document.documentElement.classList.contains(NAV_OPEN)) {
+        setNavOpen(false);
+      }
+    });
+  }
+
+  function init() {
+    // kaiadmin ya corrió (script anterior en el footer). Deshacer el daño del overwrite.
+    unbindKaiadminSidenav();
+    restoreMainHeaderToggler();
+    bindOurToggle();
+
+    // Por si kaiadmin vuelve a tocar el DOM un tick después
+    setTimeout(function () {
+      unbindKaiadminSidenav();
+      var header = document.querySelector('.main-header .logo-header');
+      if (header && !header.querySelector('.gemo-mobile-toggler')) {
+        restoreMainHeaderToggler();
+      }
+    }, 100);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();

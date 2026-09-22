@@ -41,9 +41,9 @@ INSERT INTO barrio (id_barrio, nombre, id_comuna) VALUES
     (2, 'San Carlos', 11)
     ON CONFLICT (id_barrio) DO NOTHING;
 
-INSERT INTO sitio_terreno (id_sitio, direccion, latitud, longitud) VALUES
-    (1, 'Calle 30 #36-5, San Carlos', 3.420000, -76.520000),
-    (2, 'Carrera 15 #8-20', 3.451000, -76.531000)
+INSERT INTO sitio_terreno (id_sitio, direccion) VALUES
+    (1, 'Calle 30 #36-5, San Carlos'),
+    (2, 'Carrera 15 #8-20')
 ON CONFLICT (id_sitio) DO NOTHING;
 
 INSERT INTO sitio_barrio (id_sitio_barrio, id_sitio, id_barrio) VALUES

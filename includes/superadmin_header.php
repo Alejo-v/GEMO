@@ -8,12 +8,14 @@
 <link rel="icon" href="../../assets/img/kaiadmin/favicon.ico">
 <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
 <link rel="stylesheet" href="../../assets/css/plugins.min.css">
-<link rel="stylesheet" href="../../assets/css/kaiadmin.min.css"><link rel="stylesheet" href="../../assets/css/fonts.min.css">
+<link rel="stylesheet" href="../../assets/css/kaiadmin.min.css">
+<link rel="stylesheet" href="../../assets/css/fonts.min.css">
 <link rel="stylesheet" href="../../assets/css/gemo.css">
 </head>
 <body>
 <div class="wrapper">
 <div class="sidebar gemo-sidebar" data-background-color="dark">
+
 <div class="sidebar-logo"><div class="logo-header gemo-logo-header">
 <a href="dashboard.php" class="logo text-decoration-none"><img src="../../assets/img/branding/gemo-logo-white.png" alt="GEMO" class="gemo-brand-img"></a>
 <div class="nav-toggle"><button class="btn btn-toggle toggle-sidebar"><i class="gg-menu-right"></i></button><button class="btn btn-toggle sidenav-toggler"><i class="gg-menu-left"></i></button></div>

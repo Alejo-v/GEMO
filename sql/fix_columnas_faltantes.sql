@@ -1,0 +1,11 @@
+-- ============================================================
+-- NOTA: Este script YA NO es necesario para latitud/longitud.
+-- El código PHP se adaptó al esquema de bd_gemo_final.sql:
+--   - sitio_terreno: id_sitio, direccion, activo  (sin lat/long)
+--   - comuna: id_comuna, nombre  (sin activo)
+--   - barrio: id_barrio, nombre, id_comuna  (sin activo)
+--
+-- OPCIONAL: si en el futuro quieres inhabilitar comunas/barrios
+-- (soft-delete), ejecuta en su lugar:
+--   sql/alter_crud_ubicacion.sql
+-- ============================================================

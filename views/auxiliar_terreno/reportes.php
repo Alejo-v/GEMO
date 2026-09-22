@@ -110,7 +110,7 @@ $totalCulex = array_sum(array_column($reporteSitios, 'larvas_culex'));
 </div>
 
 <div class="card card-round mb-4">
-    <div class="card-header"><h4 class="card-title">Reporte 1 · Información de sitios</h4></div>
+    <div class="card-header"><h4 class="card-title">Reporte 1 — Información de sitios</h4></div>
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-hover align-middle">
@@ -147,7 +147,7 @@ $totalCulex = array_sum(array_column($reporteSitios, 'larvas_culex'));
 <div class="row">
     <div class="col-md-6">
         <div class="card card-round mb-4">
-            <div class="card-header"><h4 class="card-title">Reporte 2 · Por tipo de actividad</h4></div>
+            <div class="card-header"><h4 class="card-title">Reporte 2 — Por tipo de actividad</h4></div>
             <div class="card-body">
                 <?php if (empty($reporteActividad)): ?>
                     <p class="text-muted mb-0">No hay datos para graficar con estos filtros.</p>
@@ -159,7 +159,7 @@ $totalCulex = array_sum(array_column($reporteSitios, 'larvas_culex'));
     </div>
     <div class="col-md-6">
         <div class="card card-round mb-4">
-            <div class="card-header"><h4 class="card-title">Reporte 4 · Por tipo de depósito</h4></div>
+            <div class="card-header"><h4 class="card-title">Reporte 4 — Por tipo de depósito</h4></div>
             <div class="card-body">
                 <?php if (empty($reporteTipoDeposito)): ?>
                     <p class="text-muted mb-0">No hay datos para graficar con estos filtros.</p>
@@ -172,7 +172,7 @@ $totalCulex = array_sum(array_column($reporteSitios, 'larvas_culex'));
 </div>
 
 <div class="card card-round mb-4">
-    <div class="card-header"><h4 class="card-title">Reporte 3 · Actividades por auxiliar</h4></div>
+    <div class="card-header"><h4 class="card-title">Reporte 3 — Actividades por auxiliar</h4></div>
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-hover align-middle">
