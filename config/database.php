@@ -15,7 +15,6 @@ class Database
         $this->dbname   = getenv('DB_NAME') ?: 'bd_gemo';
         $this->username = getenv('DB_USER') ?: 'postgres';
         $this->password = getenv('DB_PASS') ?: 'aleCV12';
-
     }
 
     public function conectar(): PDO
