@@ -28,6 +28,6 @@
 <li class="nav-item <?= basename($_SERVER['PHP_SELF'])==='acerca_de.php'?'active':'' ?>"><a href="acerca_de.php"><i class="fas fa-info-circle"></i><p>Acerca de GEMO</p></a></li>
 <li class="nav-item"><a href="../../logout.php"><i class="fas fa-sign-out-alt"></i><p>Cerrar sesión</p></a></li>
 </ul></div></div></div>
-<div class="main-panel"><div class="main-header"><div class="main-header-logo"><div class="logo-header gemo-logo-header"><a href="dashboard.php" class="logo"><img src="../../assets/img/branding/gemo-logo-white.png" alt="GEMO" class="gemo-top-brand-img"></a></div></div>
+<div class="main-panel"><div class="main-header"><div class="main-header-logo"><div class="logo-header gemo-logo-header"><button class="navbar-toggler sidenav-toggler gemo-mobile-toggler" type="button" aria-label="Abrir menú"><span class="navbar-toggler-icon"><i class="fas fa-bars"></i></span></button><a href="dashboard.php" class="logo"><img src="../../assets/img/branding/gemo-logo-white.png" alt="GEMO" class="gemo-top-brand-img"></a></div></div>
 <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom"><div class="container-fluid"><ul class="navbar-nav topbar-nav ms-auto align-items-center"><li class="nav-item"><span class="navbar-text"><strong><?= htmlspecialchars($_SESSION['usuario_nombre']) ?></strong> · <?= htmlspecialchars($_SESSION['usuario_rol']) ?></span></li></ul></div></nav></div>
 <div class="container"><div class="page-inner">

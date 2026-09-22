@@ -78,3 +78,37 @@ html.gemo-a11y-contraste .table td { color:#000!important;border-color:#000!impo
 html.gemo-a11y-contraste .gemo-about-timeline:before{background:#000}
 html.gemo-a11y-contraste .gemo-about-item .card-header{background:#fff!important;border-bottom:1px solid #000}
 html.gemo-a11y-contraste .gemo-about-list li,html.gemo-a11y-contraste .gemo-about-role{color:#000!important}
+
+/* ==== Menú hamburguesa móvil (fix) ==== */
+.gemo-mobile-toggler{display:none;background:transparent;border:0;padding:0 10px;cursor:pointer;z-index:1200;position:relative}
+.gemo-mobile-toggler .navbar-toggler-icon i{font-size:22px;color:#545454}
+.gemo-logo-header[data-background-color] .gemo-mobile-toggler .navbar-toggler-icon i{color:#fff}
+@media screen and (max-width:991.5px){
+  .gemo-mobile-toggler{display:flex!important;align-items:center;justify-content:center;height:100%;opacity:1;order:1}
+  .main-header-logo .logo-header{padding-left:6px}
+}
+
+/* ==== Alinear tarjetas de reportes en una misma fila (mismo alto, sin importar la cantidad de info) ==== */
+.row>[class*="col-"]>.card.card-round{height:calc(100% - 1.5rem);display:flex;flex-direction:column}
+.row>[class*="col-"]>.card.card-round .card-body{flex:1 1 auto;display:flex;flex-direction:column}
+.row>[class*="col-"]>.card.card-round canvas{margin-top:auto;margin-bottom:auto}
+
+/* ==== Barrios y comunas: evitar scroll horizontal, tablas más compactas ==== */
+#form-comuna ~ .table-responsive table,
+#form-barrio ~ .table-responsive table{font-size:.85rem}
+#form-comuna ~ .table-responsive table td.text-nowrap,
+#form-barrio ~ .table-responsive table td.text-nowrap{white-space:normal!important}
+#form-comuna ~ .table-responsive table .btn-sm,
+#form-barrio ~ .table-responsive table .btn-sm{padding:.2rem .45rem;margin-bottom:2px}
+@media(max-width:1199px){
+  #form-comuna ~ .table-responsive,
+  #form-barrio ~ .table-responsive{overflow-x:visible}
+}
+
+/* ==== Select filtrable (comuna / barrio) ==== */
+.gemo-select-filtrable-wrap{position:relative}
+.gemo-select-filtrable-oculto{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;border:0!important}
+.gemo-select-filtrable-lista{position:absolute;z-index:1050;top:100%;left:0;right:0;max-height:220px;overflow-y:auto;background:#fff;border:1px solid rgba(0,0,0,.15);border-radius:.375rem;box-shadow:0 6px 18px rgba(0,0,0,.12);margin-top:2px}
+.gemo-select-filtrable-item{padding:.45rem .75rem;cursor:pointer;font-size:.92rem}
+.gemo-select-filtrable-item:hover{background:var(--gemo-soft)}
+.gemo-select-filtrable-vacio{padding:.45rem .75rem;color:#8a97a6;font-size:.9rem}

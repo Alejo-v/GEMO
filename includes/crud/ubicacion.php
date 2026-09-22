@@ -17,7 +17,7 @@ $exito = $_SESSION['ubicacion_exito'] ?? null; unset($_SESSION['ubicacion_exito'
 <?php if ($exito): ?><div class="alert alert-success"><i class="fas fa-check-circle me-2"></i><?= htmlspecialchars($exito) ?></div><?php endif; ?>
 
 <div class="row g-4">
-    <div class="col-lg-5">
+    <div class="col-lg-6">
         <div class="card card-round">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h4 class="card-title mb-0"><i class="fas fa-city me-2"></i>Comunas</h4>
@@ -72,7 +72,7 @@ $exito = $_SESSION['ubicacion_exito'] ?? null; unset($_SESSION['ubicacion_exito'
         </div>
     </div>
 
-    <div class="col-lg-7">
+    <div class="col-lg-6">
         <div class="card card-round">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h4 class="card-title mb-0"><i class="fas fa-map-marker-alt me-2"></i>Barrios</h4>
@@ -84,7 +84,7 @@ $exito = $_SESSION['ubicacion_exito'] ?? null; unset($_SESSION['ubicacion_exito'
                     <input type="hidden" name="id_barrio" id="barrio-id">
                     <div class="row g-3">
                         <div class="col-md-7"><label class="form-label">Nombre del barrio *</label><input type="text" name="nombre" id="barrio-nombre" class="form-control" maxlength="120" minlength="1" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü0-9 .'-]+" required></div>
-                        <div class="col-md-5"><label class="form-label">Comuna *</label><select name="id_comuna" id="barrio-comuna" class="form-select" required><option value="">Seleccione</option><?php foreach($comunasActivas as $c): ?><option value="<?= (int)$c['id_comuna'] ?>"><?= htmlspecialchars($c['nombre']) ?></option><?php endforeach; ?></select></div>
+                        <div class="col-md-5"><label class="form-label">Comuna *</label><select name="id_comuna" id="barrio-comuna" class="form-select gemo-select-filtrable" data-placeholder="Escriba para buscar la comuna…" required><option value="">Seleccione</option><?php foreach($comunasActivas as $c): ?><option value="<?= (int)$c['id_comuna'] ?>"><?= htmlspecialchars($c['nombre']) ?></option><?php endforeach; ?></select></div>
                     </div>
                     <div class="d-flex gap-2 mt-3">
                         <button class="btn btn-gemo" type="submit"><i class="fas fa-save me-1"></i>Guardar</button>
