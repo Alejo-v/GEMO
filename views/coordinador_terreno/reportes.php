@@ -5,6 +5,8 @@ require_once '../../models/ReporteTerreno.php';
 
 $modelo = new ReporteTerreno();
 
+$hoy = date('Y-m-d');
+
 $filtros = [
     'id_comuna' => $_GET['id_comuna'] ?? '',
     'id_barrio' => $_GET['id_barrio'] ?? '',
@@ -12,6 +14,21 @@ $filtros = [
     'fecha_desde' => $_GET['fecha_desde'] ?? '',
     'fecha_hasta' => $_GET['fecha_hasta'] ?? '',
 ];
+
+foreach (['fecha_desde', 'fecha_hasta'] as $campoFecha) {
+    if ($filtros[$campoFecha] !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $filtros[$campoFecha])) {
+        $filtros[$campoFecha] = '';
+    }
+}
+if ($filtros['fecha_desde'] !== '' && $filtros['fecha_desde'] > $hoy) {
+    $filtros['fecha_desde'] = $hoy;
+}
+if ($filtros['fecha_hasta'] !== '' && $filtros['fecha_hasta'] > $hoy) {
+    $filtros['fecha_hasta'] = $hoy;
+}
+if ($filtros['fecha_desde'] !== '' && $filtros['fecha_hasta'] !== '' && $filtros['fecha_desde'] > $filtros['fecha_hasta']) {
+    [$filtros['fecha_desde'], $filtros['fecha_hasta']] = [$filtros['fecha_hasta'], $filtros['fecha_desde']];
+}
 
 $comunas = $modelo->obtenerComunas();
 $barrios = $modelo->obtenerBarrios();
@@ -83,11 +100,11 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
             </div>
             <div class="col-md-3">
                 <label class="form-label">Fecha desde</label>
-                <input type="date" name="fecha_desde" class="form-control" value="<?= htmlspecialchars($filtros['fecha_desde']) ?>">
+                <input type="date" name="fecha_desde" class="form-control" value="<?= htmlspecialchars($filtros['fecha_desde']) ?>" max="<?= htmlspecialchars($hoy) ?>">
             </div>
             <div class="col-md-3">
                 <label class="form-label">Fecha hasta</label>
-                <input type="date" name="fecha_hasta" class="form-control" value="<?= htmlspecialchars($filtros['fecha_hasta']) ?>">
+                <input type="date" name="fecha_hasta" class="form-control" value="<?= htmlspecialchars($filtros['fecha_hasta']) ?>" max="<?= htmlspecialchars($hoy) ?>">
             </div>
             <div class="col-md-9 d-flex align-items-end gap-2">
                 <button type="submit" class="btn btn-gemo"><i class="fas fa-filter me-1"></i> Aplicar filtros</button>

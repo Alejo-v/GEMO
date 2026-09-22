@@ -192,8 +192,17 @@ if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
     volverConError('La fecha de nacimiento no es válida.');
 }
 $fechaNacimiento = DateTime::createFromFormat('!Y-m-d', $fecha);
-if (!$fechaNacimiento || $fechaNacimiento->format('Y-m-d') !== $fecha || $fechaNacimiento > new DateTime('today')) {
+$hoy = new DateTime('today');
+if (!$fechaNacimiento || $fechaNacimiento->format('Y-m-d') !== $fecha || $fechaNacimiento > $hoy) {
     volverConError('La fecha de nacimiento no es válida o no puede ser futura.');
+}
+
+$edad = $fechaNacimiento->diff($hoy)->y;
+if ($edad < 18) {
+    volverConError('El usuario debe tener al menos 18 años de edad.');
+}
+if ($edad > 80) {
+    volverConError('La fecha de nacimiento no es válida (la edad máxima permitida es 80 años).');
 }
 
 try {
