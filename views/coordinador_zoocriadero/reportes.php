@@ -12,13 +12,14 @@ $filtros = [
     'id_actividad' => $_GET['id_actividad'] ?? '',
 ];
 
-$errorFechas = '';
-if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $filtros['fecha_inicio']) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $filtros['fecha_fin'])) {
-    $errorFechas = 'La fecha ingresada no es válida.';
-} elseif ($filtros['fecha_inicio'] > $hoy || $filtros['fecha_fin'] > $hoy) {
-    $errorFechas = 'No hay reportes en ese rango de fechas.';
-} elseif ($filtros['fecha_inicio'] > $filtros['fecha_fin']) {
-    $errorFechas = 'No hay reportes en ese rango de fechas.';
+if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $filtros['fecha_inicio'])) {
+    $filtros['fecha_inicio'] = date('Y-m-d', strtotime('-30 days'));
+}
+if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $filtros['fecha_fin'])) {
+    $filtros['fecha_fin'] = $hoy;
+}
+if ($filtros['fecha_inicio'] > $filtros['fecha_fin']) {
+    [$filtros['fecha_inicio'], $filtros['fecha_fin']] = [$filtros['fecha_fin'], $filtros['fecha_inicio']];
 }
 
 $modelo = new SeguimientoZoocriadero();
@@ -27,19 +28,11 @@ $modeloTanque = new Tanque();
 $zoocriaderos = $modelo->obtenerZoocriaderos();
 $actividadesCatalogo = $modelo->obtenerActividades();
 
-if ($errorFechas !== '') {
-    $resumen = ['total_vivos' => 0, 'total_muertos' => 0];
-    $serie = [];
-    $registros = [];
-    $resumenPorTanque = [];
-    $reporteTanquesZoo = [];
-} else {
-    $resumen = $modelo->obtenerResumenFiltrado($filtros);
-    $serie = $modelo->obtenerSerieDiariaFiltrada($filtros);
-    $registros = $modelo->obtenerRegistrosFiltrados($filtros);
-    $resumenPorTanque = $modelo->obtenerResumenPorTanque($filtros);
-    $reporteTanquesZoo = $modeloTanque->obtenerReportePorZoocriadero();
-}
+$resumen = $modelo->obtenerResumenFiltrado($filtros);
+$serie = $modelo->obtenerSerieDiariaFiltrada($filtros);
+$registros = $modelo->obtenerRegistrosFiltrados($filtros);
+$resumenPorTanque = $modelo->obtenerResumenPorTanque($filtros);
+$reporteTanquesZoo = $modeloTanque->obtenerReportePorZoocriadero();
 
 $totalVivos = (int) $resumen['total_vivos'];
 $totalMuertos = (int) $resumen['total_muertos'];
@@ -65,16 +58,13 @@ $urlPdf = '../../controllers/ReporteController.php?accion=pdf'
         <h3 class="fw-bold mb-1">Reportes del zoocriadero</h3>
         <p class="text-muted mb-0">Los 3 reportes del proceso de Zoocriadero, con filtros por fechas, zoocriadero y actividad.</p>
     </div>
-    <div class="btn-group" role="group"><a href="<?= htmlspecialchars($urlPdf) ?>" class="btn btn-gemo" target="_blank" title="Previsualizar"><i class="fas fa-eye me-1"></i> Previsualizar</a><a href="<?= htmlspecialchars($urlPdf) ?>&amp;descargar=1" class="btn btn-gemo" title="Descargar"><i class="fas fa-download me-1"></i> Descargar</a></div>
+    <a href="<?= htmlspecialchars($urlPdf) ?>" class="btn btn-gemo" target="_blank">
+        <i class="fas fa-file-pdf me-1"></i> Descargar PDF
+    </a>
 </div>
 
 <div class="card card-round mb-4">
     <div class="card-header"><h4 class="card-title">Filtros</h4></div>
-    <?php if ($errorFechas !== ''): ?>
-    <div class="alert alert-warning d-flex align-items-center gap-2 m-3 mb-0" role="alert">
-        <i class="fas fa-triangle-exclamation"></i> <?= htmlspecialchars($errorFechas) ?>
-    </div>
-    <?php endif; ?>
     <div class="card-body">
         <form method="get" action="reportes.php" class="row g-3 align-items-end">
             <div class="col-sm-6 col-md-3">
@@ -210,7 +200,7 @@ $urlPdf = '../../controllers/ReporteController.php?accion=pdf'
 </div>
 
 <div class="card card-round mt-3 mb-4">
-    <div class="card-header"><h4 class="card-title">Reporte 1 · Seguimiento de actividades</h4></div>
+    <div class="card-header"><h4 class="card-title">Reporte 1 — Seguimiento de actividades</h4></div>
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-hover align-middle">
@@ -259,7 +249,7 @@ $urlPdf = '../../controllers/ReporteController.php?accion=pdf'
 <div class="row">
     <div class="col-md-7">
         <div class="card card-round mb-4">
-            <div class="card-header"><h4 class="card-title">Reporte 2 · Nacidos y muertos por tanque</h4></div>
+            <div class="card-header"><h4 class="card-title">Reporte 2 — Nacidos y muertos por tanque</h4></div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
@@ -315,7 +305,7 @@ $urlPdf = '../../controllers/ReporteController.php?accion=pdf'
 </div>
 
 <div class="card card-round mb-4">
-    <div class="card-header"><h4 class="card-title">Reporte 3 · Tanques por zoocriadero</h4></div>
+    <div class="card-header"><h4 class="card-title">Reporte 3 — Tanques por zoocriadero</h4></div>
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-hover align-middle">

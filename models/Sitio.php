@@ -11,31 +11,29 @@ class Sitio
         $this->conexion = (new Database())->conectar();
     }
 
-    
+    /** Barrios disponibles (esquema final: barrio/comuna sin columna activo). */
     public function obtenerBarrios(): array
     {
         $sql = 'SELECT b.id_barrio, b.nombre, c.nombre AS comuna
                 FROM barrio b
                 INNER JOIN comuna c ON c.id_comuna = b.id_comuna
-                WHERE b.activo = TRUE AND c.activo = TRUE
                 ORDER BY c.nombre, b.nombre';
         return $this->conexion->query($sql)->fetchAll();
     }
 
     public function obtenerTodos(): array
     {
-        $sql = "SELECT st.id_sitio, st.direccion, st.latitud, st.longitud, st.activo,
+        $sql = "SELECT st.id_sitio, st.direccion, st.activo,
                        COALESCE(string_agg(DISTINCT b.nombre, ', ' ORDER BY b.nombre), 'Sin barrio') AS barrios,
                        COALESCE(array_agg(DISTINCT sb.id_barrio) FILTER (WHERE sb.id_barrio IS NOT NULL), '{}') AS ids_barrios
                 FROM sitio_terreno st
                 LEFT JOIN sitio_barrio sb ON sb.id_sitio = st.id_sitio
                 LEFT JOIN barrio b ON b.id_barrio = sb.id_barrio
-                GROUP BY st.id_sitio, st.direccion, st.latitud, st.longitud, st.activo
+                GROUP BY st.id_sitio, st.direccion, st.activo
                 ORDER BY st.id_sitio DESC";
         $stmt = $this->conexion->query($sql);
         $filas = $stmt->fetchAll();
         foreach ($filas as &$fila) {
-            
             $fila['ids_barrios'] = array_map('intval', array_filter(
                 explode(',', trim($fila['ids_barrios'], '{}')),
                 fn ($v) => $v !== ''
@@ -44,7 +42,6 @@ class Sitio
         return $filas;
     }
 
-    
     public function obtenerActivos(): array
     {
         $sql = "SELECT st.id_sitio, st.direccion,
@@ -61,26 +58,16 @@ class Sitio
     public function obtenerPorId(int $idSitio): ?array
     {
         $stmt = $this->conexion->prepare(
-            'SELECT id_sitio, direccion, latitud, longitud, activo FROM sitio_terreno WHERE id_sitio = :id'
+            'SELECT id_sitio, direccion, activo FROM sitio_terreno WHERE id_sitio = :id'
         );
         $stmt->execute([':id' => $idSitio]);
         $sitio = $stmt->fetch();
-        if (!$sitio) {
-            return null;
-        }
-
-        $stmtBarrios = $this->conexion->prepare(
-            'SELECT id_barrio FROM sitio_barrio WHERE id_sitio = :id'
-        );
-        $stmtBarrios->execute([':id' => $idSitio]);
-        $sitio['barrios'] = $stmtBarrios->fetchAll(PDO::FETCH_COLUMN);
-
-        return $sitio;
+        return $sitio ?: null;
     }
 
     public function barrioExiste(int $idBarrio): bool
     {
-        $stmt = $this->conexion->prepare('SELECT 1 FROM barrio WHERE id_barrio = :id AND activo = TRUE LIMIT 1');
+        $stmt = $this->conexion->prepare('SELECT 1 FROM barrio WHERE id_barrio = :id LIMIT 1');
         $stmt->execute([':id' => $idBarrio]);
         return (bool) $stmt->fetchColumn();
     }
@@ -90,11 +77,11 @@ class Sitio
         $this->conexion->beginTransaction();
         try {
             $stmt = $this->conexion->prepare(
-                'INSERT INTO sitio_terreno (direccion, latitud, longitud)
-                 VALUES (:direccion, :latitud, :longitud)
+                'INSERT INTO sitio_terreno (direccion)
+                 VALUES (:direccion)
                  RETURNING id_sitio'
             );
-            $stmt->execute($datos);
+            $stmt->execute([':direccion' => $datos[':direccion']]);
             $idSitio = (int) $stmt->fetchColumn();
 
             $this->vincularBarrios($idSitio, $idsBarrios);
@@ -111,13 +98,15 @@ class Sitio
     {
         $this->conexion->beginTransaction();
         try {
-            $datos[':id'] = $idSitio;
             $stmt = $this->conexion->prepare(
                 'UPDATE sitio_terreno
-                 SET direccion = :direccion, latitud = :latitud, longitud = :longitud
+                 SET direccion = :direccion
                  WHERE id_sitio = :id'
             );
-            $stmt->execute($datos);
+            $stmt->execute([
+                ':direccion' => $datos[':direccion'],
+                ':id'        => $idSitio,
+            ]);
 
             $stmtBorrar = $this->conexion->prepare('DELETE FROM sitio_barrio WHERE id_sitio = :id');
             $stmtBorrar->execute([':id' => $idSitio]);

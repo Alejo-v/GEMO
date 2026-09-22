@@ -18,8 +18,6 @@ CREATE TABLE barrio (
 CREATE TABLE sitio_terreno (
     id_sitio    SMALLINT      NOT NULL,
     direccion   VARCHAR(50),
-    latitud     NUMERIC(9,6),
-    longitud    NUMERIC(9,6),
     CONSTRAINT pk_sitio_terreno PRIMARY KEY (id_sitio)
 );
 

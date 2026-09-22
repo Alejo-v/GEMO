@@ -38,9 +38,7 @@ $error = $_SESSION['permiso_error'] ?? null; unset($_SESSION['permiso_error']);
                 <ul class="list-group list-group-flush">
                     <?php foreach ($rol['permisos'] as $permiso): ?>
                         <li class="list-group-item d-flex align-items-center justify-content-between px-0">
-                            <span><?= htmlspecialchars($permiso['etiqueta']) ?>
-                                <br><small class="text-muted"><?= htmlspecialchars($permiso['pagina']) ?></small>
-                            </span>
+                            <span><?= htmlspecialchars($permiso['etiqueta']) ?></span>
                             <form method="post" action="../../controllers/PermisoController.php" class="permiso-form">
                                 <input type="hidden" name="accion" value="cambiar_estado">
                                 <input type="hidden" name="id_permiso" value="<?= (int) $permiso['id_permiso'] ?>">

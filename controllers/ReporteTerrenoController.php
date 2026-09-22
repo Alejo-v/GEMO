@@ -48,13 +48,11 @@ $filtros = [
 
 foreach (['fecha_desde', 'fecha_hasta'] as $campoFecha) {
     if ($filtros[$campoFecha] !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $filtros[$campoFecha])) {
-        http_response_code(400);
-        die('La fecha ingresada no es válida.');
+        $filtros[$campoFecha] = '';
     }
 }
 if ($filtros['fecha_desde'] !== '' && $filtros['fecha_hasta'] !== '' && $filtros['fecha_desde'] > $filtros['fecha_hasta']) {
-    http_response_code(400);
-    die('No hay reportes en ese rango de fechas.');
+    [$filtros['fecha_desde'], $filtros['fecha_hasta']] = [$filtros['fecha_hasta'], $filtros['fecha_desde']];
 }
 
 
@@ -341,6 +339,5 @@ if ($imprimeReporte1) {
 }
 
 $nombreArchivo = $archivosReporte[$reporte] . '_' . date('Y-m-d') . '.pdf';
-$modoSalidaPdf = (isset($_GET['descargar']) && $_GET['descargar'] == '1') ? 'D' : 'I';
-$pdf->Output($modoSalidaPdf, $nombreArchivo);
+$pdf->Output('D', $nombreArchivo);
 exit;

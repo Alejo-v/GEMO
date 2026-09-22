@@ -12,13 +12,14 @@ $filtros = [
     'id_actividad' => $_GET['id_actividad'] ?? '',
 ];
 
-$errorFechas = '';
-if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $filtros['fecha_inicio']) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $filtros['fecha_fin'])) {
-    $errorFechas = 'La fecha ingresada no es válida.';
-} elseif ($filtros['fecha_inicio'] > $hoy || $filtros['fecha_fin'] > $hoy) {
-    $errorFechas = 'No hay reportes en ese rango de fechas.';
-} elseif ($filtros['fecha_inicio'] > $filtros['fecha_fin']) {
-    $errorFechas = 'No hay reportes en ese rango de fechas.';
+if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $filtros['fecha_inicio'])) {
+    $filtros['fecha_inicio'] = date('Y-m-d', strtotime('-30 days'));
+}
+if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $filtros['fecha_fin'])) {
+    $filtros['fecha_fin'] = $hoy;
+}
+if ($filtros['fecha_inicio'] > $filtros['fecha_fin']) {
+    [$filtros['fecha_inicio'], $filtros['fecha_fin']] = [$filtros['fecha_fin'], $filtros['fecha_inicio']];
 }
 
 $modelo = new SeguimientoZoocriadero();
@@ -27,19 +28,11 @@ $modeloTanque = new Tanque();
 $zoocriaderos = $modelo->obtenerZoocriaderos();
 $actividadesCatalogo = $modelo->obtenerActividades();
 
-if ($errorFechas !== '') {
-    $resumen = ['total_vivos' => 0, 'total_muertos' => 0];
-    $serie = [];
-    $registros = [];
-    $resumenPorTanque = [];
-    $reporteTanquesZoo = [];
-} else {
-    $resumen = $modelo->obtenerResumenFiltrado($filtros);
-    $serie = $modelo->obtenerSerieDiariaFiltrada($filtros);
-    $registros = $modelo->obtenerRegistrosFiltrados($filtros);
-    $resumenPorTanque = $modelo->obtenerResumenPorTanque($filtros);
-    $reporteTanquesZoo = $modeloTanque->obtenerReportePorZoocriadero($filtros['id_zoocriadero']);
-}
+$resumen = $modelo->obtenerResumenFiltrado($filtros);
+$serie = $modelo->obtenerSerieDiariaFiltrada($filtros);
+$registros = $modelo->obtenerRegistrosFiltrados($filtros);
+$resumenPorTanque = $modelo->obtenerResumenPorTanque($filtros);
+$reporteTanquesZoo = $modeloTanque->obtenerReportePorZoocriadero($filtros['id_zoocriadero']);
 
 $totalVivos = (int) $resumen['total_vivos'];
 $totalMuertos = (int) $resumen['total_muertos'];
@@ -76,14 +69,10 @@ function urlPdfZoo(array $filtros, string $reporte): string
             <a href="reportes_terreno.php">su propia pantalla</a>.
         </p>
     </div>
-    <div class="btn-group" role="group"><a href="<?= htmlspecialchars(urlPdfZoo($filtros, 'todos')) ?>" class="btn btn-outline-success" target="_blank" title="Previsualizar"><i class="fas fa-eye me-1"></i> Previsualizar</a><a href="<?= htmlspecialchars(urlPdfZoo($filtros, 'todos')) ?>&amp;descargar=1" class="btn btn-outline-success" title="Descargar"><i class="fas fa-download me-1"></i> Descargar</a></div>
+    <a href="<?= htmlspecialchars(urlPdfZoo($filtros, 'todos')) ?>" class="btn btn-outline-success" target="_blank">
+        <i class="fas fa-file-pdf me-1"></i> Descargar los 3 en un PDF
+    </a>
 </div>
-
-<?php if ($errorFechas !== ''): ?>
-<div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
-    <i class="fas fa-triangle-exclamation"></i> <?= htmlspecialchars($errorFechas) ?>
-</div>
-<?php endif; ?>
 
 <div class="card card-round mb-4">
     <div class="card-header"><h4 class="card-title">Filtros</h4></div>
@@ -225,10 +214,12 @@ function urlPdfZoo(array $filtros, string $reporte): string
 <div class="card card-round mt-3 mb-4">
     <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div>
-            <h4 class="card-title mb-0">Reporte 1 · Seguimiento de actividades</h4>
+            <h4 class="card-title mb-0">Reporte 1 — Seguimiento de actividades</h4>
             <small class="text-muted">Filtrado por fechas, zoocriadero y actividad</small>
         </div>
-        <div class="btn-group" role="group"><a href="<?= htmlspecialchars(urlPdfZoo($filtros, '1')) ?>" class="btn btn-gemo btn-sm" target="_blank" title="Previsualizar"><i class="fas fa-eye me-1"></i> Previsualizar</a><a href="<?= htmlspecialchars(urlPdfZoo($filtros, '1')) ?>&amp;descargar=1" class="btn btn-gemo btn-sm" title="Descargar"><i class="fas fa-download me-1"></i> Descargar</a></div>
+        <a href="<?= htmlspecialchars(urlPdfZoo($filtros, '1')) ?>" class="btn btn-gemo btn-sm" target="_blank">
+            <i class="fas fa-file-pdf me-1"></i> Descargar reporte 1
+        </a>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -275,16 +266,18 @@ function urlPdfZoo(array $filtros, string $reporte): string
     </div>
 </div>
 
-
+<!-- ================= Reporte 2 ================= -->
 <div class="row">
     <div class="col-md-7">
         <div class="card card-round mb-4">
             <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
                 <div>
-                    <h4 class="card-title mb-0">Reporte 2 · Nacidos y muertos por tanque</h4>
+                    <h4 class="card-title mb-0">Reporte 2 — Nacidos y muertos por tanque</h4>
                     <small class="text-muted">Cuantificado tanque por tanque</small>
                 </div>
-                <div class="btn-group" role="group"><a href="<?= htmlspecialchars(urlPdfZoo($filtros, '2')) ?>" class="btn btn-gemo btn-sm" target="_blank" title="Previsualizar"><i class="fas fa-eye me-1"></i> Previsualizar</a><a href="<?= htmlspecialchars(urlPdfZoo($filtros, '2')) ?>&amp;descargar=1" class="btn btn-gemo btn-sm" title="Descargar"><i class="fas fa-download me-1"></i> Descargar</a></div>
+                <a href="<?= htmlspecialchars(urlPdfZoo($filtros, '2')) ?>" class="btn btn-gemo btn-sm" target="_blank">
+                    <i class="fas fa-file-pdf me-1"></i> Descargar reporte 2
+                </a>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -340,14 +333,16 @@ function urlPdfZoo(array $filtros, string $reporte): string
     </div>
 </div>
 
-
+<!-- ================= Reporte 3 ================= -->
 <div class="card card-round mb-4">
     <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div>
-            <h4 class="card-title mb-0">Reporte 3 · Tanques por zoocriadero</h4>
+            <h4 class="card-title mb-0">Reporte 3 — Tanques por zoocriadero</h4>
             <small class="text-muted">Cantidad de tanques, tipo de tanque y encargado</small>
         </div>
-        <div class="btn-group" role="group"><a href="<?= htmlspecialchars(urlPdfZoo($filtros, '3')) ?>" class="btn btn-gemo btn-sm" target="_blank" title="Previsualizar"><i class="fas fa-eye me-1"></i> Previsualizar</a><a href="<?= htmlspecialchars(urlPdfZoo($filtros, '3')) ?>&amp;descargar=1" class="btn btn-gemo btn-sm" title="Descargar"><i class="fas fa-download me-1"></i> Descargar</a></div>
+        <a href="<?= htmlspecialchars(urlPdfZoo($filtros, '3')) ?>" class="btn btn-gemo btn-sm" target="_blank">
+            <i class="fas fa-file-pdf me-1"></i> Descargar reporte 3
+        </a>
     </div>
     <div class="card-body">
         <div class="table-responsive">

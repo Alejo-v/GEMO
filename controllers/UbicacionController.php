@@ -81,21 +81,22 @@ try {
 
         if ($esBarrio) {
             if (!$modelo->barrioExiste($id)) volverUbicacion('El barrio no existe.');
-            if ($habilitar && !$modelo->comunaDelBarrioActiva($id)) {
-                volverUbicacion('No se puede habilitar este barrio porque su comuna está inhabilitada. Habilite primero la comuna.');
-            }
             if (!$habilitar && !$modelo->barrioPuedeInhabilitarse($id)) {
                 volverUbicacion('No se puede inhabilitar este barrio porque está asociado a sitios o zoocriaderos activos.');
             }
-            $modelo->cambiarEstadoBarrio($id, $habilitar);
+            if (!$modelo->cambiarEstadoBarrio($id, $habilitar)) {
+                volverUbicacion('La inhabilitación de barrios no está disponible con el esquema actual de la base de datos (sin columna activo).');
+            }
             volverUbicacion($habilitar ? 'Barrio habilitado correctamente.' : 'Barrio inhabilitado correctamente.', false);
         }
 
         if (!$modelo->comunaExiste($id)) volverUbicacion('La comuna no existe.');
         if (!$habilitar && !$modelo->comunaPuedeInhabilitarse($id)) {
-            volverUbicacion('No se puede inhabilitar esta comuna porque todavía tiene barrios activos. Inhabilite primero sus barrios.');
+            volverUbicacion('No se puede inhabilitar esta comuna porque todavía tiene barrios. Elimine o reasigne sus barrios primero.');
         }
-        $modelo->cambiarEstadoComuna($id, $habilitar);
+        if (!$modelo->cambiarEstadoComuna($id, $habilitar)) {
+            volverUbicacion('La inhabilitación de comunas no está disponible con el esquema actual de la base de datos (sin columna activo).');
+        }
         volverUbicacion($habilitar ? 'Comuna habilitada correctamente.' : 'Comuna inhabilitada correctamente.', false);
     }
 

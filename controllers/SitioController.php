@@ -56,8 +56,6 @@ try {
 
         $datos = [
             ':direccion' => $direccion,
-            ':latitud' => null,
-            ':longitud' => null,
         ];
 
         if ($accion === 'crear') {

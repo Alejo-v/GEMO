@@ -112,3 +112,164 @@ html.gemo-a11y-contraste .gemo-about-list li,html.gemo-a11y-contraste .gemo-abou
 .gemo-select-filtrable-item{padding:.45rem .75rem;cursor:pointer;font-size:.92rem}
 .gemo-select-filtrable-item:hover{background:var(--gemo-soft)}
 .gemo-select-filtrable-vacio{padding:.45rem .75rem;color:#8a97a6;font-size:.9rem}
+
+/* ==== Tarjetas alineadas, sin desborde, wrap en vez de scroll horizontal ==== */
+
+/* Contenedor principal: nunca scroll horizontal por tarjetas */
+.main-panel,
+.main-panel > .container,
+.main-panel > .container-fluid,
+.page-inner,
+.page-wrapper {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Filas de Bootstrap: permitir que las columnas se encojan y hagan wrap */
+.page-inner .row,
+.main-panel .row {
+  --bs-gutter-x: 1.5rem;
+  --bs-gutter-y: 1.5rem;
+  margin-left: calc(var(--bs-gutter-x) * -0.5);
+  margin-right: calc(var(--bs-gutter-x) * -0.5);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.page-inner .row > [class*="col-"],
+.main-panel .row > [class*="col-"] {
+  min-width: 0; /* evita que el contenido fuerce overflow */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Todas las tarjetas dentro de columnas: mismo alto y sin desborde */
+.page-inner .row > [class*="col-"] > .card,
+.main-panel .row > [class*="col-"] > .card,
+.row > [class*="col-"] > .card.card-round,
+.row > [class*="col-"] > .card.card-stats {
+  height: 100%;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.page-inner .row > [class*="col-"] > .card > .card-body,
+.main-panel .row > [class*="col-"] > .card > .card-body,
+.row > [class*="col-"] > .card.card-round > .card-body,
+.row > [class*="col-"] > .card.card-stats > .card-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Espacio inferior entre filas de tarjetas */
+.page-inner .row > [class*="col-"],
+.main-panel .row > [class*="col-"] {
+  margin-bottom: 1.25rem;
+}
+
+/* card-stats: texto e iconos sin desbordar */
+.card-stats .card-body .row {
+  flex-wrap: nowrap;
+  align-items: center;
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+}
+.card-stats .col-icon {
+  flex: 0 0 auto;
+  max-width: 65px;
+}
+.card-stats .col-stats,
+.card-stats .col.col-stats {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  padding-left: 12px !important;
+}
+.card-stats .numbers {
+  min-width: 0;
+  max-width: 100%;
+}
+.card-stats .card-title,
+.card-stats .card-category {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+  max-width: 100%;
+}
+.card-stats .card-title {
+  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  line-height: 1.25;
+}
+
+/* Gráficos / canvas dentro de tarjetas: que no empujen el layout */
+.card canvas,
+.card .chart-container {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* Si el contenido de una tarjeta es muy largo: scroll interno suave (solo vertical) */
+.card .card-body.gemo-card-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: min(70vh, 520px);
+}
+
+/* Tablas dentro de tarjetas: scroll solo si hace falta, sin romper la fila */
+.card .table-responsive {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Botones en filas: wrap en vez de desborde */
+.d-flex.flex-wrap,
+.card-body .d-flex {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Pantallas medianas: preferir 2 por fila cuando hay muchas col-md-3 */
+@media (max-width: 991.98px) {
+  .page-inner .row > .col-md-3,
+  .main-panel .row > .col-md-3 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+/* Móvil: una tarjeta por fila, sin scroll horizontal */
+@media (max-width: 575.98px) {
+  .page-inner .row > [class*="col-"],
+  .main-panel .row > [class*="col-"] {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  .card-stats .card-body .row {
+    flex-wrap: wrap;
+  }
+  .card-stats .col-icon {
+    margin-bottom: 8px;
+  }
+  .gemo-welcome-card {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* Ajuste de altura consistente cuando se usa mb en la tarjeta */
+.row > [class*="col-"] > .card.card-round.mb-4,
+.row > [class*="col-"] > .card.card-stats.mb-4 {
+  margin-bottom: 0 !important;
+}
