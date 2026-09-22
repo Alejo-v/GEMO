@@ -275,7 +275,7 @@ function urlPdfZoo(array $filtros, string $reporte): string
     </div>
 </div>
 
-<!-- ================= Reporte 2 ================= -->
+
 <div class="row">
     <div class="col-md-7">
         <div class="card card-round mb-4">
@@ -340,7 +340,7 @@ function urlPdfZoo(array $filtros, string $reporte): string
     </div>
 </div>
 
-<!-- ================= Reporte 3 ================= -->
+
 <div class="card card-round mb-4">
     <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div>

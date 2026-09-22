@@ -161,7 +161,7 @@ function urlPdfTerreno(array $filtros, string $reporte): string
     </div>
 </div>
 
-<!-- ================= Reporte 1 ================= -->
+
 <div class="card card-round mb-4">
     <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div>
@@ -203,7 +203,7 @@ function urlPdfTerreno(array $filtros, string $reporte): string
     </div>
 </div>
 
-<!-- ================= Reportes 2 y 4 ================= -->
+
 <div class="row">
     <div class="col-md-6">
         <div class="card card-round mb-4">
@@ -237,7 +237,7 @@ function urlPdfTerreno(array $filtros, string $reporte): string
     </div>
 </div>
 
-<!-- ================= Reporte 3 ================= -->
+
 <div class="card card-round mb-4">
     <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
         <h4 class="card-title mb-0">Reporte 3 · Actividades por auxiliar</h4>

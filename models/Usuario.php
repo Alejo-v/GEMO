@@ -231,9 +231,9 @@ class Usuario
     }
 
     /*
-     * ============================================================
+     * 
      * RECUPERACIÓN DE CONTRASEÑA
-     * ============================================================
+     * 
      */
 
     public function crearCodigoRecuperacion(
@@ -246,10 +246,7 @@ class Usuario
 
         try {
 
-            /*
-             * Elimina códigos anteriores que todavía no hayan
-             * sido utilizados.
-             */
+            
             $stmt = $this->conexion->prepare(
                 'DELETE FROM password_reset_codes
                  WHERE id_usuario = :id_usuario
@@ -261,7 +258,7 @@ class Usuario
             ]);
 
             /*
-             * Nunca se guarda el código original.
+             * recuerden muchachos que Nunca se guarda el código original.
              * Se guarda únicamente su hash.
              */
             $hash = password_hash(
@@ -269,9 +266,7 @@ class Usuario
                 PASSWORD_DEFAULT
             );
 
-            /*
-             * PostgreSQL calcula la fecha de expiración.
-             */
+            
             $sql = "INSERT INTO password_reset_codes
                     (
                         id_usuario,
@@ -316,9 +311,7 @@ class Usuario
         int $idUsuario
     ): ?array {
 
-        /*
-         * PostgreSQL determina si el código todavía está vigente.
-         */
+        
         $stmt = $this->conexion->prepare(
             'SELECT
                 id_reset,
@@ -348,12 +341,7 @@ class Usuario
         int $idReset
     ): int {
 
-        /*
-         * Solo aumenta los intentos si el código:
-         * - sigue vigente
-         * - no ha sido utilizado
-         * - todavía tiene menos de 5 intentos
-         */
+        
         $stmt = $this->conexion->prepare(
             'UPDATE password_reset_codes
              SET intentos = intentos + 1
@@ -379,12 +367,7 @@ class Usuario
         int $idReset
     ): bool {
 
-        /*
-         * El código solo puede marcarse como verificado si:
-         * - no ha sido utilizado
-         * - no ha expirado
-         * - tiene menos de 5 intentos
-         */
+       
         $stmt = $this->conexion->prepare(
             'UPDATE password_reset_codes
              SET verificado = true
@@ -406,9 +389,7 @@ class Usuario
         int $idReset
     ): ?array {
 
-        /*
-         * Se utiliza antes de permitir cambiar la contraseña.
-         */
+        
         $stmt = $this->conexion->prepare(
             'SELECT
                 id_reset,
@@ -453,10 +434,7 @@ class Usuario
         ]);
     }
 
-    /*
-     * Cambia la contraseña y consume el código
-     * dentro de una misma transacción.
-     */
+    
     public function finalizarRecuperacionPassword(
         int $idUsuario,
         int $idReset,
@@ -467,11 +445,7 @@ class Usuario
 
         try {
 
-            /*
-             * Primero consumimos el código.
-             *
-             * PostgreSQL vuelve a verificar todas las condiciones.
-             */
+            
             $stmt = $this->conexion->prepare(
                 'UPDATE password_reset_codes
                  SET usado_en = CURRENT_TIMESTAMP
@@ -487,10 +461,7 @@ class Usuario
                 ':id_usuario' => $idUsuario
             ]);
 
-            /*
-             * Si no se actualizó ningún registro,
-             * el código ya no es válido.
-             */
+            
             if ($stmt->rowCount() !== 1) {
 
                 $this->conexion->rollBack();
@@ -498,9 +469,7 @@ class Usuario
                 return false;
             }
 
-            /*
-             * Actualizamos la contraseña.
-             */
+            
             $stmt = $this->conexion->prepare(
                 'UPDATE usuario
                  SET "contraseña" = :contrasena
@@ -512,10 +481,7 @@ class Usuario
                 ':id_usuario' => $idUsuario
             ]);
 
-            /*
-             * Si no existe el usuario, no confirmamos
-             * la transacción.
-             */
+            
             if ($stmt->rowCount() !== 1) {
 
                 $this->conexion->rollBack();
@@ -538,9 +504,9 @@ class Usuario
     }
 
     /*
-     * ============================================================
-     * ESTADO DEL USUARIO
-     * ============================================================
+     * 
+     * aqui queda lo de ESTADO DEL USUARIO
+     * 
      */
 
     public function cambiarEstado(
@@ -560,9 +526,9 @@ class Usuario
     }
 
     /*
-     * ============================================================
+     * 
      * REGISTRO
-     * ============================================================
+     * 
      */
 
     public function registrar(array $datos): bool
