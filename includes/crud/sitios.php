@@ -33,27 +33,24 @@ $exito = $_SESSION['sitio_exito'] ?? null; unset($_SESSION['sitio_exito']);
                         <div class="col-md-2"><label class="form-label small">Número *</label><input type="text" name="numero_via" id="f-numero_via" class="form-control" maxlength="4" pattern="[0-9]{1,4}" inputmode="numeric" required></div>
                         <div class="col-md-1"><label class="form-label small">Letra</label><input type="text" name="letra_via" id="f-letra_via" class="form-control" maxlength="2" pattern="[A-Za-z]{1,2}"></div>
                         <div class="col-md-2"><label class="form-label small">Orientación</label><select name="orientacion" id="f-orientacion" class="form-select"><option value="">Sin orientación</option><option>Norte</option><option>Sur</option><option>Este</option><option>Oeste</option></select></div>
-                        <div class="col-md-1"><label class="form-label small">Placa *</label><input type="text" name="numero_placa" id="f-numero_placa" class="form-control" maxlength="4" pattern="[0-9]{1,4}" inputmode="numeric" required></div>
-                        <div class="col-md-1"><label class="form-label small">Letra</label><input type="text" name="letra_placa" id="f-letra_placa" class="form-control" maxlength="2" pattern="[A-Za-z]{1,2}"></div>
-                        <div class="col-md-2"><label class="form-label small">Metros *</label><input type="text" name="numero_metros" id="f-numero_metros" class="form-control" maxlength="4" pattern="[0-9]{1,4}" inputmode="numeric" required></div>
+                        <div class="col-md-4">
+                            <label class="form-label small">Placa y metros *</label>
+                            <input type="text" id="f-placa-metros" class="form-control" maxlength="10" placeholder="Ej: 79A-10" pattern="[0-9]{1,4}[A-Za-z]{0,2}-[0-9]{1,4}" required>
+                            <input type="hidden" name="numero_placa" id="f-numero_placa">
+                            <input type="hidden" name="letra_placa" id="f-letra_placa">
+                            <input type="hidden" name="numero_metros" id="f-numero_metros">
+                        </div>
                         <div class="col-12"><label class="form-label small">Complemento / apartamento / torre (opcional)</label><input type="text" name="complemento" id="f-complemento" class="form-control" maxlength="20" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü0-9 .#\-/]+"></div>
                     </div>
                     <input type="hidden" name="direccion" id="f-direccion">
-                    <small class="text-muted">Ejemplo: Calle 1A Oeste # 79A-10</small>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Latitud</label>
-                    <input type="number" step="0.000001" min="-90" max="90" name="latitud" id="f-latitud" class="form-control">
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Longitud</label>
-                    <input type="number" step="0.000001" min="-180" max="180" name="longitud" id="f-longitud" class="form-control">
+                    <small class="text-muted">Placa y metros: escríbalos como en el ejemplo (número, letra opcional, guion y metros). Ejemplo completo: Calle 1A Oeste # 79A-10</small>
                 </div>
                 <div class="col-12">
                     <label class="form-label">Barrios que abarca *</label>
-                    <div class="row">
+                    <input type="text" class="form-control mb-2" placeholder="Escriba para filtrar barrios o comunas…" data-checklist-filtro="lista-barrios-sitio">
+                    <div class="row gemo-checklist-scroll" id="lista-barrios-sitio">
                         <?php foreach ($barrios as $b): ?>
-                            <div class="col-md-4">
+                            <div class="col-md-4" data-checklist-item>
                                 <div class="form-check">
                                     <input class="form-check-input barrio-checkbox" type="checkbox" name="barrios[]"
                                            value="<?= (int)$b['id_barrio'] ?>" id="barrio-<?= (int)$b['id_barrio'] ?>">
@@ -83,20 +80,18 @@ $exito = $_SESSION['sitio_exito'] ?? null; unset($_SESSION['sitio_exito']);
             <table class="table table-hover align-middle">
                 <thead>
                     <tr>
-                        <th>#</th><th>Dirección</th><th>Barrios</th><th>Latitud</th><th>Longitud</th><th>Estado</th><th>Acciones</th>
+                        <th>#</th><th>Dirección</th><th>Barrios</th><th>Estado</th><th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                 <?php if (empty($sitios)): ?>
-                    <tr><td colspan="7" class="text-center text-muted">No hay sitios registrados.</td></tr>
+                    <tr><td colspan="5" class="text-center text-muted">No hay sitios registrados.</td></tr>
                 <?php endif; ?>
                 <?php foreach ($sitios as $s): ?>
                     <tr>
                         <td><?= (int)$s['id_sitio'] ?></td>
                         <td><?= htmlspecialchars($s['direccion']) ?></td>
                         <td><?= htmlspecialchars($s['barrios']) ?></td>
-                        <td><?= htmlspecialchars($s['latitud'] ?? '—') ?></td>
-                        <td><?= htmlspecialchars($s['longitud'] ?? '—') ?></td>
                         <td>
                             <?php if ($s['activo']): ?>
                                 <span class="badge badge-success">Activo</span>
@@ -137,13 +132,12 @@ function nuevoSitio() {
     document.getElementById('f-numero_via').value = '';
     document.getElementById('f-letra_via').value = '';
     document.getElementById('f-orientacion').value = '';
+    document.getElementById('f-placa-metros').value = '';
     document.getElementById('f-numero_placa').value = '';
     document.getElementById('f-letra_placa').value = '';
     document.getElementById('f-numero_metros').value = '';
     document.getElementById('f-complemento').value = '';
     document.getElementById('f-direccion').value = '';
-    document.getElementById('f-latitud').value = '';
-    document.getElementById('f-longitud').value = '';
     document.querySelectorAll('.barrio-checkbox').forEach(function (c) { c.checked = false; });
     document.getElementById('card-formulario').style.display = '';
     document.getElementById('card-formulario').scrollIntoView({ behavior: 'smooth' });
@@ -154,8 +148,6 @@ function editarSitio(sitio, idsBarrios) {
     document.getElementById('f-accion').value = 'actualizar';
     document.getElementById('f-id_sitio').value = sitio.id_sitio;
     cargarDireccion(sitio.direccion);
-    document.getElementById('f-latitud').value = sitio.latitud ?? '';
-    document.getElementById('f-longitud').value = sitio.longitud ?? '';
     document.querySelectorAll('.barrio-checkbox').forEach(function (c) {
         c.checked = idsBarrios.map(String).includes(c.value);
     });
@@ -168,35 +160,55 @@ function cargarDireccion(direccion) {
     var m = d.match(/^(Calle|Carrera|Avenida|Diagonal|Transversal|Circular|Autopista|Vía|Via|Kilómetro)\s+([0-9]{1,4})([A-Za-z]{1,2})?(?:\s+(Norte|Sur|Este|Oeste))?\s*#\s*([0-9]{1,4})([A-Za-z]{1,2})?\s*-\s*([0-9]{1,4})(?:\s+(.*))?$/i);
     if (!m) {
         alert('La dirección existente no tiene el formato estructurado esperado. Revísela antes de guardar.');
-        ['f-tipo_via','f-numero_via','f-letra_via','f-orientacion','f-numero_placa','f-letra_placa','f-numero_metros','f-complemento'].forEach(function(id){ document.getElementById(id).value=''; });
+        ['f-tipo_via','f-numero_via','f-letra_via','f-orientacion','f-complemento'].forEach(function(id){ document.getElementById(id).value=''; });
+        document.getElementById('f-placa-metros').value = '';
         return;
     }
     document.getElementById('f-tipo_via').value = m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase();
     document.getElementById('f-numero_via').value = m[2];
     document.getElementById('f-letra_via').value = m[3] || '';
     document.getElementById('f-orientacion').value = m[4] ? m[4].charAt(0).toUpperCase() + m[4].slice(1).toLowerCase() : '';
-    document.getElementById('f-numero_placa').value = m[5];
-    document.getElementById('f-letra_placa').value = m[6] || '';
-    document.getElementById('f-numero_metros').value = m[7];
+    document.getElementById('f-placa-metros').value = m[5] + (m[6] || '') + '-' + m[7];
     document.getElementById('f-complemento').value = m[8] || '';
 }
 
+function separarPlacaMetros() {
+    var valor = document.getElementById('f-placa-metros').value.trim().toUpperCase();
+    var m = valor.match(/^([0-9]{1,4})([A-Za-z]{0,2})-([0-9]{1,4})$/);
+    if (!m) {
+        return null;
+    }
+    document.getElementById('f-numero_placa').value = m[1];
+    document.getElementById('f-letra_placa').value = m[2] || '';
+    document.getElementById('f-numero_metros').value = m[3];
+    return { placa: m[1], letra: m[2] || '', metros: m[3] };
+}
+
 function construirDireccion() {
+    var partes = separarPlacaMetros();
     var tipo = document.getElementById('f-tipo_via').value.trim();
     var numero = document.getElementById('f-numero_via').value.trim();
     var letra = document.getElementById('f-letra_via').value.trim().toUpperCase();
     var orientacion = document.getElementById('f-orientacion').value.trim();
-    var placa = document.getElementById('f-numero_placa').value.trim();
-    var letraPlaca = document.getElementById('f-letra_placa').value.trim().toUpperCase();
-    var numeroMetros = document.getElementById('f-numero_metros').value.trim();
     var complemento = document.getElementById('f-complemento').value.trim();
-    var direccion = tipo + ' ' + numero + letra + (orientacion ? ' ' + orientacion : '') + ' # ' + placa + letraPlaca + '-' + numeroMetros;
+    if (!partes) {
+        document.getElementById('f-direccion').value = '';
+        return '';
+    }
+    var direccion = tipo + ' ' + numero + letra + (orientacion ? ' ' + orientacion : '') + ' # ' + partes.placa + partes.letra + '-' + partes.metros;
     if (complemento) direccion += ' ' + complemento;
     document.getElementById('f-direccion').value = direccion;
     return direccion;
 }
 
 document.getElementById('form-sitio').addEventListener('submit', function(e) {
+    var partes = separarPlacaMetros();
+    if (!partes) {
+        e.preventDefault();
+        alert('Escriba la placa y los metros con el formato correcto, por ejemplo: 79A-10');
+        document.getElementById('f-placa-metros').focus();
+        return;
+    }
     var direccion = construirDireccion();
     if (direccion.length > 50) {
         e.preventDefault();

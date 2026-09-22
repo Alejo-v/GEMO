@@ -47,8 +47,9 @@ if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaInicio) || !preg_match('/^\d{4}-\
     die('El rango de fechas no es válido.');
 }
 
-if ($fechaInicio > $fechaFin) {
-    [$fechaInicio, $fechaFin] = [$fechaFin, $fechaInicio];
+if ($fechaInicio > $hoy || $fechaFin > $hoy || $fechaInicio > $fechaFin) {
+    http_response_code(400);
+    die('No hay reportes en ese rango de fechas.');
 }
 
 $filtros = [
@@ -354,5 +355,6 @@ if ($imprimeReporte3) {
 }
 
 $nombreArchivo = $archivosReporte[$reporte] . '_' . $fechaInicio . '_a_' . $fechaFin . '.pdf';
-$pdf->Output('D', $nombreArchivo);
+$modoSalidaPdf = (isset($_GET['descargar']) && $_GET['descargar'] == '1') ? 'D' : 'I';
+$pdf->Output($modoSalidaPdf, $nombreArchivo);
 exit;
