@@ -1,1 +1,17 @@
+# Configuración local con credenciales (cada quien tiene la suya)
 config/database.php
+config/mail.php
+
+# Dependencias / entornos
+/vendor/
+.env
+.env.*
+
+# Archivos de editor / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

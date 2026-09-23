@@ -77,7 +77,7 @@ $totalCulex = array_sum(array_column($reporteSitios, 'larvas_culex'));
                 <label class="form-label">Fecha hasta</label>
                 <input type="date" name="fecha_hasta" class="form-control" value="<?= htmlspecialchars($filtros['fecha_hasta']) ?>">
             </div>
-            <div class="col-md-9 d-flex align-items-end gap-2">
+            <div class="col-12 gemo-filtros-btns">
                 <button type="submit" class="btn btn-gemo"><i class="fas fa-filter me-1"></i> Aplicar filtros</button>
                 <a href="reportes.php" class="btn btn-secondary">Limpiar</a>
             </div>
@@ -113,7 +113,12 @@ $totalCulex = array_sum(array_column($reporteSitios, 'larvas_culex'));
     <div class="card-header"><h4 class="card-title">Reporte 1 — Información de sitios</h4></div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
+            <table class="table table-hover align-middle table-reporte">
+                <colgroup>
+                    <col style="width:8%"><col style="width:14%"><col style="width:10%"><col style="width:10%">
+                    <col style="width:12%"><col style="width:12%"><col style="width:6%"><col style="width:6%">
+                    <col style="width:6%"><col style="width:16%">
+                </colgroup>
                 <thead>
                     <tr>
                         <th>Fecha</th><th>Sitio</th><th>Barrio</th><th>Comuna</th><th>Tipo depósito</th>
@@ -126,16 +131,16 @@ $totalCulex = array_sum(array_column($reporteSitios, 'larvas_culex'));
                 <?php endif; ?>
                 <?php foreach ($reporteSitios as $r): ?>
                     <tr>
-                        <td><?= htmlspecialchars(date('d/m/Y', strtotime($r['fecha']))) ?></td>
-                        <td><?= htmlspecialchars($r['direccion']) ?></td>
-                        <td><?= htmlspecialchars($r['barrios'] ?? '—') ?></td>
-                        <td><?= htmlspecialchars($r['comunas'] ?? '—') ?></td>
-                        <td><span class="badge badge-success"><?= htmlspecialchars($r['tipo_deposito']) ?></span></td>
-                        <td><?= htmlspecialchars($r['actividad']) ?></td>
-                        <td><?= (int)$r['larvas_aedes'] ?></td>
-                        <td><?= (int)$r['pupas'] ?></td>
-                        <td><?= (int)$r['larvas_culex'] ?></td>
-                        <td><?= htmlspecialchars($r['auxiliar']) ?></td>
+                        <td data-label="Fecha"><?= htmlspecialchars(date('d/m/Y', strtotime($r['fecha']))) ?></td>
+                        <td data-label="Sitio"><?= htmlspecialchars($r['direccion']) ?></td>
+                        <td data-label="Barrio"><?= htmlspecialchars($r['barrios'] ?? '—') ?></td>
+                        <td data-label="Comuna"><?= htmlspecialchars($r['comunas'] ?? '—') ?></td>
+                        <td data-label="Tipo depósito"><span class="badge badge-success"><?= htmlspecialchars($r['tipo_deposito']) ?></span></td>
+                        <td data-label="Actividad"><?= htmlspecialchars($r['actividad']) ?></td>
+                        <td data-label="Aedes"><?= (int)$r['larvas_aedes'] ?></td>
+                        <td data-label="Pupas"><?= (int)$r['pupas'] ?></td>
+                        <td data-label="Culex"><?= (int)$r['larvas_culex'] ?></td>
+                        <td data-label="Auxiliar"><?= htmlspecialchars($r['auxiliar']) ?></td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>
@@ -175,7 +180,10 @@ $totalCulex = array_sum(array_column($reporteSitios, 'larvas_culex'));
     <div class="card-header"><h4 class="card-title">Reporte 3 — Actividades por auxiliar</h4></div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
+            <table class="table table-hover align-middle table-reporte">
+                <colgroup>
+                    <col style="width:20%"><col style="width:15%"><col style="width:65%">
+                </colgroup>
                 <thead><tr><th>Auxiliar</th><th>Total registros</th><th>Detalle por actividad</th></tr></thead>
                 <tbody>
                 <?php if (empty($reporteAuxiliar)): ?>
@@ -183,9 +191,9 @@ $totalCulex = array_sum(array_column($reporteSitios, 'larvas_culex'));
                 <?php endif; ?>
                 <?php foreach ($reporteAuxiliar as $a): ?>
                     <tr>
-                        <td><?= htmlspecialchars($a['auxiliar']) ?></td>
-                        <td><?= (int)$a['total'] ?></td>
-                        <td><?= htmlspecialchars(implode(' · ', $a['actividades'])) ?></td>
+                        <td data-label="Auxiliar"><?= htmlspecialchars($a['auxiliar']) ?></td>
+                        <td data-label="Total registros"><?= (int)$a['total'] ?></td>
+                        <td data-label="Detalle por actividad"><?= htmlspecialchars(implode(' · ', $a['actividades'])) ?></td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>

@@ -48,7 +48,7 @@ $totalCulex = array_sum(array_column($reporteSitios, 'larvas_culex'));
 
 
 
-function urlPdfTerreno(array $filtros, string $reporte): string
+function urlPdfTerreno(array $filtros, string $reporte, bool $previsualizar = false): string
 {
     return '../../controllers/ReporteTerrenoController.php?accion=pdf'
         . '&reporte=' . urlencode($reporte)
@@ -56,7 +56,8 @@ function urlPdfTerreno(array $filtros, string $reporte): string
         . '&id_barrio=' . urlencode($filtros['id_barrio'])
         . '&id_tipo_deposito=' . urlencode($filtros['id_tipo_deposito'])
         . '&fecha_desde=' . urlencode($filtros['fecha_desde'])
-        . '&fecha_hasta=' . urlencode($filtros['fecha_hasta']);
+        . '&fecha_hasta=' . urlencode($filtros['fecha_hasta'])
+        . ($previsualizar ? '&salida=ver' : '');
 }
 ?>
 <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
@@ -67,9 +68,14 @@ function urlPdfTerreno(array $filtros, string $reporte): string
             <a href="reportes_zoocriadero.php">su propia pantalla</a>.
         </p>
     </div>
-    <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, 'todos')) ?>" class="btn btn-outline-success" target="_blank">
-        <i class="fas fa-file-pdf me-1"></i> Descargar los 4 en un PDF
-    </a>
+    <div class="d-flex gap-2">
+        <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, 'todos', true)) ?>" class="btn btn-outline-secondary" target="_blank">
+            <i class="fas fa-eye me-1"></i> Previsualizar los 4
+        </a>
+        <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, 'todos')) ?>" class="btn btn-outline-success" target="_blank">
+            <i class="fas fa-file-pdf me-1"></i> Descargar los 4 en un PDF
+        </a>
+    </div>
 </div>
 
 <div class="card card-round mb-4">
@@ -157,9 +163,14 @@ function urlPdfTerreno(array $filtros, string $reporte): string
             <h4 class="card-title mb-0">Reporte 1 — Información de sitios</h4>
             <small class="text-muted">Detalle de cada visita registrada en campo</small>
         </div>
-        <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '1')) ?>" class="btn btn-gemo btn-sm" target="_blank">
-            <i class="fas fa-file-pdf me-1"></i> Descargar reporte 1
-        </a>
+        <div class="d-flex gap-2">
+            <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '1', true)) ?>" class="btn btn-outline-secondary btn-sm" target="_blank">
+                <i class="fas fa-eye me-1"></i> Previsualizar
+            </a>
+            <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '1')) ?>" class="btn btn-gemo btn-sm" target="_blank">
+                <i class="fas fa-file-pdf me-1"></i> Descargar reporte 1
+            </a>
+        </div>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -200,9 +211,14 @@ function urlPdfTerreno(array $filtros, string $reporte): string
         <div class="card card-round mb-4">
             <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
                 <h4 class="card-title mb-0">Reporte 2 — Por tipo de actividad</h4>
-                <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '2')) ?>" class="btn btn-gemo btn-sm" target="_blank">
-                    <i class="fas fa-file-pdf me-1"></i> Descargar
-                </a>
+                <div class="d-flex gap-2">
+                    <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '2', true)) ?>" class="btn btn-outline-secondary btn-sm" target="_blank">
+                        <i class="fas fa-eye me-1"></i> Previsualizar
+                    </a>
+                    <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '2')) ?>" class="btn btn-gemo btn-sm" target="_blank">
+                        <i class="fas fa-file-pdf me-1"></i> Descargar
+                    </a>
+                </div>
             </div>
             <div class="card-body">
                 <?php if (empty($reporteActividad)): ?>
@@ -217,9 +233,14 @@ function urlPdfTerreno(array $filtros, string $reporte): string
         <div class="card card-round mb-4">
             <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
                 <h4 class="card-title mb-0">Reporte 4 — Por tipo de depósito</h4>
-                <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '4')) ?>" class="btn btn-gemo btn-sm" target="_blank">
-                    <i class="fas fa-file-pdf me-1"></i> Descargar
-                </a>
+                <div class="d-flex gap-2">
+                    <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '4', true)) ?>" class="btn btn-outline-secondary btn-sm" target="_blank">
+                        <i class="fas fa-eye me-1"></i> Previsualizar
+                    </a>
+                    <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '4')) ?>" class="btn btn-gemo btn-sm" target="_blank">
+                        <i class="fas fa-file-pdf me-1"></i> Descargar
+                    </a>
+                </div>
             </div>
             <div class="card-body">
                 <?php if (empty($reporteTipoDeposito)): ?>
@@ -236,9 +257,14 @@ function urlPdfTerreno(array $filtros, string $reporte): string
 <div class="card card-round mb-4">
     <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
         <h4 class="card-title mb-0">Reporte 3 — Actividades por auxiliar</h4>
-        <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '3')) ?>" class="btn btn-gemo btn-sm" target="_blank">
-            <i class="fas fa-file-pdf me-1"></i> Descargar reporte 3
-        </a>
+        <div class="d-flex gap-2">
+            <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '3', true)) ?>" class="btn btn-outline-secondary btn-sm" target="_blank">
+                <i class="fas fa-eye me-1"></i> Previsualizar
+            </a>
+            <a href="<?= htmlspecialchars(urlPdfTerreno($filtros, '3')) ?>" class="btn btn-gemo btn-sm" target="_blank">
+                <i class="fas fa-file-pdf me-1"></i> Descargar reporte 3
+            </a>
+        </div>
     </div>
     <div class="card-body">
         <div class="table-responsive">

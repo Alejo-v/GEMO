@@ -52,15 +52,21 @@ $urlPdf = '../../controllers/ReporteController.php?accion=pdf'
     . '&fecha_fin=' . urlencode($filtros['fecha_fin'])
     . '&id_zoocriadero=' . urlencode($filtros['id_zoocriadero'])
     . '&id_actividad=' . urlencode($filtros['id_actividad']);
+$urlPdfVer = $urlPdf . '&salida=ver';
 ?>
 <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
     <div>
         <h3 class="fw-bold mb-1">Reportes del zoocriadero</h3>
         <p class="text-muted mb-0">Los 3 reportes del proceso de Zoocriadero, con filtros por fechas, zoocriadero y actividad.</p>
     </div>
-    <a href="<?= htmlspecialchars($urlPdf) ?>" class="btn btn-gemo" target="_blank">
-        <i class="fas fa-file-pdf me-1"></i> Descargar PDF
-    </a>
+    <div class="d-flex gap-2">
+        <a href="<?= htmlspecialchars($urlPdfVer) ?>" class="btn btn-outline-secondary" target="_blank">
+            <i class="fas fa-eye me-1"></i> Previsualizar
+        </a>
+        <a href="<?= htmlspecialchars($urlPdf) ?>" class="btn btn-gemo" target="_blank">
+            <i class="fas fa-file-pdf me-1"></i> Descargar PDF
+        </a>
+    </div>
 </div>
 
 <div class="card card-round mb-4">
@@ -97,7 +103,7 @@ $urlPdf = '../../controllers/ReporteController.php?accion=pdf'
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-md-12 d-flex gap-2">
+            <div class="col-12 gemo-filtros-btns">
                 <button type="submit" class="btn btn-outline-success"><i class="fas fa-filter me-1"></i> Filtrar</button>
                 <a href="reportes.php" class="btn btn-secondary">Limpiar</a>
             </div>
@@ -203,7 +209,12 @@ $urlPdf = '../../controllers/ReporteController.php?accion=pdf'
     <div class="card-header"><h4 class="card-title">Reporte 1 — Seguimiento de actividades</h4></div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
+            <table class="table table-hover align-middle table-reporte">
+                <colgroup>
+                    <col style="width:7%"><col style="width:12%"><col style="width:6%"><col style="width:8%">
+                    <col style="width:5%"><col style="width:6%"><col style="width:6%"><col style="width:6%">
+                    <col style="width:8%"><col style="width:12%"><col style="width:10%"><col style="width:14%">
+                </colgroup>
                 <thead>
                     <tr>
                         <th>Fecha</th>
@@ -226,18 +237,18 @@ $urlPdf = '../../controllers/ReporteController.php?accion=pdf'
                 <?php endif; ?>
                 <?php foreach ($registros as $r): ?>
                     <tr>
-                        <td><?= htmlspecialchars(date('d/m/Y', strtotime($r['fecha']))) ?></td>
-                        <td><?= htmlspecialchars($r['zoocriadero']) ?></td>
-                        <td>#<?= (int) $r['id_tanque'] ?></td>
-                        <td><span class="badge badge-success"><?= htmlspecialchars($r['tipo_tanque']) ?></span></td>
-                        <td><?= htmlspecialchars((string) $r['ph']) ?></td>
-                        <td><?= htmlspecialchars((string) $r['temperatura']) ?></td>
-                        <td><?= htmlspecialchars((string) $r['cloro']) ?></td>
-                        <td><?= (int) $r['alevines_nacidos'] ?></td>
-                        <td><?= (int) $r['muertos_macho'] ?> / <?= (int) $r['muertos_hembra'] ?></td>
-                        <td><?= htmlspecialchars($r['actividades']) ?></td>
-                        <td><?= htmlspecialchars($r['registrado_por']) ?></td>
-                        <td><?= htmlspecialchars($r['observaciones'] ?? '') ?></td>
+                        <td data-label="Fecha"><?= htmlspecialchars(date('d/m/Y', strtotime($r['fecha']))) ?></td>
+                        <td data-label="Zoocriadero"><?= htmlspecialchars($r['zoocriadero']) ?></td>
+                        <td data-label="Tanque">#<?= (int) $r['id_tanque'] ?></td>
+                        <td data-label="Tipo"><span class="badge badge-success"><?= htmlspecialchars($r['tipo_tanque']) ?></span></td>
+                        <td data-label="pH"><?= htmlspecialchars((string) $r['ph']) ?></td>
+                        <td data-label="Temp."><?= htmlspecialchars((string) $r['temperatura']) ?></td>
+                        <td data-label="Cloro"><?= htmlspecialchars((string) $r['cloro']) ?></td>
+                        <td data-label="Vivos"><?= (int) $r['alevines_nacidos'] ?></td>
+                        <td data-label="Muertos M/H"><?= (int) $r['muertos_macho'] ?> / <?= (int) $r['muertos_hembra'] ?></td>
+                        <td data-label="Actividades"><?= htmlspecialchars($r['actividades']) ?></td>
+                        <td data-label="Registrado por"><?= htmlspecialchars($r['registrado_por']) ?></td>
+                        <td data-label="Observaciones"><?= htmlspecialchars($r['observaciones'] ?? '') ?></td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>
@@ -247,12 +258,16 @@ $urlPdf = '../../controllers/ReporteController.php?accion=pdf'
 </div>
 
 <div class="row">
-    <div class="col-md-7">
+    <div class="col-lg-7 col-md-12">
         <div class="card card-round mb-4">
             <div class="card-header"><h4 class="card-title">Reporte 2 — Nacidos y muertos por tanque</h4></div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
+                    <table class="table table-hover align-middle table-reporte">
+                        <colgroup>
+                            <col style="width:8%"><col style="width:20%"><col style="width:14%"><col style="width:12%">
+                            <col style="width:10%"><col style="width:14%"><col style="width:12%"><col style="width:10%">
+                        </colgroup>
                         <thead>
                             <tr>
                                 <th>Tanque</th>
@@ -274,14 +289,14 @@ $urlPdf = '../../controllers/ReporteController.php?accion=pdf'
                             $tasaTanque = $totalTanque > 0 ? round(((int) $t['total_muertos'] / $totalTanque) * 100, 1) : 0.0;
                         ?>
                             <tr>
-                                <td>#<?= (int) $t['id_tanque'] ?></td>
-                                <td><?= htmlspecialchars($t['zoocriadero']) ?></td>
-                                <td><span class="badge badge-success"><?= htmlspecialchars($t['tipo_tanque']) ?></span></td>
-                                <td><?= (int) $t['total_registros'] ?></td>
-                                <td><?= (int) $t['total_vivos'] ?></td>
-                                <td><?= (int) $t['total_muertos_macho'] ?> / <?= (int) $t['total_muertos_hembra'] ?></td>
-                                <td><?= (int) $t['total_muertos'] ?></td>
-                                <td><?= $tasaTanque ?>%</td>
+                                <td data-label="Tanque">#<?= (int) $t['id_tanque'] ?></td>
+                                <td data-label="Zoocriadero"><?= htmlspecialchars($t['zoocriadero']) ?></td>
+                                <td data-label="Tipo"><span class="badge badge-success"><?= htmlspecialchars($t['tipo_tanque']) ?></span></td>
+                                <td data-label="Registros"><?= (int) $t['total_registros'] ?></td>
+                                <td data-label="Vivos"><?= (int) $t['total_vivos'] ?></td>
+                                <td data-label="Muertos M/H"><?= (int) $t['total_muertos_macho'] ?> / <?= (int) $t['total_muertos_hembra'] ?></td>
+                                <td data-label="Total muertos"><?= (int) $t['total_muertos'] ?></td>
+                                <td data-label="Tasa mortalidad"><?= $tasaTanque ?>%</td>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
@@ -290,7 +305,7 @@ $urlPdf = '../../controllers/ReporteController.php?accion=pdf'
             </div>
         </div>
     </div>
-    <div class="col-md-5">
+    <div class="col-lg-5 col-md-12">
         <div class="card card-round mb-4">
             <div class="card-header"><h4 class="card-title">Vivos vs. muertos por tanque</h4></div>
             <div class="card-body">
@@ -308,7 +323,11 @@ $urlPdf = '../../controllers/ReporteController.php?accion=pdf'
     <div class="card-header"><h4 class="card-title">Reporte 3 — Tanques por zoocriadero</h4></div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
+            <table class="table table-hover align-middle table-reporte">
+                <colgroup>
+                    <col style="width:16%"><col style="width:14%"><col style="width:10%"><col style="width:9%">
+                    <col style="width:12%"><col style="width:13%"><col style="width:26%">
+                </colgroup>
                 <thead>
                     <tr>
                         <th>Zoocriadero</th>
@@ -326,13 +345,13 @@ $urlPdf = '../../controllers/ReporteController.php?accion=pdf'
                 <?php endif; ?>
                 <?php foreach ($reporteTanquesZoo as $zoo): ?>
                     <tr>
-                        <td><?= htmlspecialchars($zoo['direccion']) ?></td>
-                        <td><?= htmlspecialchars($zoo['encargado']) ?></td>
-                        <td><?= (int) $zoo['total_tanques'] ?></td>
-                        <td><?= (int) $zoo['tanques_activos'] ?></td>
-                        <td><?= (int) $zoo['tanques_mantenimiento'] ?></td>
-                        <td><?= (int) $zoo['tanques_fuera_servicio'] ?></td>
-                        <td>
+                        <td data-label="Zoocriadero"><?= htmlspecialchars($zoo['direccion']) ?></td>
+                        <td data-label="Encargado"><?= htmlspecialchars($zoo['encargado']) ?></td>
+                        <td data-label="Total tanques"><?= (int) $zoo['total_tanques'] ?></td>
+                        <td data-label="Activos"><?= (int) $zoo['tanques_activos'] ?></td>
+                        <td data-label="Mantenimiento"><?= (int) $zoo['tanques_mantenimiento'] ?></td>
+                        <td data-label="Fuera de servicio"><?= (int) $zoo['tanques_fuera_servicio'] ?></td>
+                        <td data-label="Detalle por tipo de tanque">
                             <?php if (empty($zoo['detalle_tipos'])): ?>
                                 <span class="text-muted">Sin tanques registrados</span>
                             <?php else: ?>

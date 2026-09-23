@@ -1,6 +1,7 @@
 <?php
 
 session_start();
+require_once __DIR__ . '/../includes/sesion_unica.php';
 require_once __DIR__ . '/../includes/roles.php';
 require_once __DIR__ . '/../models/Usuario.php';
 require_once __DIR__ . '/../includes/password_validation.php';
@@ -9,6 +10,8 @@ if (!isset($_SESSION['usuario_id'])) {
     header('Location: ../login.php');
     exit;
 }
+
+validarSesionUnica();
 
 
 

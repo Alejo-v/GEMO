@@ -1,6 +1,7 @@
 <?php
 
 session_start();
+require_once __DIR__ . '/../includes/sesion_unica.php';
 require_once __DIR__ . '/../models/SeguimientoZoocriadero.php';
 require_once __DIR__ . '/../models/Tanque.php';
 require_once __DIR__ . '/../lib/fpdf/fpdf.php';
@@ -11,6 +12,8 @@ if (!isset($_SESSION['usuario_id']) || !in_array((int) ($_SESSION['usuario_rol_i
     header('Location: ../login.php');
     exit;
 }
+
+validarSesionUnica();
 
 $esAdmin = (int) $_SESSION['usuario_rol_id'] === 1;
 
@@ -354,5 +357,6 @@ if ($imprimeReporte3) {
 }
 
 $nombreArchivo = $archivosReporte[$reporte] . '_' . $fechaInicio . '_a_' . $fechaFin . '.pdf';
-$pdf->Output('D', $nombreArchivo);
+$modoSalida = (($_GET['salida'] ?? '') === 'ver') ? 'I' : 'D';
+$pdf->Output($modoSalida, $nombreArchivo);
 exit;

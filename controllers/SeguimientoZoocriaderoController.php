@@ -1,12 +1,15 @@
 <?php
 
 session_start();
+require_once __DIR__ . '/../includes/sesion_unica.php';
 require_once __DIR__ . '/../models/SeguimientoZoocriadero.php';
 
 if (!isset($_SESSION['usuario_id']) || (int)($_SESSION['usuario_rol_id'] ?? 0) !== 3) {
     header('Location: ../login.php');
     exit;
 }
+
+validarSesionUnica();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || ($_POST['accion'] ?? '') !== 'registrar_seguimiento') {
     header('Location: ../views/auxiliar_zoocriadero/registrar_seguimiento.php');

@@ -1,8 +1,10 @@
 <?php
 session_start();
+require_once __DIR__ . '/includes/sesion_unica.php';
 if (!isset($_SESSION['usuario_id'])) {
     header('Location: login.php'); exit;
 }
+validarSesionUnica('login.php');
 if ((int)($_SESSION['usuario_rol_id'] ?? 0) === 1) {
     header('Location: views/admin/dashboard.php'); exit;
 }
