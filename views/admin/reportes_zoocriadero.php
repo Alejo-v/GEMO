@@ -51,14 +51,15 @@ $muertosTanque = array_map(static fn($t) => (int) $t['total_muertos'], $resumenP
 
 
 
-function urlPdfZoo(array $filtros, string $reporte): string
+function urlPdfZoo(array $filtros, string $reporte, bool $previsualizar = false): string
 {
     return '../../controllers/ReporteController.php?accion=pdf'
         . '&reporte=' . urlencode($reporte)
         . '&fecha_inicio=' . urlencode($filtros['fecha_inicio'])
         . '&fecha_fin=' . urlencode($filtros['fecha_fin'])
         . '&id_zoocriadero=' . urlencode($filtros['id_zoocriadero'])
-        . '&id_actividad=' . urlencode($filtros['id_actividad']);
+        . '&id_actividad=' . urlencode($filtros['id_actividad'])
+        . ($previsualizar ? '&salida=ver' : '');
 }
 ?>
 <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
@@ -69,9 +70,14 @@ function urlPdfZoo(array $filtros, string $reporte): string
             <a href="reportes_terreno.php">su propia pantalla</a>.
         </p>
     </div>
-    <a href="<?= htmlspecialchars(urlPdfZoo($filtros, 'todos')) ?>" class="btn btn-outline-success" target="_blank">
-        <i class="fas fa-file-pdf me-1"></i> Descargar los 3 en un PDF
-    </a>
+    <div class="d-flex gap-2">
+        <a href="<?= htmlspecialchars(urlPdfZoo($filtros, 'todos', true)) ?>" class="btn btn-outline-secondary" target="_blank">
+            <i class="fas fa-eye me-1"></i> Previsualizar los 3
+        </a>
+        <a href="<?= htmlspecialchars(urlPdfZoo($filtros, 'todos')) ?>" class="btn btn-outline-success" target="_blank">
+            <i class="fas fa-file-pdf me-1"></i> Descargar los 3 en un PDF
+        </a>
+    </div>
 </div>
 
 <div class="card card-round mb-4">
@@ -217,9 +223,14 @@ function urlPdfZoo(array $filtros, string $reporte): string
             <h4 class="card-title mb-0">Reporte 1 — Seguimiento de actividades</h4>
             <small class="text-muted">Filtrado por fechas, zoocriadero y actividad</small>
         </div>
-        <a href="<?= htmlspecialchars(urlPdfZoo($filtros, '1')) ?>" class="btn btn-gemo btn-sm" target="_blank">
-            <i class="fas fa-file-pdf me-1"></i> Descargar reporte 1
-        </a>
+        <div class="d-flex gap-2">
+            <a href="<?= htmlspecialchars(urlPdfZoo($filtros, '1', true)) ?>" class="btn btn-outline-secondary btn-sm" target="_blank">
+                <i class="fas fa-eye me-1"></i> Previsualizar
+            </a>
+            <a href="<?= htmlspecialchars(urlPdfZoo($filtros, '1')) ?>" class="btn btn-gemo btn-sm" target="_blank">
+                <i class="fas fa-file-pdf me-1"></i> Descargar reporte 1
+            </a>
+        </div>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -275,9 +286,14 @@ function urlPdfZoo(array $filtros, string $reporte): string
                     <h4 class="card-title mb-0">Reporte 2 — Nacidos y muertos por tanque</h4>
                     <small class="text-muted">Cuantificado tanque por tanque</small>
                 </div>
-                <a href="<?= htmlspecialchars(urlPdfZoo($filtros, '2')) ?>" class="btn btn-gemo btn-sm" target="_blank">
-                    <i class="fas fa-file-pdf me-1"></i> Descargar reporte 2
-                </a>
+                <div class="d-flex gap-2">
+                    <a href="<?= htmlspecialchars(urlPdfZoo($filtros, '2', true)) ?>" class="btn btn-outline-secondary btn-sm" target="_blank">
+                        <i class="fas fa-eye me-1"></i> Previsualizar
+                    </a>
+                    <a href="<?= htmlspecialchars(urlPdfZoo($filtros, '2')) ?>" class="btn btn-gemo btn-sm" target="_blank">
+                        <i class="fas fa-file-pdf me-1"></i> Descargar reporte 2
+                    </a>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -340,9 +356,14 @@ function urlPdfZoo(array $filtros, string $reporte): string
             <h4 class="card-title mb-0">Reporte 3 — Tanques por zoocriadero</h4>
             <small class="text-muted">Cantidad de tanques, tipo de tanque y encargado</small>
         </div>
-        <a href="<?= htmlspecialchars(urlPdfZoo($filtros, '3')) ?>" class="btn btn-gemo btn-sm" target="_blank">
-            <i class="fas fa-file-pdf me-1"></i> Descargar reporte 3
-        </a>
+        <div class="d-flex gap-2">
+            <a href="<?= htmlspecialchars(urlPdfZoo($filtros, '3', true)) ?>" class="btn btn-outline-secondary btn-sm" target="_blank">
+                <i class="fas fa-eye me-1"></i> Previsualizar
+            </a>
+            <a href="<?= htmlspecialchars(urlPdfZoo($filtros, '3')) ?>" class="btn btn-gemo btn-sm" target="_blank">
+                <i class="fas fa-file-pdf me-1"></i> Descargar reporte 3
+            </a>
+        </div>
     </div>
     <div class="card-body">
         <div class="table-responsive">

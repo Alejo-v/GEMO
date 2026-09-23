@@ -1,12 +1,15 @@
 <?php
 
 session_start();
+require_once __DIR__ . '/../includes/sesion_unica.php';
 require_once __DIR__ . '/../models/SeguimientoTerreno.php';
 
 if (!isset($_SESSION['usuario_id']) || (int)($_SESSION['usuario_rol_id'] ?? 0) !== 4) {
     header('Location: ../login.php');
     exit;
 }
+
+validarSesionUnica();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || ($_POST['accion'] ?? '') !== 'registrar_seguimiento') {
     header('Location: ../views/auxiliar_terreno/registrar_seguimiento.php');

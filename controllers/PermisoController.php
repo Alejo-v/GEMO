@@ -1,6 +1,7 @@
 <?php
 
 session_start();
+require_once __DIR__ . '/../includes/sesion_unica.php';
 require_once __DIR__ . '/../models/Permiso.php';
 
 
@@ -8,6 +9,8 @@ if (!isset($_SESSION['usuario_id']) || (int) ($_SESSION['usuario_rol_id'] ?? 0) 
     header('Location: ../login.php');
     exit;
 }
+
+validarSesionUnica();
 
 function volverConError(string $mensaje): never
 {

@@ -44,11 +44,23 @@ if (!$usuario['activo']) {
 }
 
 session_regenerate_id(true);
+
+$tokenSesion = bin2hex(random_bytes(32));
+
+try {
+    (new Usuario())->actualizarTokenSesion((int) $usuario['id_usuario'], $tokenSesion);
+} catch (Throwable $e) {
+    $_SESSION['error_login'] = 'No fue posible iniciar sesión. Intente nuevamente.';
+    header('Location: ../login.php');
+    exit;
+}
+
 $_SESSION['usuario_id'] = $usuario['id_usuario'];
 $_SESSION['usuario_nombre'] = $usuario['nombres'];
 $_SESSION['usuario_apellido'] = $usuario['apellidos'];
 $_SESSION['usuario_rol_id'] = $usuario['id_rol'];
 $_SESSION['usuario_rol'] = $usuario['nombre_rol'];
+$_SESSION['token_sesion'] = $tokenSesion;
 
 if ((int)$usuario['id_rol'] === 1) {
     header('Location: ../views/admin/dashboard.php');

@@ -5,11 +5,14 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 
 require_once __DIR__ . '/permisos.php';
+require_once __DIR__ . '/sesion_unica.php';
 
 if (!isset($_SESSION['usuario_id'])) {
     header('Location: ../../login.php');
     exit;
 }
+
+validarSesionUnica('../../login.php');
 
 if ((int)($_SESSION['usuario_rol_id'] ?? 0) !== 3) {
     header('Location: ../../index.php');

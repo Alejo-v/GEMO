@@ -49,15 +49,21 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
     . '&id_tipo_deposito=' . urlencode($filtros['id_tipo_deposito'])
     . '&fecha_desde=' . urlencode($filtros['fecha_desde'])
     . '&fecha_hasta=' . urlencode($filtros['fecha_hasta']);
+$urlPdfVer = $urlPdf . '&salida=ver';
 ?>
 <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
     <div>
         <h3 class="fw-bold mb-1">Reportes de terreno</h3>
         <p class="text-muted mb-0">Los 4 reportes del proceso de Trabajo de Terreno, con filtros por comuna, barrio, tipo de depósito y fechas.</p>
     </div>
-    <a href="<?= htmlspecialchars($urlPdf) ?>" class="btn btn-gemo" target="_blank">
-        <i class="fas fa-file-pdf me-1"></i> Descargar PDF
-    </a>
+    <div class="d-flex gap-2">
+        <a href="<?= htmlspecialchars($urlPdfVer) ?>" class="btn btn-outline-secondary" target="_blank">
+            <i class="fas fa-eye me-1"></i> Previsualizar
+        </a>
+        <a href="<?= htmlspecialchars($urlPdf) ?>" class="btn btn-gemo" target="_blank">
+            <i class="fas fa-file-pdf me-1"></i> Descargar PDF
+        </a>
+    </div>
 </div>
 
 <div class="card card-round mb-4">
@@ -106,7 +112,7 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
                 <label class="form-label">Fecha hasta</label>
                 <input type="date" name="fecha_hasta" class="form-control" value="<?= htmlspecialchars($filtros['fecha_hasta']) ?>" max="<?= htmlspecialchars($hoy) ?>">
             </div>
-            <div class="col-md-9 d-flex align-items-end gap-2">
+            <div class="col-12 gemo-filtros-btns">
                 <button type="submit" class="btn btn-gemo"><i class="fas fa-filter me-1"></i> Aplicar filtros</button>
                 <a href="reportes.php" class="btn btn-secondary">Limpiar</a>
             </div>
@@ -142,7 +148,12 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
     <div class="card-header"><h4 class="card-title">Reporte 1 — Información de sitios</h4></div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
+            <table class="table table-hover align-middle table-reporte">
+                <colgroup>
+                    <col style="width:8%"><col style="width:14%"><col style="width:10%"><col style="width:10%">
+                    <col style="width:12%"><col style="width:12%"><col style="width:6%"><col style="width:6%">
+                    <col style="width:6%"><col style="width:16%">
+                </colgroup>
                 <thead>
                     <tr>
                         <th>Fecha</th><th>Sitio</th><th>Barrio</th><th>Comuna</th><th>Tipo depósito</th>
@@ -155,16 +166,16 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
                 <?php endif; ?>
                 <?php foreach ($reporteSitios as $r): ?>
                     <tr>
-                        <td><?= htmlspecialchars(date('d/m/Y', strtotime($r['fecha']))) ?></td>
-                        <td><?= htmlspecialchars($r['direccion']) ?></td>
-                        <td><?= htmlspecialchars($r['barrios'] ?? '—') ?></td>
-                        <td><?= htmlspecialchars($r['comunas'] ?? '—') ?></td>
-                        <td><span class="badge badge-success"><?= htmlspecialchars($r['tipo_deposito']) ?></span></td>
-                        <td><?= htmlspecialchars($r['actividad']) ?></td>
-                        <td><?= (int)$r['larvas_aedes'] ?></td>
-                        <td><?= (int)$r['pupas'] ?></td>
-                        <td><?= (int)$r['larvas_culex'] ?></td>
-                        <td><?= htmlspecialchars($r['auxiliar']) ?></td>
+                        <td data-label="Fecha"><?= htmlspecialchars(date('d/m/Y', strtotime($r['fecha']))) ?></td>
+                        <td data-label="Sitio"><?= htmlspecialchars($r['direccion']) ?></td>
+                        <td data-label="Barrio"><?= htmlspecialchars($r['barrios'] ?? '—') ?></td>
+                        <td data-label="Comuna"><?= htmlspecialchars($r['comunas'] ?? '—') ?></td>
+                        <td data-label="Tipo depósito"><span class="badge badge-success"><?= htmlspecialchars($r['tipo_deposito']) ?></span></td>
+                        <td data-label="Actividad"><?= htmlspecialchars($r['actividad']) ?></td>
+                        <td data-label="Aedes"><?= (int)$r['larvas_aedes'] ?></td>
+                        <td data-label="Pupas"><?= (int)$r['pupas'] ?></td>
+                        <td data-label="Culex"><?= (int)$r['larvas_culex'] ?></td>
+                        <td data-label="Auxiliar"><?= htmlspecialchars($r['auxiliar']) ?></td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>
@@ -204,7 +215,10 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
     <div class="card-header"><h4 class="card-title">Reporte 3 — Actividades por auxiliar</h4></div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
+            <table class="table table-hover align-middle table-reporte">
+                <colgroup>
+                    <col style="width:20%"><col style="width:15%"><col style="width:65%">
+                </colgroup>
                 <thead><tr><th>Auxiliar</th><th>Total registros</th><th>Detalle por actividad</th></tr></thead>
                 <tbody>
                 <?php if (empty($reporteAuxiliar)): ?>
@@ -212,9 +226,9 @@ $urlPdf = '../../controllers/ReporteTerrenoController.php?accion=pdf'
                 <?php endif; ?>
                 <?php foreach ($reporteAuxiliar as $a): ?>
                     <tr>
-                        <td><?= htmlspecialchars($a['auxiliar']) ?></td>
-                        <td><?= (int)$a['total'] ?></td>
-                        <td><?= htmlspecialchars(implode(' · ', $a['actividades'])) ?></td>
+                        <td data-label="Auxiliar"><?= htmlspecialchars($a['auxiliar']) ?></td>
+                        <td data-label="Total registros"><?= (int)$a['total'] ?></td>
+                        <td data-label="Detalle por actividad"><?= htmlspecialchars(implode(' · ', $a['actividades'])) ?></td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>

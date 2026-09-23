@@ -231,6 +231,48 @@ class Usuario
     }
 
     /*
+     *
+     * SESIÓN ÚNICA
+     *
+     */
+
+    public function actualizarTokenSesion(
+        int $idUsuario,
+        ?string $token
+    ): bool {
+
+        $stmt = $this->conexion->prepare(
+            'UPDATE usuario
+             SET token_sesion = :token_sesion
+             WHERE id_usuario = :id_usuario'
+        );
+
+        return $stmt->execute([
+            ':token_sesion' => $token,
+            ':id_usuario' => $idUsuario
+        ]);
+    }
+
+    public function obtenerTokenSesion(
+        int $idUsuario
+    ): ?string {
+
+        $stmt = $this->conexion->prepare(
+            'SELECT token_sesion
+             FROM usuario
+             WHERE id_usuario = :id_usuario'
+        );
+
+        $stmt->execute([
+            ':id_usuario' => $idUsuario
+        ]);
+
+        $token = $stmt->fetchColumn();
+
+        return $token !== false ? $token : null;
+    }
+
+    /*
      * 
      * RECUPERACIÓN DE CONTRASEÑA
      * 

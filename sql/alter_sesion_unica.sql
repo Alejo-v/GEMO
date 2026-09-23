@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE public.usuario
+    ADD COLUMN IF NOT EXISTS token_sesion VARCHAR(64);
+
+COMMIT;
