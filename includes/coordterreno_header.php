@@ -135,6 +135,12 @@ $__verSeccionTerreno = $__verSitios || $__verDepositos || $__verTiposDeposito ||
 <p>Manual de usuario</p>
 </a>
 </li>
+<li class="nav-item <?= basename($_SERVER['PHP_SELF']) === 'guia_usuario.php' ? 'active' : '' ?>">
+<a href="guia_usuario.php">
+<i class="fas fa-book"></i>
+<p>Guía de usuario</p>
+</a>
+</li>
 <li class="nav-item">
 <a href="../../logout.php">
 <i class="fas fa-sign-out-alt"></i>

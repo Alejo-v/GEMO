@@ -525,3 +525,87 @@ html.gemo-a11y-contraste .gemo-manual-meta-item {
     width: 100%;
   }
 }
+
+.gemo-guia-card {
+  border: none;
+  width: 100%;
+  max-width: 100%;
+}
+/* Hacer que la previsualización del documento ocupe todo el ancho disponible del área de contenido */
+.page-inner > .gemo-about-badge + .gemo-guia-card,
+.page-inner .gemo-guia-card {
+  width: 100%;
+  max-width: 100%;
+}
+.gemo-guia-titulo {
+  font-weight: 800;
+  color: var(--gemo-text);
+  margin-bottom: 4px;
+}
+.gemo-guia-subtitulo {
+  display: block;
+  font-weight: 500;
+  font-size: 15px;
+  color: #5b6b7c;
+  margin-top: 4px;
+}
+.gemo-guia-intro {
+  color: var(--gemo-text);
+  margin: 16px 0 22px;
+  line-height: 1.6;
+}
+.gemo-guia-doc-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  height: min(90vh, 1100px);
+  min-height: 780px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(21, 61, 107, .15);
+  margin-bottom: 22px;
+  background: #f4f6f9;
+}
+.gemo-guia-doc-wrap iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 780px;
+  border: 0;
+}
+.gemo-guia-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+.gemo-guia-descarga {
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.2;
+}
+.gemo-guia-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--gemo-bg);
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: var(--gemo-text);
+}
+.gemo-guia-meta-item i {
+  color: var(--gemo-mid);
+  font-size: 16px;
+}
+html.gemo-a11y-contraste .gemo-guia-meta-item {
+  background: #fff !important;
+  border: 1px solid #000 !important;
+  color: #000 !important;
+}

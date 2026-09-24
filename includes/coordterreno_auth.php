@@ -19,7 +19,7 @@ if ((int)($_SESSION['usuario_rol_id'] ?? 0) !== 5) {
     exit;
 }
 
-if (!in_array(basename($_SERVER['PHP_SELF']), ['ubicacion.php', 'acerca_de.php', 'manual_usuario.php'], true) && !usuarioTienePermiso((int)($_SESSION['usuario_rol_id'] ?? 0), basename($_SERVER['PHP_SELF']))) {
+if (!in_array(basename($_SERVER['PHP_SELF']), ['ubicacion.php', 'acerca_de.php', 'manual_usuario.php', 'guia_usuario.php'], true) && !usuarioTienePermiso((int)($_SESSION['usuario_rol_id'] ?? 0), basename($_SERVER['PHP_SELF']))) {
     $_SESSION['error'] = 'No tienes permisos para acceder a esa página.';
     header('Location: ../../index.php');
     exit;
