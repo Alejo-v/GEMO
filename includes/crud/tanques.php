@@ -95,7 +95,7 @@ $exito = $_SESSION['tanque_exito'] ?? null; unset($_SESSION['tanque_exito']);
                             <?php endif; ?>
                         </td>
                         <td class="d-flex gap-1">
-                            <button type="button" class="btn btn-sm btn-outline-primary"
+                            <button type="button" class="btn btn-sm btn-outline-primary" title="Editar"
                                     onclick='editarTanque(<?= json_encode($t, JSON_HEX_APOS) ?>)'>
                                 <i class="fas fa-edit"></i>
                             </button>
@@ -103,10 +103,10 @@ $exito = $_SESSION['tanque_exito'] ?? null; unset($_SESSION['tanque_exito']);
                                 <input type="hidden" name="id_tanque" value="<?= (int)$t['id_tanque'] ?>">
                                 <?php if ($t['activo']): ?>
                                     <input type="hidden" name="accion" value="inhabilitar">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Inhabilitar este tanque?')"><i class="fas fa-ban"></i></button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Inhabilitar" onclick="return confirm('¿Inhabilitar este tanque?')"><i class="fas fa-ban"></i></button>
                                 <?php else: ?>
                                     <input type="hidden" name="accion" value="habilitar">
-                                    <button type="submit" class="btn btn-sm btn-outline-success"><i class="fas fa-check"></i></button>
+                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Habilitar"><i class="fas fa-check"></i></button>
                                 <?php endif; ?>
                             </form>
                         </td>

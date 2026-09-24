@@ -104,7 +104,7 @@ $urlPdfVer = $urlPdf . '&salida=ver';
                 </select>
             </div>
             <div class="col-12 gemo-filtros-btns">
-                <button type="submit" class="btn btn-outline-success"><i class="fas fa-filter me-1"></i> Filtrar</button>
+                <button type="submit" class="btn btn-outline-success"><i class="fas fa-filter me-1"></i> Consultar</button>
                 <a href="reportes.php" class="btn btn-secondary">Limpiar</a>
             </div>
         </form>

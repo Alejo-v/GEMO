@@ -75,14 +75,17 @@ $exito = $_SESSION['seguimiento_exito'] ?? null; unset($_SESSION['seguimiento_ex
             <div class="col-md-4">
                 <label class="form-label">pH *</label>
                 <input type="number" step="0.1" min="0" max="14" name="ph" class="form-control" required>
+                <small class="text-muted">Valor mínimo: 0 — Valor máximo: 14</small>
             </div>
             <div class="col-md-4">
                 <label class="form-label">Temperatura (°C) *</label>
                 <input type="number" step="0.1" min="0" max="50" name="temperatura" class="form-control" required>
+                <small class="text-muted">Valor mínimo: 0 °C — Valor máximo: 50 °C</small>
             </div>
             <div class="col-md-4">
                 <label class="form-label">Cloro (mg/L) *</label>
                 <input type="number" step="0.01" min="0" max="20" name="cloro" class="form-control" required>
+                <small class="text-muted">Valor mínimo: 0 mg/L — Valor máximo: 20 mg/L</small>
             </div>
         </div>
     </div>

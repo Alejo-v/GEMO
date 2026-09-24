@@ -37,8 +37,8 @@ try {
         if (!preg_match('/^[0-9]{1,4}$/', $numeroVia)) volverZoocriaderoConError('El número de vía debe contener entre 1 y 4 dígitos.');
         if ($letraVia !== '' && !preg_match('/^[A-Z]{1,2}$/', $letraVia)) volverZoocriaderoConError('La letra de la vía no es válida.');
         if ($orientacion !== '' && !in_array($orientacion, $orientaciones, true)) volverZoocriaderoConError('La orientación no es válida.');
-        if (!preg_match('/^[0-9]{1,4}$/', $numeroPlaca)) volverZoocriaderoConError('El número de placa debe contener entre 1 y 4 dígitos.');
-        if ($letraPlaca !== '' && !preg_match('/^[A-Z]{1,2}$/', $letraPlaca)) volverZoocriaderoConError('La letra de la placa no es válida.');
+        if (!preg_match('/^[0-9]{1,4}$/', $numeroPlaca)) volverZoocriaderoConError('El número de la nomenclatura debe contener entre 1 y 4 dígitos.');
+        if ($letraPlaca !== '' && !preg_match('/^[A-Z]{1,2}$/', $letraPlaca)) volverZoocriaderoConError('La letra de la nomenclatura no es válida.');
         if (!preg_match('/^[0-9]{1,4}$/', $numeroMetros)) volverZoocriaderoConError('El número después del guion debe contener entre 1 y 4 dígitos.');
         if ($complemento !== '' && (mb_strlen($complemento) > 20 || !preg_match('/^[\p{L}\p{N} .#\/\-]+$/u', $complemento))) volverZoocriaderoConError('El complemento de la dirección contiene caracteres no válidos.');
         $direccion = $tipoVia . ' ' . $numeroVia . $letraVia . ($orientacion !== '' ? ' ' . $orientacion : '') . ' # ' . $numeroPlaca . $letraPlaca . '-' . $numeroMetros . ($complemento !== '' ? ' ' . $complemento : '');

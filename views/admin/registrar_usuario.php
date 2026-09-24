@@ -53,8 +53,10 @@ unset($_SESSION['usuario_error']);
 
                 <div class="col-md-6">
                     <label class="form-label">Número de teléfono *</label>
-                    <input name="telefono" class="form-control" maxlength="20"
-                           pattern="[0-9+() .-]{7,20}" inputmode="tel" required>
+                    <input name="telefono" class="form-control" maxlength="10"
+                           pattern="[0-9]{7,10}" inputmode="numeric"
+                           oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"
+                           title="Solo números, máximo 10 dígitos" required>
                 </div>
             </div>
         </div>

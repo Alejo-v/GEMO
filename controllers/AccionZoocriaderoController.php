@@ -23,25 +23,25 @@ try {
         $nombre = trim($_POST['nombre'] ?? '');
 
         if ($nombre === '' || mb_strlen($nombre) > 120) {
-            volverAccionConError('El nombre de la acción es obligatorio (máximo 120 caracteres).');
+            volverAccionConError('El nombre del proceso es obligatorio (máximo 120 caracteres).');
         }
 
         if ($accion === 'crear') {
             if ($modelo->nombreExiste($nombre)) {
-                volverAccionConError('Ya existe una acción con ese nombre.');
+                volverAccionConError('Ya existe un proceso con ese nombre.');
             }
             $modelo->crear($nombre);
-            $_SESSION['accion_zoo_exito'] = 'Acción registrada correctamente.';
+            $_SESSION['accion_zoo_exito'] = 'Proceso registrado correctamente.';
         } else {
             $id = (int) ($_POST['id_actividad_zoocriadero'] ?? 0);
             if (!$modelo->obtenerPorId($id)) {
-                volverAccionConError('La acción que intenta editar no existe.');
+                volverAccionConError('El proceso que intenta editar no existe.');
             }
             if ($modelo->nombreExiste($nombre, $id)) {
-                volverAccionConError('Ya existe otra acción con ese nombre.');
+                volverAccionConError('Ya existe otro proceso con ese nombre.');
             }
             $modelo->actualizar($id, $nombre);
-            $_SESSION['accion_zoo_exito'] = 'Acción actualizada correctamente.';
+            $_SESSION['accion_zoo_exito'] = 'Proceso actualizado correctamente.';
         }
 
         header('Location: ' . gemoVistaDelRol('acciones_zoocriadero.php'));
@@ -51,12 +51,12 @@ try {
     if ($accion === 'inhabilitar' || $accion === 'habilitar') {
         $id = (int) ($_POST['id_actividad_zoocriadero'] ?? 0);
         if (!$modelo->obtenerPorId($id)) {
-            volverAccionConError('La acción no existe.');
+            volverAccionConError('El proceso no existe.');
         }
         $modelo->cambiarEstado($id, $accion === 'habilitar');
         $_SESSION['accion_zoo_exito'] = $accion === 'habilitar'
-            ? 'Acción habilitada correctamente.'
-            : 'Acción inhabilitada correctamente.';
+            ? 'Proceso habilitado correctamente.'
+            : 'Proceso inhabilitado correctamente.';
         header('Location: ' . gemoVistaDelRol('acciones_zoocriadero.php'));
         exit;
     }

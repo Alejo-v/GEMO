@@ -9,17 +9,17 @@ $exito = $_SESSION['accion_zoo_exito'] ?? null; unset($_SESSION['accion_zoo_exit
 ?>
 <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
-        <h3 class="fw-bold mb-1">Acciones del zoocriadero</h3>
-        <p class="text-muted mb-0">Catálogo de acciones que se pueden marcar en el registro diario (Limpieza, Aspirado, Ajuste de nivel, etc.).</p>
+        <h3 class="fw-bold mb-1">Procesos del zoocriadero</h3>
+        <p class="text-muted mb-0">Catálogo de procesos que se pueden marcar en el registro diario (Limpieza, Aspirado, Ajuste de nivel, etc.).</p>
     </div>
-    <button type="button" class="btn btn-gemo" onclick="nuevaAccion()"><i class="fas fa-plus me-1"></i> Nueva acción</button>
+    <button type="button" class="btn btn-gemo" onclick="nuevaAccion()"><i class="fas fa-plus me-1"></i> Nuevo proceso</button>
 </div>
 
 <?php if ($error): ?><div class="alert alert-danger"><?= htmlspecialchars($error) ?></div><?php endif; ?>
 <?php if ($exito): ?><div class="alert alert-success"><?= htmlspecialchars($exito) ?></div><?php endif; ?>
 
 <div class="card card-round mb-4" id="card-formulario" style="display:none;">
-    <div class="card-header"><h4 class="card-title" id="titulo-formulario">Nueva acción</h4></div>
+    <div class="card-header"><h4 class="card-title" id="titulo-formulario">Nuevo proceso</h4></div>
     <div class="card-body">
         <form method="post" action="../../controllers/AccionZoocriaderoController.php" id="form-accion-zoo">
             <input type="hidden" name="accion" id="f-accion" value="crear">
@@ -47,7 +47,7 @@ $exito = $_SESSION['accion_zoo_exito'] ?? null; unset($_SESSION['accion_zoo_exit
                 </thead>
                 <tbody>
                 <?php if (empty($acciones)): ?>
-                    <tr><td colspan="4" class="text-center text-muted">No hay acciones registradas.</td></tr>
+                    <tr><td colspan="4" class="text-center text-muted">No hay procesos registrados.</td></tr>
                 <?php endif; ?>
                 <?php foreach ($acciones as $a): ?>
                     <tr>
@@ -61,7 +61,7 @@ $exito = $_SESSION['accion_zoo_exito'] ?? null; unset($_SESSION['accion_zoo_exit
                             <?php endif; ?>
                         </td>
                         <td class="d-flex gap-1">
-                            <button type="button" class="btn btn-sm btn-outline-primary"
+                            <button type="button" class="btn btn-sm btn-outline-primary" title="Editar"
                                     onclick='editarAccion(<?= json_encode($a, JSON_HEX_APOS) ?>)'>
                                 <i class="fas fa-edit"></i>
                             </button>
@@ -69,10 +69,10 @@ $exito = $_SESSION['accion_zoo_exito'] ?? null; unset($_SESSION['accion_zoo_exit
                                 <input type="hidden" name="id_actividad_zoocriadero" value="<?= (int)$a['id_actividad_zoocriadero'] ?>">
                                 <?php if ($a['activo']): ?>
                                     <input type="hidden" name="accion" value="inhabilitar">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Inhabilitar esta acción?')"><i class="fas fa-ban"></i></button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Inhabilitar" onclick="return confirm('¿Inhabilitar este proceso?')"><i class="fas fa-ban"></i></button>
                                 <?php else: ?>
                                     <input type="hidden" name="accion" value="habilitar">
-                                    <button type="submit" class="btn btn-sm btn-outline-success"><i class="fas fa-check"></i></button>
+                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Habilitar"><i class="fas fa-check"></i></button>
                                 <?php endif; ?>
                             </form>
                         </td>
@@ -86,7 +86,7 @@ $exito = $_SESSION['accion_zoo_exito'] ?? null; unset($_SESSION['accion_zoo_exit
 
 <script>
 function nuevaAccion() {
-    document.getElementById('titulo-formulario').textContent = 'Nueva acción';
+    document.getElementById('titulo-formulario').textContent = 'Nuevo proceso';
     document.getElementById('f-accion').value = 'crear';
     document.getElementById('f-id_actividad_zoocriadero').value = '';
     document.getElementById('f-nombre').value = '';
@@ -95,7 +95,7 @@ function nuevaAccion() {
 }
 
 function editarAccion(accion) {
-    document.getElementById('titulo-formulario').textContent = 'Editar acción #' + accion.id_actividad_zoocriadero;
+    document.getElementById('titulo-formulario').textContent = 'Editar proceso #' + accion.id_actividad_zoocriadero;
     document.getElementById('f-accion').value = 'actualizar';
     document.getElementById('f-id_actividad_zoocriadero').value = accion.id_actividad_zoocriadero;
     document.getElementById('f-nombre').value = accion.nombre;

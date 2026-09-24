@@ -36,8 +36,8 @@ try {
         if (!preg_match('/^[0-9]{1,4}$/', $numeroVia)) volverSitioConError('El número de vía debe contener entre 1 y 4 dígitos.');
         if ($letraVia !== '' && !preg_match('/^[A-Z]{1,2}$/', $letraVia)) volverSitioConError('La letra de la vía no es válida.');
         if ($orientacion !== '' && !in_array($orientacion, $orientaciones, true)) volverSitioConError('La orientación no es válida.');
-        if (!preg_match('/^[0-9]{1,4}$/', $numeroPlaca)) volverSitioConError('El número de placa debe contener entre 1 y 4 dígitos.');
-        if ($letraPlaca !== '' && !preg_match('/^[A-Z]{1,2}$/', $letraPlaca)) volverSitioConError('La letra de la placa no es válida.');
+        if (!preg_match('/^[0-9]{1,4}$/', $numeroPlaca)) volverSitioConError('El número de la nomenclatura debe contener entre 1 y 4 dígitos.');
+        if ($letraPlaca !== '' && !preg_match('/^[A-Z]{1,2}$/', $letraPlaca)) volverSitioConError('La letra de la nomenclatura no es válida.');
         if (!preg_match('/^[0-9]{1,4}$/', $numeroMetros)) volverSitioConError('El número después del guion debe contener entre 1 y 4 dígitos.');
         if ($complemento !== '' && (mb_strlen($complemento) > 20 || !preg_match('/^[\p{L}\p{N} .#\/\-]+$/u', $complemento))) volverSitioConError('El complemento de la dirección contiene caracteres no válidos.');
 

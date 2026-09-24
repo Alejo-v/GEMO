@@ -115,7 +115,7 @@ function urlPdfZoo(array $filtros, string $reporte, bool $previsualizar = false)
                 </select>
             </div>
             <div class="col-md-12 d-flex gap-2">
-                <button type="submit" class="btn btn-gemo"><i class="fas fa-filter me-1"></i> Filtrar</button>
+                <button type="submit" class="btn btn-gemo"><i class="fas fa-filter me-1"></i> Consultar</button>
                 <a href="reportes_zoocriadero.php" class="btn btn-secondary">Limpiar</a>
             </div>
         </form>
