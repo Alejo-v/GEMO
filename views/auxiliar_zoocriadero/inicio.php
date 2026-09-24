@@ -55,7 +55,7 @@ $nombreCompleto = trim(($_SESSION['usuario_nombre'] ?? '') . ' ' . ($_SESSION['u
 <div class="card card-round mt-3">
     <div class="card-body">
         <h4 class="card-title">Bienvenido a GEMO</h4>
-        <p class="card-text">Desde aquí puede registrar el seguimiento diario del zoocriadero (peces vivos, muertos y condiciones de los tanques) y consultar sus registros anteriores. Los catálogos de zoocriaderos, tanques, tipos de tanque y acciones los administra el Coordinador de zoocriadero.</p>
+        <p class="card-text">Desde aquí puede registrar el seguimiento diario del zoocriadero (peces vivos, muertos y condiciones de los tanques) y consultar sus registros anteriores. Los catálogos de zoocriaderos, tanques, tipos de tanque y procesos los administra el Coordinador de zoocriadero.</p>
         <a href="registrar_seguimiento.php" class="btn btn-outline-success me-2"><i class="fas fa-clipboard-list me-1"></i> Ir a registrar</a>
         <a href="mis_registros.php" class="btn btn-outline-success"><i class="fas fa-history me-1"></i> Ver mis registros</a>
     </div>

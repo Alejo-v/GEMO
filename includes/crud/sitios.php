@@ -34,7 +34,7 @@ $exito = $_SESSION['sitio_exito'] ?? null; unset($_SESSION['sitio_exito']);
                         <div class="col-md-1"><label class="form-label small">Letra</label><input type="text" name="letra_via" id="f-letra_via" class="form-control" maxlength="2" pattern="[A-Za-z]{1,2}"></div>
                         <div class="col-md-2"><label class="form-label small">Orientación</label><select name="orientacion" id="f-orientacion" class="form-select"><option value="">Sin orientación</option><option>Norte</option><option>Sur</option><option>Este</option><option>Oeste</option></select></div>
                         <div class="col-md-4">
-                            <label class="form-label small">Placa y metros *</label>
+                            <label class="form-label small">Nomenclatura *</label>
                             <input type="text" id="f-placa-metros" class="form-control" maxlength="10" placeholder="Ej: 79A-10" pattern="[0-9]{1,4}[A-Za-z]{0,2}-[0-9]{1,4}" required>
                             <input type="hidden" name="numero_placa" id="f-numero_placa">
                             <input type="hidden" name="letra_placa" id="f-letra_placa">
@@ -43,7 +43,7 @@ $exito = $_SESSION['sitio_exito'] ?? null; unset($_SESSION['sitio_exito']);
                         <div class="col-12"><label class="form-label small">Complemento / apartamento / torre (opcional)</label><input type="text" name="complemento" id="f-complemento" class="form-control" maxlength="20" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü0-9 .#\-/]+"></div>
                     </div>
                     <input type="hidden" name="direccion" id="f-direccion">
-                    <small class="text-muted">Placa y metros: escríbalos como en el ejemplo (número, letra opcional, guion y metros). Ejemplo completo: Calle 1A Oeste # 79A-10</small>
+                    <small class="text-muted">Nomenclatura: escríbalos como en el ejemplo (número, letra opcional, guion y metros). Ejemplo completo: Calle 1A Oeste # 79A-10</small>
                 </div>
                 <div class="col-12">
                     <label class="form-label">Barrios que abarca *</label>
@@ -100,7 +100,7 @@ $exito = $_SESSION['sitio_exito'] ?? null; unset($_SESSION['sitio_exito']);
                             <?php endif; ?>
                         </td>
                         <td class="d-flex gap-1">
-                            <button type="button" class="btn btn-sm btn-outline-primary"
+                            <button type="button" class="btn btn-sm btn-outline-primary" title="Editar"
                                     onclick='editarSitio(<?= json_encode($s, JSON_HEX_APOS) ?>, <?= json_encode($s['ids_barrios']) ?>)'>
                                 <i class="fas fa-edit"></i>
                             </button>
@@ -108,10 +108,10 @@ $exito = $_SESSION['sitio_exito'] ?? null; unset($_SESSION['sitio_exito']);
                                 <input type="hidden" name="id_sitio" value="<?= (int)$s['id_sitio'] ?>">
                                 <?php if ($s['activo']): ?>
                                     <input type="hidden" name="accion" value="inhabilitar">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Inhabilitar este sitio?')"><i class="fas fa-ban"></i></button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Inhabilitar" onclick="return confirm('¿Inhabilitar este sitio?')"><i class="fas fa-ban"></i></button>
                                 <?php else: ?>
                                     <input type="hidden" name="accion" value="habilitar">
-                                    <button type="submit" class="btn btn-sm btn-outline-success"><i class="fas fa-check"></i></button>
+                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Habilitar"><i class="fas fa-check"></i></button>
                                 <?php endif; ?>
                             </form>
                         </td>
@@ -205,7 +205,7 @@ document.getElementById('form-sitio').addEventListener('submit', function(e) {
     var partes = separarPlacaMetros();
     if (!partes) {
         e.preventDefault();
-        alert('Escriba la placa y los metros con el formato correcto, por ejemplo: 79A-10');
+        alert('Escriba la nomenclatura con el formato correcto, por ejemplo: 79A-10');
         document.getElementById('f-placa-metros').focus();
         return;
     }

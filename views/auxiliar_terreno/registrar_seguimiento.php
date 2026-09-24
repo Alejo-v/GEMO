@@ -104,10 +104,12 @@ $exito = $_SESSION['seguimiento_terreno_exito'] ?? null; unset($_SESSION['seguim
             <div class="col-md-6">
                 <label class="form-label">pH *</label>
                 <input type="number" step="0.1" min="0" max="14" name="ph" class="form-control" required>
+                <small class="text-muted">Valor mínimo: 0 — Valor máximo: 14</small>
             </div>
             <div class="col-md-6">
                 <label class="form-label">Temperatura (°C) *</label>
                 <input type="number" step="0.1" min="0" max="50" name="temperatura" class="form-control" required>
+                <small class="text-muted">Valor mínimo: 0 °C — Valor máximo: 50 °C</small>
             </div>
         </div>
     </div>

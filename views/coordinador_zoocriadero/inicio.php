@@ -98,8 +98,8 @@ $nombreCompleto = trim(($_SESSION['usuario_nombre'] ?? '') . ' ' . ($_SESSION['u
                         <div class="col col-stats ms-3 ms-sm-0">
                             <div class="numbers">
                                 <p class="card-category">Administrar</p>
-                                <h4 class="card-title">Acciones</h4>
-                                <p class="card-category mb-0">Acciones del zoocriadero</p>
+                                <h4 class="card-title">Procesos</h4>
+                                <p class="card-category mb-0">Procesos del zoocriadero</p>
                             </div>
                         </div>
                     </div>

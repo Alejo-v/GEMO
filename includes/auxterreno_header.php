@@ -1,4 +1,16 @@
-<?php require_once __DIR__ . '/auxterreno_auth.php'; ?>
+<?php
+require_once __DIR__ . '/auxterreno_auth.php';
+
+$__rolId = (int) ($_SESSION['usuario_rol_id'] ?? 0);
+$__perm = static fn(string $pagina): bool => usuarioTienePermiso($__rolId, $pagina);
+
+$__verInicio = $__perm('inicio.php');
+$__verRegistrarSeguimiento = $__perm('registrar_seguimiento.php');
+$__verMisRegistros = $__perm('mis_registros.php');
+$__verEstadisticas = $__perm('estadisticas.php');
+$__verReportes = $__perm('reportes.php');
+$__verInformacionPersonal = $__perm('informacion_personal.php');
+?>
 <!doctype html>
 <html lang="es">
 <head>
@@ -36,46 +48,58 @@
 <div class="sidebar-wrapper scrollbar scrollbar-inner">
 <div class="sidebar-content">
 <ul class="nav nav-secondary">
+<?php if ($__verInicio): ?>
 <li class="nav-item <?= basename($_SERVER['PHP_SELF']) === 'inicio.php' ? 'active' : '' ?>">
 <a href="inicio.php">
 <i class="fas fa-home"></i>
 <p>Inicio</p>
 </a>
 </li>
+<?php endif; ?>
+<?php if ($__verRegistrarSeguimiento): ?>
 <li class="nav-item <?= basename($_SERVER['PHP_SELF']) === 'registrar_seguimiento.php' ? 'active' : '' ?>">
 <a href="registrar_seguimiento.php">
 <i class="fas fa-map-marker-alt"></i>
 <p>Registro de campo</p>
 </a>
 </li>
+<?php endif; ?>
+<?php if ($__verMisRegistros): ?>
 <li class="nav-item <?= basename($_SERVER['PHP_SELF']) === 'mis_registros.php' ? 'active' : '' ?>">
 <a href="mis_registros.php">
 <i class="fas fa-history"></i>
 <p>Mis registros</p>
 </a>
 </li>
+<?php endif; ?>
+<?php if ($__verEstadisticas): ?>
 <li class="nav-item <?= basename($_SERVER['PHP_SELF']) === 'estadisticas.php' ? 'active' : '' ?>">
 <a href="estadisticas.php">
 <i class="fas fa-chart-bar"></i>
 <p>Estadísticas</p>
 </a>
 </li>
+<?php endif; ?>
+<?php if ($__verReportes): ?>
 <li class="nav-item <?= basename($_SERVER['PHP_SELF']) === 'reportes.php' ? 'active' : '' ?>">
 <a href="reportes.php">
 <i class="fas fa-file-alt"></i>
 <p>Reportes</p>
 </a>
 </li>
+<?php endif; ?>
 <li class="nav-section">
 <span class="sidebar-mini-icon"><i class="fa fa-ellipsis-h"></i></span>
 <h4 class="text-section">Cuenta</h4>
 </li>
+<?php if ($__verInformacionPersonal): ?>
 <li class="nav-item <?= basename($_SERVER['PHP_SELF']) === 'informacion_personal.php' ? 'active' : '' ?>">
 <a href="informacion_personal.php">
 <i class="fas fa-id-card"></i>
 <p>Información personal</p>
 </a>
 </li>
+<?php endif; ?>
 <li class="nav-item <?= basename($_SERVER['PHP_SELF']) === 'acerca_de.php' ? 'active' : '' ?>">
 <a href="acerca_de.php">
 <i class="fas fa-info-circle"></i>

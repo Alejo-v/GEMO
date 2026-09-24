@@ -1,4 +1,19 @@
-<?php require_once __DIR__ . '/coordzoo_auth.php'; ?>
+<?php
+require_once __DIR__ . '/coordzoo_auth.php';
+
+$__rolId = (int) ($_SESSION['usuario_rol_id'] ?? 0);
+$__perm = static fn(string $pagina): bool => usuarioTienePermiso($__rolId, $pagina);
+
+$__verInicio = $__perm('inicio.php');
+$__verReportes = $__perm('reportes.php');
+$__verZoocriaderos = $__perm('zoocriaderos.php');
+$__verTanques = $__perm('tanques.php');
+$__verTiposTanque = $__perm('tipos_tanque.php');
+$__verAccionesZoo = $__perm('acciones_zoocriadero.php');
+$__verInformacionPersonal = $__perm('informacion_personal.php');
+
+$__verSeccionZoo = $__verZoocriaderos || $__verTanques || $__verTiposTanque || $__verAccionesZoo;
+?>
 <!doctype html>
 <html lang="es">
 <head>
@@ -36,56 +51,72 @@
 <div class="sidebar-wrapper scrollbar scrollbar-inner">
 <div class="sidebar-content">
 <ul class="nav nav-secondary">
+<?php if ($__verInicio): ?>
 <li class="nav-item <?= basename($_SERVER['PHP_SELF']) === 'inicio.php' ? 'active' : '' ?>">
 <a href="inicio.php">
 <i class="fas fa-home"></i>
 <p>Inicio</p>
 </a>
 </li>
+<?php endif; ?>
+<?php if ($__verReportes): ?>
 <li class="nav-item <?= basename($_SERVER['PHP_SELF']) === 'reportes.php' ? 'active' : '' ?>">
 <a href="reportes.php">
 <i class="fas fa-chart-bar"></i>
 <p>Reportes</p>
 </a>
 </li>
+<?php endif; ?>
+<?php if ($__verSeccionZoo): ?>
 <li class="nav-section">
 <span class="sidebar-mini-icon"><i class="fa fa-ellipsis-h"></i></span>
 <h4 class="text-section">Catálogos de zoocriadero</h4>
 </li>
+<?php endif; ?>
+<?php if ($__verZoocriaderos): ?>
 <li class="nav-item <?= basename($_SERVER['PHP_SELF']) === 'zoocriaderos.php' ? 'active' : '' ?>">
 <a href="zoocriaderos.php">
 <i class="fas fa-warehouse"></i>
 <p>Zoocriaderos</p>
 </a>
 </li>
+<?php endif; ?>
+<?php if ($__verTanques): ?>
 <li class="nav-item <?= basename($_SERVER['PHP_SELF']) === 'tanques.php' ? 'active' : '' ?>">
 <a href="tanques.php">
 <i class="fas fa-swimming-pool"></i>
 <p>Tanques</p>
 </a>
 </li>
+<?php endif; ?>
+<?php if ($__verTiposTanque): ?>
 <li class="nav-item <?= basename($_SERVER['PHP_SELF']) === 'tipos_tanque.php' ? 'active' : '' ?>">
 <a href="tipos_tanque.php">
 <i class="fas fa-tags"></i>
 <p>Tipos de tanque</p>
 </a>
 </li>
+<?php endif; ?>
+<?php if ($__verAccionesZoo): ?>
 <li class="nav-item <?= basename($_SERVER['PHP_SELF']) === 'acciones_zoocriadero.php' ? 'active' : '' ?>">
 <a href="acciones_zoocriadero.php">
 <i class="fas fa-tasks"></i>
-<p>Acciones</p>
+<p>Procesos</p>
 </a>
 </li>
+<?php endif; ?>
 <li class="nav-section">
 <span class="sidebar-mini-icon"><i class="fa fa-ellipsis-h"></i></span>
 <h4 class="text-section">Cuenta</h4>
 </li>
+<?php if ($__verInformacionPersonal): ?>
 <li class="nav-item <?= basename($_SERVER['PHP_SELF']) === 'informacion_personal.php' ? 'active' : '' ?>">
 <a href="informacion_personal.php">
 <i class="fas fa-id-card"></i>
 <p>Información personal</p>
 </a>
 </li>
+<?php endif; ?>
 <li class="nav-item <?= basename($_SERVER['PHP_SELF']) === 'acerca_de.php' ? 'active' : '' ?>">
 <a href="acerca_de.php">
 <i class="fas fa-info-circle"></i>

@@ -35,7 +35,7 @@ $exito = $_SESSION['zoocriadero_exito'] ?? null; unset($_SESSION['zoocriadero_ex
                         <div class="col-md-1"><label class="form-label small">Letra</label><input type="text" name="letra_via" id="f-letra_via" class="form-control" maxlength="2" pattern="[A-Za-z]{1,2}"></div>
                         <div class="col-md-2"><label class="form-label small">Orientación</label><select name="orientacion" id="f-orientacion" class="form-select"><option value="">Sin orientación</option><option>Norte</option><option>Sur</option><option>Este</option><option>Oeste</option></select></div>
                         <div class="col-md-4">
-                            <label class="form-label small">Placa y metros *</label>
+                            <label class="form-label small">Nomenclatura *</label>
                             <input type="text" id="f-placa-metros" class="form-control" maxlength="10" placeholder="Ej: 8-30" pattern="[0-9]{1,4}[A-Za-z]{0,2}-[0-9]{1,4}" required>
                             <input type="hidden" name="numero_placa" id="f-numero_placa">
                             <input type="hidden" name="letra_placa" id="f-letra_placa">
@@ -44,7 +44,7 @@ $exito = $_SESSION['zoocriadero_exito'] ?? null; unset($_SESSION['zoocriadero_ex
                         <div class="col-12"><label class="form-label small">Complemento / sede (opcional)</label><input type="text" name="complemento" id="f-complemento" class="form-control" maxlength="20" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü0-9 .#\-/]+"></div>
                     </div>
                     <input type="hidden" name="direccion" id="f-direccion">
-                    <small class="text-muted">Placa y metros: número, letra opcional, guion y metros. Ejemplo completo: Carrera 15 # 8-30</small>
+                    <small class="text-muted">Nomenclatura: número, letra opcional, guion y metros. Ejemplo completo: Carrera 15 # 8-30</small>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Barrio *</label>
@@ -100,7 +100,7 @@ $exito = $_SESSION['zoocriadero_exito'] ?? null; unset($_SESSION['zoocriadero_ex
                             <?php endif; ?>
                         </td>
                         <td class="d-flex gap-1">
-                            <button type="button" class="btn btn-sm btn-outline-primary"
+                            <button type="button" class="btn btn-sm btn-outline-primary" title="Editar"
                                     onclick='editarZoocriadero(<?= json_encode($z, JSON_HEX_APOS) ?>)'>
                                 <i class="fas fa-edit"></i>
                             </button>
@@ -108,10 +108,10 @@ $exito = $_SESSION['zoocriadero_exito'] ?? null; unset($_SESSION['zoocriadero_ex
                                 <input type="hidden" name="id_zoocriadero" value="<?= (int)$z['id_zoocriadero'] ?>">
                                 <?php if ($z['activo']): ?>
                                     <input type="hidden" name="accion" value="inhabilitar">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Inhabilitar este zoocriadero?')"><i class="fas fa-ban"></i></button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Inhabilitar" onclick="return confirm('¿Inhabilitar este zoocriadero?')"><i class="fas fa-ban"></i></button>
                                 <?php else: ?>
                                     <input type="hidden" name="accion" value="habilitar">
-                                    <button type="submit" class="btn btn-sm btn-outline-success"><i class="fas fa-check"></i></button>
+                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Habilitar"><i class="fas fa-check"></i></button>
                                 <?php endif; ?>
                             </form>
                         </td>
@@ -189,7 +189,7 @@ function construirDireccion() {
 }
 document.getElementById('form-zoocriadero').addEventListener('submit',function(e){
     var partes = separarPlacaMetros();
-    if (!partes) { e.preventDefault(); alert('Escriba la placa y los metros con el formato correcto, por ejemplo: 8-30'); document.getElementById('f-placa-metros').focus(); return; }
+    if (!partes) { e.preventDefault(); alert('Escriba la nomenclatura con el formato correcto, por ejemplo: 8-30'); document.getElementById('f-placa-metros').focus(); return; }
     if (construirDireccion().length > 50) { e.preventDefault(); alert('La dirección completa no puede superar 50 caracteres.'); }
 });
 

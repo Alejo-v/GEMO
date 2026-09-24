@@ -179,8 +179,8 @@ if (!preg_match('/^[0-9A-Za-z\-\.]{5,50}$/', $documento)) {
     volverConError('El número de cédula no tiene un formato válido.');
 }
 
-if (!preg_match('/^[0-9+\s\-]{7,20}$/', $telefono)) {
-    volverConError('El número de teléfono no tiene un formato válido.');
+if (!preg_match('/^[0-9]{7,10}$/', $telefono)) {
+    volverConError('El número de teléfono debe contener solo números, con un máximo de 10 dígitos.');
 }
 
 if ($password !== $confirmar) {

@@ -61,7 +61,7 @@ $exito = $_SESSION['tipo_deposito_exito'] ?? null; unset($_SESSION['tipo_deposit
                             <?php endif; ?>
                         </td>
                         <td class="d-flex gap-1">
-                            <button type="button" class="btn btn-sm btn-outline-primary"
+                            <button type="button" class="btn btn-sm btn-outline-primary" title="Editar"
                                     onclick='editarTipo(<?= json_encode($t, JSON_HEX_APOS) ?>)'>
                                 <i class="fas fa-edit"></i>
                             </button>
@@ -69,10 +69,10 @@ $exito = $_SESSION['tipo_deposito_exito'] ?? null; unset($_SESSION['tipo_deposit
                                 <input type="hidden" name="id_tipo_deposito" value="<?= (int)$t['id_tipo_deposito'] ?>">
                                 <?php if ($t['activo']): ?>
                                     <input type="hidden" name="accion" value="inhabilitar">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Inhabilitar este tipo de depósito?')"><i class="fas fa-ban"></i></button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Inhabilitar" onclick="return confirm('¿Inhabilitar este tipo de depósito?')"><i class="fas fa-ban"></i></button>
                                 <?php else: ?>
                                     <input type="hidden" name="accion" value="habilitar">
-                                    <button type="submit" class="btn btn-sm btn-outline-success"><i class="fas fa-check"></i></button>
+                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Habilitar"><i class="fas fa-check"></i></button>
                                 <?php endif; ?>
                             </form>
                         </td>

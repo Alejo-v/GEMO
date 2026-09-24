@@ -60,7 +60,7 @@ $registros = $modelo->obtenerAuditoriaTerreno(
     </select>
   </div>
   <div class="col-12 d-flex gap-2">
-    <button class="btn btn-gemo" type="submit"><i class="fas fa-filter me-1"></i> Filtrar</button>
+    <button class="btn btn-gemo" type="submit"><i class="fas fa-filter me-1"></i> Consultar</button>
     <a class="btn btn-outline-secondary" href="auditoria_terreno.php">Limpiar</a>
   </div>
 </form>

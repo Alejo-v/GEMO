@@ -55,7 +55,10 @@ $error = $_SESSION['perfil_error'] ?? null; unset($_SESSION['perfil_error']);
             <input type="hidden" name="accion" value="actualizar_telefono">
             <div class="col-md-6">
                 <label class="form-label">Número de teléfono *</label>
-                <input class="form-control" type="tel" name="telefono" maxlength="20" required
+                <input class="form-control" type="tel" name="telefono" maxlength="10"
+                       pattern="[0-9]{7,10}" inputmode="numeric"
+                       oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"
+                       title="Solo números, máximo 10 dígitos" required
                        value="<?= htmlspecialchars($usuario['telefono']) ?>">
             </div>
             <div class="col-md-auto">
